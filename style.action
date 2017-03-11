@@ -1,0 +1,26 @@
+#---------------------------------------
+# Global
+
+{+filter{savemyeyes}}
+#/
+
+#---------------------------------------
+# Specific
+
+{+filter{FacebookStyle}}
+#.facebook.com
+
+{+filter{GoogleHestiaStyle}}
+.google.
+
+{+filter{FacebookStyle2}}
+.facebook.com
+
+#---------------------------------------
+# -
+{-filter{FacebookStyle2}}
+.facebook.com/video/liveviewcount/
+.facebook.com/chat/user_info/
+.facebook.com/ajax/
+.facebook.com/notifications/
+.facebook.com/typeahead/

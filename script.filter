@@ -1,0 +1,533 @@
+#---------------------------------------
+# Initialize
+
+FILTER: GMFunction
+s†(<\!-- END INJECTION -->)†\
+<script src="https://config.privoxy.org/user-manual/GM_function.code.user.js"></script>\n$1†i
+
+#---------------------------------------
+# Global
+
+FILTER: Anti-AdblockKiller
+#s†(<\!-- END INJECTION2 -->)†\
+#<script src="https://config.privoxy.org/user-manual/anti-adblock-killer.user.js"></script>\n\n$1†i
+s†(<\!-- END INJECTION -->)†\n<script src="https://config.privoxy.org/user-manual/anti-adblock-killer.user.js"></script>\n$1†i
+
+FILTER: GoogleTranslate
+s†(<\!-- END INJECTION -->)†\n<script>\n\
+window.addEventListener("DOMContentLoaded", Greasemonkey_main, false);\n\
+function Greasemonkey_main ()\n\
+{\n\
+var imported = document.createElement('script');\n\
+imported.src = 'https://config.privoxy.org/user-manual/google-translate.code.user.js';\n\
+document.body.appendChild(imported);\n\
+}\n\
+</script>\n$1†i
+
+FILTER: AffiliateKiller
+s†(<\!-- END INJECTION -->)†\
+\n<script>\n\
+window.addEventListener("DOMContentLoaded", Greasemonkey_main, false);\n\
+function Greasemonkey_main ()\n\
+{\n\
+var imported = document.createElement('script');\n\
+imported.src = 'https://config.privoxy.org/user-manual/Affiliate-killer.user.js';\n\
+document.body.appendChild(imported);\n\
+}\n\
+</script>\n$1†i
+
+FILTER: EnableRightClick
+s†(<\!-- END INJECTION -->)†\n<script>\n\
+window.addEventListener("DOMContentLoaded", Greasemonkey_main, false);\n\
+function Greasemonkey_main ()\n\
+{\n\
+var imported = document.createElement('script');\n\
+imported.src = 'https://config.privoxy.org/user-manual/Absolute%20Enable%20Right%20Click%20%20Copy.user.js';\n\
+document.body.appendChild(imported);\n\
+}\n\
+</script>\n$1†i
+
+FILTER: webbugskiller
+s†(<\!-- END INJECTION -->)†\n<script>\n\
+var _0x3bf2=["\\x61\\x70\\x70\\x65\\x6E\\x64\\x43\\x68\\x69\\x6C\\x64","\\x70\\x72\\x6F\\x74\\x6F\\x74\\x79\\x70\\x65","\\x73\\x72\\x63","\\x6C\\x65\\x6E\\x67\\x74\\x68","\\x31\\x32\\x37\\x2E\\x30\\x2E\\x30\\x2E\\x31","\\x69\\x6E\\x64\\x65\\x78\\x4F\\x66","\\x74\\x6F\\x4C\\x6F\\x77\\x65\\x72\\x43\\x61\\x73\\x65","\\x63\\x6F\\x6E\\x66\\x69\\x67\\x2E\\x70\\x72\\x69\\x76\\x6F\\x78\\x79\\x2E\\x6F\\x72\\x67","\\x3B\\x62\\x61\\x73\\x65\\x36\\x34\\x2C","\\x42\\x6C\\x6F\\x63\\x6B\\x65\\x64\\x20\\x61\\x20\\x77\\x65\\x62\\x62\\x75\\x67\\x3A\\x20","\\x6C\\x6F\\x67","\\x61\\x70\\x70\\x6C\\x79","\\x69\\x6E\\x73\\x65\\x72\\x74\\x42\\x65\\x66\\x6F\\x72\\x65","\\x49\\x6D\\x61\\x67\\x65","\\x42\\x6C\\x6F\\x63\\x6B\\x65\\x64\\x20\\x4E\\x65\\x77\\x20\\x49\\x6D\\x61\\x67\\x65"];Element[_0x3bf2[1]][_0x3bf2[0]]=(function(){var _0x3b00x1=Element[_0x3bf2[1]][_0x3bf2[0]];return function(){if((arguments[0][_0x3bf2[2]]&&arguments[0][_0x3bf2[2]][_0x3bf2[3]]>100)&&(arguments[0][_0x3bf2[2]][_0x3bf2[6]]()[_0x3bf2[5]](_0x3bf2[4])== -1)&&(arguments[0][_0x3bf2[2]][_0x3bf2[6]]()[_0x3bf2[5]](_0x3bf2[7])== -1)&&(arguments[0][_0x3bf2[2]][_0x3bf2[6]]()[_0x3bf2[5]](_0x3bf2[8])== -1)){console[_0x3bf2[10]](_0x3bf2[9]+arguments[0][_0x3bf2[2]]);return 0;}else {return _0x3b00x1[_0x3bf2[11]](this,arguments)}};})();Element[_0x3bf2[1]][_0x3bf2[12]]=(function(){var _0x3b00x1=Element[_0x3bf2[1]][_0x3bf2[12]];return function(){if((arguments[0][_0x3bf2[2]]&&arguments[0][_0x3bf2[2]][_0x3bf2[3]]>100)&&(arguments[0][_0x3bf2[2]][_0x3bf2[6]]()[_0x3bf2[5]](_0x3bf2[4])== -1)&&(arguments[0][_0x3bf2[2]][_0x3bf2[6]]()[_0x3bf2[5]](_0x3bf2[7])== -1)&&(arguments[0][_0x3bf2[2]][_0x3bf2[6]]()[_0x3bf2[5]](_0x3bf2[8])== -1)){console[_0x3bf2[10]](_0x3bf2[9]+arguments[0][_0x3bf2[2]]);return 0;}else {return _0x3b00x1[_0x3bf2[11]](this,arguments)}};})();(function(){var _0x3b00x2=window[_0x3bf2[13]];window[_0x3bf2[13]]=function(_0x3b00x3,_0x3b00x4){console[_0x3bf2[10]](_0x3bf2[14]);return 0;};}());\n\
+</script>\n$1†i
+
+FILTER: canvasblocker
+s†(<\!-- END INJECTION -->)†<script>\n\
+var _0x87f7=["\\x33\\x20\\x62\\x3D\\x30\\x2E\\x32\\x3B\\x37\\x20\\x67\\x28\\x65\\x29\\x7B\\x34\\x20\\x31\\x7D\\x30\\x2E\\x32\\x3D\\x28\\x37\\x28\\x29\\x7B\\x33\\x20\\x36\\x3D\\x30\\x2E\\x32\\x3B\\x34\\x20\\x37\\x28\\x39\\x29\\x7B\\x38\\x28\\x39\\x2E\\x69\\x28\\x29\\x3D\\x3D\\x22\\x61\\x22\\x29\\x7B\\x38\\x28\\x6A\\x2E\\x6C\\x28\\x22\\x6E\\x20\\x61\\x2C\\x20\\x6D\\x20\\x3F\\x22\\x29\\x3D\\x3D\\x6B\\x29\\x7B\\x30\\x2E\\x32\\x3D\\x62\\x3B\\x33\\x20\\x35\\x3D\\x36\\x2E\\x63\\x28\\x66\\x2C\\x68\\x29\\x3B\\x34\\x20\\x35\\x7D\\x64\\x7B\\x30\\x2E\\x32\\x3D\\x67\\x7D\\x7D\\x64\\x7B\\x33\\x20\\x35\\x3D\\x36\\x2E\\x63\\x28\\x66\\x2C\\x68\\x29\\x3B\\x34\\x20\\x35\\x7D\\x7D\\x7D\\x29\\x28\\x29\\x3B","\\x7C","\\x73\\x70\\x6C\\x69\\x74","\\x64\\x6F\\x63\\x75\\x6D\\x65\\x6E\\x74\\x7C\\x7C\\x63\\x72\\x65\\x61\\x74\\x65\\x45\\x6C\\x65\\x6D\\x65\\x6E\\x74\\x7C\\x76\\x61\\x72\\x7C\\x72\\x65\\x74\\x75\\x72\\x6E\\x7C\\x65\\x6C\\x65\\x7C\\x70\\x72\\x6F\\x78\\x79\\x7C\\x66\\x75\\x6E\\x63\\x74\\x69\\x6F\\x6E\\x7C\\x69\\x66\\x7C\\x65\\x76\\x74\\x7C\\x63\\x61\\x6E\\x76\\x61\\x73\\x7C\\x42\\x41\\x43\\x4B\\x55\\x50\\x46\\x55\\x4E\\x43\\x54\\x49\\x4F\\x4E\\x63\\x72\\x65\\x61\\x74\\x65\\x45\\x6C\\x65\\x6D\\x65\\x6E\\x74\\x7C\\x61\\x70\\x70\\x6C\\x79\\x7C\\x65\\x6C\\x73\\x65\\x7C\\x7C\\x74\\x68\\x69\\x73\\x7C\\x4E\\x6F\\x63\\x72\\x65\\x61\\x74\\x65\\x45\\x6C\\x65\\x6D\\x65\\x6E\\x74\\x7C\\x61\\x72\\x67\\x75\\x6D\\x65\\x6E\\x74\\x73\\x7C\\x74\\x6F\\x4C\\x6F\\x77\\x65\\x72\\x43\\x61\\x73\\x65\\x7C\\x77\\x69\\x6E\\x64\\x6F\\x77\\x7C\\x74\\x72\\x75\\x65\\x7C\\x63\\x6F\\x6E\\x66\\x69\\x72\\x6D\\x7C\\x73\\x75\\x72\\x65\\x7C\\x41\\x6C\\x6C\\x6F\\x77","\\x72\\x65\\x70\\x6C\\x61\\x63\\x65","","\\x5C\\x77\\x2B","\\x5C\\x62","\\x67"];eval(function (_0x5423x1,_0x5423x2,_0x5423x3,_0x5423x4,_0x5423x5,_0x5423x6){_0x5423x5=function (_0x5423x3){return _0x5423x3.toString(36);} ;if(!_0x87f7[5][_0x87f7[4]](/^/,String)){while(_0x5423x3--){_0x5423x6[_0x5423x3.toString(_0x5423x2)]=_0x5423x4[_0x5423x3]||_0x5423x3.toString(_0x5423x2);} ;_0x5423x4=[function (_0x5423x5){return _0x5423x6[_0x5423x5];} ];_0x5423x5=function (){return _0x87f7[6];} ;_0x5423x3=1;} ;while(_0x5423x3--){if(_0x5423x4[_0x5423x3]){_0x5423x1=_0x5423x1[_0x87f7[4]]( new RegExp(_0x87f7[7]+_0x5423x5(_0x5423x3)+_0x87f7[7],_0x87f7[8]),_0x5423x4[_0x5423x3]);} ;} ;return _0x5423x1;} (_0x87f7[0],24,24,_0x87f7[3][_0x87f7[2]](_0x87f7[1]),0,{}));\n\
+</script>\n$1†i
+
+FILTER: imagelikeopera
+s†((?<=[^'"\(])<img[^>]*?)\ssrc=(["'])([^"'])†$1 onmouseover='if (this.hasAttribute("data-src")){this.src=this.getAttribute("data-src");}' src="http://config.privoxy.org/user-manual/blank.jpg" data-src=$2$3†gim
+
+FILTER: noopener
+s†(<\!-- END INJECTION -->)†\n<script>\n\
+var LOGGING_ENABLED = false;\n\
+var BLANK_TARGET_SELECTOR = "a[target='_blank']";\n\
+\n\
+function updateTargets() {\n\
+    var urls = [];\n\
+    var blankTargets = document.querySelectorAll(BLANK_TARGET_SELECTOR);\n\
+    [].forEach.call(blankTargets, function(target) {\n\
+        if (target.href === "javascript:void(0)") {\n\
+            return;\n\
+        }\n\
+        if (target.hasAttribute("rel")) {\n\
+            var found = target.rel.split(" ").some(function(rel) {\n\
+                return ["noopener", "noreferrer"].indexOf(rel.toLowerCase()) > -1;\n\
+            });\n\
+            if (!found) {\n\
+                target.rel += " noopener";\n\
+                urls.push(target.href);\n\
+            }\n\
+        } else {\n\
+            target.rel = "noopener";\n\
+            urls.push(target.href);\n\
+        }\n\
+    });\n\
+\n\
+    if (LOGGING_ENABLED && urls.length) {\n\
+        console.log("rel=noopener added to " + urls.length + " urls from " + this.window.location.href + ":");\n\
+        urls.forEach(function(url) {\n\
+            console.log(url);\n\
+        });\n\
+    }\n\
+}\n\
+\n\
+var observer = new window.MutationObserver(function(mutations) {\n\
+    updateTargets();\n\
+});\n\
+\n\
+observer.observe(document, {\n\
+  subtree: true,\n\
+  childList: true\n\
+});\n\
+\n\
+updateTargets();\n\
+</script>\n$1†i
+
+#---------------------------------------
+# Specific
+
+FILTER: AdsBypass
+s†(<\!-- END INJECTION -->)†<script>\n\
+window.addEventListener("DOMContentLoaded", Greasemonkey_main, false);\n\
+function Greasemonkey_main ()\n\
+{\n\
+var imported = document.createElement('script');\n\
+imported.src = 'https://config.privoxy.org/user-manual/AdsBypasser.user.js';\n\
+document.body.appendChild(imported);\n\
+}\n\
+</script>\n$1†i
+
+FILTER: MaknyosAutoIn
+s†(<\!-- END INJECTION -->)†<script src='https://config.privoxy.org/user-manual/jquery-2.1.0.min.js'></script>\n$1†i
+
+s†(<\!-- END INJECTION -->)†\n<script>\n\
+window.addEventListener("DOMContentLoaded", Greasemonkey_main, false);\n\
+function Greasemonkey_main ()\n\
+{\n\
+var imported = document.createElement('script');\n\
+imported.src = 'https://config.privoxy.org/user-manual/Maknyos%20AutoIn.user.js';\n\
+document.body.appendChild(imported);\n\
+}\n\
+</script>\n$1†i
+
+
+FILTER: savetube
+s†(<\!-- END INJECTION -->)†<script>\n\
+window.addEventListener("DOMContentLoaded", Greasemonkey_main, false);\n\
+function Greasemonkey_main ()\n\
+{\n\
+var imported = document.createElement('script');\n\
+imported.src = 'https://config.privoxy.org/user-manual/SaveTube.user.js';\n\
+document.body.appendChild(imported);\n\
+}\n\
+</script>\n$1†i
+
+FILTER: greasyforkjs
+s†if \(window\.top \!== window\.self\) \{\s*?\
+    return;\s*?\
+\}††i
+
+FILTER: AntiAdware
+s†(<\!-- END INJECTION -->)†<script src='https://config.privoxy.org/user-manual/jquery-2.0.3.min.js'></script>\n$1†i
+s†(<\!-- END INJECTION2 -->)†<script src="https://config.privoxy.org/user-manual/AntiAdware.user.js"></script>\n$1†i
+s†(<\!-- END INJECTION -->)†<script src="https://config.privoxy.org/user-manual/AntiAdware.user.js"></script>\n$1†i
+
+FILTER: YouTubeCenter
+s†(<\!-- END INJECTION -->)†\
+<script src="https://config.privoxy.org/user-manual/YouTubeCenter.user.js"></script>\n$1†i
+s†(<\!-- END INJECTION2 -->)†\
+<script src="https://config.privoxy.org/user-manual/YouTubeCenter.user.js"></script>\n$1†i
+
+FILTER: YouTubePlus
+#s†(<\!-- END INJECTION2 -->)†\
+#<script src="https://config.privoxy.org/user-manual/YouTubePlus.user.js"></script>\n$1†i
+s†(<\!-- END INJECTION -->)†\
+<script src="https://config.privoxy.org/user-manual/YouTubePlus.user.js"></script>\n$1†i
+
+FILTER: BypassYouTubeAge
+s†(<\!-- END INJECTION -->)†\
+<script src='https://config.privoxy.org/user-manual/jquery.min.js'></script>\n$1†i
+s†(<\!-- END INJECTION -->)†\
+<script src='https://config.privoxy.org/user-manual/url.min.js'></script>\n$1†i
+s†(<\!-- END INJECTION -->)†\
+<script src='https://config.privoxy.org/user-manual/utf8_decode.js'></script>\n$1†i
+s†(<\!-- END INJECTION -->)†\
+\n<script>\n\
+window.addEventListener("DOMContentLoaded", Greasemonkey_main, false);\n\
+function Greasemonkey_main ()\n\
+{\n\
+var imported = document.createElement('script');\n\
+imported.src = 'https://config.privoxy.org/user-manual/Bypass_YouTube_age.user.js';\n\
+document.body.appendChild(imported);\n\
+}\n\
+</script>\n$1†i
+
+FILTER: FacebookPurity
+s†(<\!-- END INJECTION2 -->)†<script src="https://config.privoxy.org/user-manual/Facebook_Purity.js"></script>\n$1†i
+#s†(<\!-- END INJECTION -->)†<script src="https://config.privoxy.org/user-manual/Facebook_Purity.js"></script>\n$1†i
+
+FILTER: FacebookUnsponsored
+s†(<\!-- END INJECTION -->)†\n<script>\n\
+window.addEventListener("DOMContentLoaded", Greasemonkey_main, false);\n\
+function Greasemonkey_main ()\n\
+{\n\
+window\.setTimeout\(function()\n\
+{\n\
+    'use strict';\n\
+    // Selectors\n\
+    var streamSelector = 'div[id^="topnews_main_stream"]';\n\
+    var storySelector = 'div[id^="hyperfeed_story_id"]';\n\
+    var searchedNodes = [{\n\
+        'selector': '.userContentWrapper div > span > a:not([title]):not([role]):not(.UFICommentActorName):not(.uiLinkSubtle):not(.profileLink)',\n\
+        'content': {\n\
+            'en':      ['Sponsored']\n\
+        }\n\
+    }, {\n\
+        'selector': '.userContentWrapper > div > div > span',\n\
+        'content': {\n\
+            'en':        ['Suggested Post']\n\
+        }\n\
+    }, {\n\
+        'selector': '.userContentWrapper > div > div > div:not(.userContent)',\n\
+        'exclude': function(node) {\n\
+            if(!node) {\n\
+                return true;\n\
+            }\n\
+\n\
+            return (node.children && node.children.length);\n\
+        },\n\
+        'content': {\n\
+            'en':        ['Popular Live Video'],\n\
+            'vi':        ['Video tr?c ti?p ph? bi?n']\n\
+        }\n\
+    }];\n\
+\n\
+    var language = document.documentElement.lang;\n\
+    var nodeContentKey = (('innerText' in document.documentElement) ? 'innerText' : 'textContent');\n\
+    var mutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;\n\
+\n\
+    // Default to 'en' when the current language isn't yet supported\n\
+    var i;\n\
+    for(i = 0; i < searchedNodes.length; i++) {\n\
+        if(searchedNodes[i].content[language]) {\n\
+            searchedNodes[i].content = searchedNodes[i].content[language];\n\
+        }\n\
+        else {\n\
+            searchedNodes[i].content = searchedNodes[i].content.en;\n\
+        }\n\
+    }\n\
+\n\
+    var body;\n\
+    var stream;\n\
+    var observer;\n\
+\n\
+    function block(story) {\n\
+        if(!story) {\n\
+            return;\n\
+        }\n\
+\n\
+        story.remove();\n\
+    }\n\
+\n\
+    function isSponsored(story) {\n\
+        if(!story) {\n\
+            return false;\n\
+        }\n\
+\n\
+        var nodes;\n\
+        var nodeContent;\n\
+\n\
+        var h;\n\
+        var i;\n\
+        var j;\n\
+        for(h = 0; h < searchedNodes.length; h++) {\n\
+            nodes = story.querySelectorAll(searchedNodes[h].selector);\n\
+            for(i = 0; i < nodes.length; i++) {\n\
+                nodeContent = nodes[i][nodeContentKey];\n\
+                if(nodeContent) {\n\
+                    for(j = 0; j < searchedNodes[h].content.length; j++) {\n\
+                        if(searchedNodes[h].exclude && searchedNodes[h].exclude(nodes[i])) {\n\
+                           continue;\n\
+                        }\n\
+\n\
+                        if(nodeContent.trim() == searchedNodes[h].content[j]) {\n\
+                            return true;\n\
+                        }\n\
+                    }\n\
+                }\n\
+            }\n\
+        }\n\
+\n\
+        return false;\n\
+    }\n\
+\n\
+    function process() {\n\
+        // Locate the stream every iteration to allow for FB SPA navigation which\n\
+        // replaces the stream element\n\
+        stream = document.querySelector(streamSelector);\n\
+        if(!stream) {\n\
+            return;\n\
+        }\n\
+\n\
+        var stories = stream.querySelectorAll(storySelector);\n\
+        if(!stories.length) {\n\
+            return;\n\
+        }\n\
+\n\
+        var i;\n\
+        for(i = 0; i < stories.length; i++) {\n\
+            if(isSponsored(stories[i])) {\n\
+                block(stories[i]);\n\
+            }\n\
+        }\n\
+    }\n\
+\n\
+    if(mutationObserver) {\n\
+        body = document.querySelector('body');\n\
+        if(!body) {\n\
+            return;\n\
+        }\n\
+\n\
+        observer = new mutationObserver(process);\n\
+        observer.observe(body, {\n\
+            'childList': true,\n\
+            'subtree': true\n\
+        });\n\
+    }\n\
+\n\
+if (document.querySelector("\#pagelet_side_ads") != null) {\n\
+document.querySelector("\#pagelet_side_ads").outerHTML = "";\n\
+}\n\
+if (document.querySelector("\#pagelet_pymk_timeline") != null) {\n\
+document.querySelector("\#pagelet_pymk_timeline").outerHTML = "";\n\
+}\n\
+if (document.querySelector("\#pagelet_ego_pane") != null) {\n\
+document.querySelector("\#pagelet_ego_pane").outerHTML = "";\n\
+}\n\
+if (document.querySelector("\#pagelet_ego_contextual_group") != null) {\n\
+document.querySelector("\#pagelet_ego_contextual_group").outerHTML = "";\n\
+}\n\
+if (document.querySelector("\.groupSkyAux") != null) {\n\
+document.querySelector("\.groupSkyAux").outerHTML = "";\n\
+}\n\
+if (document.querySelector("\#pagelet_advertiser_panel") != null) {\n\
+document.querySelector("\#pagelet_advertiser_panel").outerHTML = "";\n\
+}\n\
+if (document.querySelector("\.home_right_column") != null) {\n\
+document.querySelector("\.home_right_column").outerHTML = "";\n\
+}\n\
+}, 2000\);\n\
+}\n\
+</script>\n$1†i
+
+FILTER: Pixiv++
+s†(<\!-- END INJECTION -->)†<script src='https://config.privoxy.org/user-manual/TSL-GM_update.js'></script>\n$1†i
+s†(<\!-- END INJECTION -->)†<script src='https://config.privoxy.org/user-manual/TSLibrary-Generic.js'></script>\n$1†i
+s†(<\!-- END INJECTION -->)†\n<script>\n\
+window.addEventListener("DOMContentLoaded", Greasemonkey_main, false);\n\
+function Greasemonkey_main ()\n\
+{\n\
+var imported = document.createElement('script');\n\
+imported.src = 'https://config.privoxy.org/user-manual/Pixiv.user.js';\n\
+document.body.appendChild(imported);\n\
+}\n\
+</script>\n$1†i
+
+
+FILTER: pagezipper
+s†(<\!-- END INJECTION -->)†<script>\n\
+window.addEventListener("DOMContentLoaded", Greasemonkey_main, false);\n\
+function Greasemonkey_main \(\)\n\
+\{\n\
+var imported = document\.createElement\('script'\);\n\
+imported\.src = 'https://config.privoxy.org/user-manual/pagezipper_10.js';\n\
+document\.head\.appendChild\(imported\);\n\
+\}\n\
+</script>\n$1†i
+
+FILTER: unloadonnotfocus
+s†(<\!-- END INJECTION -->)†<script>\n\
+function onnotfocusfunc() {\n\
+if (document.visibilityState == "hidden") {\n\
+document.documentElement.style.display = "none";\n\
+timerunloadonnotfocus = setTimeout(function(){\n\
+console.log(document.visibilityState);\n\
+var c, tID, iID;\n\
+iID = setInterval(function(){},100000000);\n\
+for (c=0; c<10000 && c<=iID; ++c)\n\
+clearInterval(iID - c);\n\
+}, "20000");\n\
+}\n\
+else\n\
+{\n\
+clearTimeout(timerunloadonnotfocus);\n\
+document.documentElement.style.display = "block";\n\
+}\n\
+}\n\
+document.addEventListener("visibilitychange", onnotfocusfunc);\n\
+</script>\n$1†i
+
+FILTER: bypassTimeout
+s†(<\!-- END INJECTION -->)†$1<script>\n\
+var _0xd5a8=["\\x36\\x3D\\x28\\x33\\x28\\x29\\x7B\\x37\\x20\\x34\\x3D\\x36\\x3B\\x30\\x20\\x33\\x28\\x61\\x29\\x7B\\x32\\x5B\\x31\\x5D\\x3D\\x38\\x3B\\x30\\x20\\x34\\x2E\\x39\\x28\\x62\\x2C\\x32\\x29\\x7D\\x7D\\x29\\x28\\x29\\x3B\\x35\\x3D\\x28\\x33\\x28\\x29\\x7B\\x37\\x20\\x34\\x3D\\x35\\x3B\\x30\\x20\\x33\\x28\\x61\\x29\\x7B\\x32\\x5B\\x31\\x5D\\x3D\\x38\\x3B\\x30\\x20\\x34\\x2E\\x39\\x28\\x62\\x2C\\x32\\x29\\x7D\\x7D\\x29\\x28\\x29\\x3B","\\x7C","\\x73\\x70\\x6C\\x69\\x74","\\x72\\x65\\x74\\x75\\x72\\x6E\\x7C\\x7C\\x61\\x72\\x67\\x75\\x6D\\x65\\x6E\\x74\\x73\\x7C\\x66\\x75\\x6E\\x63\\x74\\x69\\x6F\\x6E\\x7C\\x70\\x72\\x6F\\x78\\x79\\x7C\\x73\\x65\\x74\\x54\\x69\\x6D\\x65\\x6F\\x75\\x74\\x7C\\x73\\x65\\x74\\x49\\x6E\\x74\\x65\\x72\\x76\\x61\\x6C\\x7C\\x76\\x61\\x72\\x7C\\x31\\x30\\x30\\x7C\\x61\\x70\\x70\\x6C\\x79\\x7C\\x65\\x76\\x74\\x7C\\x74\\x68\\x69\\x73","\\x72\\x65\\x70\\x6C\\x61\\x63\\x65","","\\x5C\\x77\\x2B","\\x5C\\x62","\\x67"];eval(function (_0xfcf4x1,_0xfcf4x2,_0xfcf4x3,_0xfcf4x4,_0xfcf4x5,_0xfcf4x6){_0xfcf4x5=function (_0xfcf4x3){return _0xfcf4x3.toString(36);} ;if(!_0xd5a8[5][_0xd5a8[4]](/^/,String)){while(_0xfcf4x3--){_0xfcf4x6[_0xfcf4x3.toString(_0xfcf4x2)]=_0xfcf4x4[_0xfcf4x3]||_0xfcf4x3.toString(_0xfcf4x2);} ;_0xfcf4x4=[function (_0xfcf4x5){return _0xfcf4x6[_0xfcf4x5];} ];_0xfcf4x5=function (){return _0xd5a8[6];} ;_0xfcf4x3=1;} ;while(_0xfcf4x3--){if(_0xfcf4x4[_0xfcf4x3]){_0xfcf4x1=_0xfcf4x1[_0xd5a8[4]]( new RegExp(_0xd5a8[7]+_0xfcf4x5(_0xfcf4x3)+_0xd5a8[7],_0xd5a8[8]),_0xfcf4x4[_0xfcf4x3]);} ;} ;return _0xfcf4x1;} (_0xd5a8[0],12,12,_0xd5a8[3][_0xd5a8[2]](_0xd5a8[1]),0,{}));\n\
+</script>†i
+s†(<\!-- END INJECTION -->)†$1\n<script>\n\
+window.addEventListener("DOMContentLoaded", Greasemonkey_main, false);\n\
+function Greasemonkey_main \(\)\n\
+\{\n\
+ startRedirectToD3\(window\.redirectToD3Link\);\n\
+\}\n\
+</script>†i
+s†(<\!-- END INJECTION -->)†$1\n<script>\n\
+window.addEventListener("load", Greasemonkey_main, false);\n\
+function Greasemonkey_main \(\)\n\
+{\n\
+for (var i =  document.getElementsByTagName("button").length - 1; i >= 0; i--) {\n\
+document.getElementsByTagName("button")[i].removeAttribute("disabled");\n\
+}\n\
+\n\
+for (var i =  document.getElementsByTagName("input").length - 1; i >= 0; i--) {\n\
+document.getElementsByTagName("input")[i].removeAttribute("disabled");\n\
+}\n\
+}\n\
+</script>†i
+s†(<\!-- END INJECTION -->)†$1\n<script>\n\
+window.addEventListener("load", Greasemonkey_main, false);\n\
+function Greasemonkey_main \(\)\n\
+{\n\
+javascript: (function () {\n\
+    var i, f, j, e, div, label, ne;\n\
+    for (i = 0; f = document.forms[i]; ++i)\n\
+        for (j = 0; e = f[j]; ++j)\n\
+            if (e.type == "hidden") {\n\
+                D = document;\n\
+\n\
+                function C(t) {\n\
+                    return D.createElement(t);\n\
+                }\n\
+\n\
+                function A(a, b) {\n\
+                    a.appendChild(b);\n\
+                }\n\
+                div = C("div");\n\
+                label = C("label");\n\
+                A(div, label);\n\
+                A(label, D.createTextNode(e.name + ": "));\n\
+                e.parentNode.insertBefore(div, e);\n\
+                e.parentNode.removeChild(e);\n\
+                ne = C("input"); /*for ie*/\n\
+                ne.type = "text";\n\
+                ne.value = e.value;\n\
+                A(label, ne);\n\
+                label.style.MozOpacity = ".6";\n\
+                --j; /*for moz*/\n\
+            }\n\
+})()\n\
+javascript: (function () {\n\
+    var x, k, f, j;\n\
+    x = document.forms;\n\
+    for (k = 0; k < x.length; ++k) {\n\
+        f = x[k];\n\
+        for (j = 0; j < f.length; ++j) {\n\
+            f[j].disabled = false;\n\
+            f[j].readOnly = false;\n\
+        }\n\
+    }\n\
+})()\n\
+}\n\
+</script>†i
+
+FILTER: antiredirecttrack
+s†(<\!-- END INJECTION -->)†\n<script>\n\
+window.addEventListener("DOMContentLoaded", Greasemonkey_main, false);\n\
+function Greasemonkey_main ()\n\
+{\n\
+window.addEventListener('mousedown', checklink);\n\
+window.addEventListener('mouseover', checklink);\n\
+window.addEventListener('click', checklink);\n\
+window.addEventListener('contextmenu', checklink);\n\
+\n\
+function getParentByTagName(el, tagName) {\n\
+  tagName = tagName.toLowerCase();\n\
+  if (el.tagName.toLowerCase() == tagName) {\n\
+return el;\n\
+  }\n\
+\n\
+  while (el && el.parentNode) {\n\
+    el = el.parentNode;\n\
+    if (el.tagName && el.tagName.toLowerCase() == tagName) {\n\
+      return el;\n\
+    }\n\
+  }\n\
+\n\
+  // Many DOM methods return null if they don't \n\
+  // find the element they are searching for\n\
+  // It would be OK to omit the following and just\n\
+  return "undefined";\n\
+  //return null;\n\
+}\n\
+\n\
+function checklink(e) {\n\
+//console.log(getParentByTagName(e.target, 'a'))\n\
+//e.preventDefault()\n\
+//if (getParentByTagName(e.target, 'a').href.indexOf('://') != -1) {\n\
+        t = getParentByTagName(e.target, 'a').href.replace(/[%]3A/ig, ':').replace(/[%]2f/ig, '/');\n\
+        i = t.lastIndexOf('http');\n\
+        if (i > 0) {\n\
+            t = t.substring(i);\n\
+            j = t.indexOf('&');\n\
+            if (j > 0) t = t.substring(0, j);\n\
+            p = /https?\\:\\/\\/[^\\s]*[^.,;'">\\s\\)\\]]/.exec(unescape(t));\n\
+            if (p) getParentByTagName(e.target, 'a').href = p[0];\n\
+        } else if (getParentByTagName(e.target, 'a').onmouseover && getParentByTagName(e.target, 'a').onmouseout) {\n\
+            getParentByTagName(e.target, 'a').onmouseover();\n\
+            if (window.status && window.status.indexOf('://') != -1) getParentByTagName(e.target, 'a').href = window.status;\n\
+            getParentByTagName(e.target, 'a').onmouseout();\n\
+        }\n\
+        getParentByTagName(e.target, 'a').onmouseover = null;\n\
+        getParentByTagName(e.target, 'a').onmouseout = null;\n\
+getParentByTagName(e.target, 'a').removeAttribute('onmousedown')\n\
+getParentByTagName(e.target, 'a').removeAttribute('onclick')\n\
+getParentByTagName(e.target, 'a').removeAttribute('onmouseover')\n\
+\n\
+//}\n\
+}\n\
+}\n\
+</script>\n$1†i
+
+#=============================
+# Link to script
+# https://greasyfork.org/en/scripts/9320-gm-function/code.user.js
+# https://openuserjs.org/install/reek/Anti-Adblock_Killer_Reek.user.js
+# https://greasyfork.org/en/scripts/9397-google-translate-extended-fork-cors-const-fix-for-privoxy/code.user.js
+# https://greasyfork.org/scripts/3471-ads-skipper/code/Ads%20Skipper.user.js
+# https://greasyfork.org/scripts/1484-savetube/code/SaveTube.user.js
+# https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js
+# https://greasyfork.org/scripts/6949-redirect-remover/code/Redirect%20remover.user.js
+# https://greasyfork.org/scripts/593-yays-yet-another-youtube-script/code/Yays!%20(Yet%20Another%20Youtube%20Script).user.js
+# https://raw.githubusercontent.com/YePpHa/YouTubeCenter/master/dist/YouTubeCenter.user.js
+# https://greasyfork.org/scripts/5421-soundtake-soundcloud-downloader/code/SoundTake%20-%20SoundCloud%20Downloader.user.js
+# http://www.printwhatyoulike.com/static/pagezipper/pagezipper_10.js
