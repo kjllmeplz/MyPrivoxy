@@ -21001,16 +21001,6 @@ x.translateth.
 .piccy.org.ua/c\?
 .target.ukr.net
 
-{+block{Declined Paths} }
-/.*(campaign|comm?ercial|marketing|parte?nn?(er|air)|promo|social)
-/.*((resolution|ram.{0,3}MB|screen)=|subscribe|splash.?page|track)
-#/.*([^o]ads?.?(bloc?k?|loade?r|manage?r|modul)|fingerprint|=false)
-/.*([^o]ads?.?(loade?r|manage?r|modul)|fingerprint|=false)
-#/.*(advertize|invisible|(e.?mail|slot.?name|url)=|widget|win.?bid)
-#/.*((client|request|survey).?id|https?(:|%3A)(\/\/|%2F%2F)|lytics)
-#/(.*[^a-z])?(F?www\.)
-/(.*(/|%2F))?(([a-z]|[0-9]|_)+[-+][a-z0-9_]*([0-9][a-z]|[a-z][0-9])[a-z0-9-_+]*|[a-z0-9_]*([0-9][a-z]|[a-z][0-9])[a-z0-9_]*[-+][a-z0-9-_+]+)$
-
 #------------------------------------
 # Catch-all exceptions
 {-block}
@@ -21690,29 +21680,9 @@ gm-link.com/
 /.*(watch|weather(/[0-9]+)?|\.(css|html|js)(\?[a-z0-9]+|\.gzip)?)\?[a-z]{1,}[0-9]?=
 .fbcdn.net/.*?\.(jpe?g|gif|png)
 .facebook.com/ajax/photos/snowlift/
-ln.hako.re/truyen/
 [0-9]-edge-chat.facebook.com/ping?
 .facebook.com/feed/options_menu/\?button_id?
-.forum.xda-developers.com
-disqus.com/embed/comments/
-.miui.vn/forum/styles/flatawesome/xenforo/	
-.miui.vn/forum/js/WidgetFramework/
-.miui.vn/forum/css.php?
-vozforums.com/redirect/
-.vcplayer.vcmedia.vn
-.tinhte.vn/css.php?
-login.microsoftonline.com	
-fptcloud-my.sharepoint.com
-dl.delivery.mp.microsoft.com
-api.soundcloud.com
-.winphoneviet.com/forum/css?
-.twitter.com/i/search/
-.twitter.com/i/timeline?
-api.twitch.tv/api/
-.ttvnw.net/api/
-.mixpanel.com/track?
-drive.google.com/sharing/
-github.com/preview?
+
 
 #----------------------------------------------------------------------------
 # Site-specific block patterns;
