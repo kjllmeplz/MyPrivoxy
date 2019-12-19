@@ -11,10 +11,16 @@
 #.facebook.com
 
 {+filter{GoogleHestiaStyle}}
-.google.
+#.google.
+
+{+filter{gg-new-style}}
+#www.google.
 
 {+filter{FacebookStyle2}}
-.facebook.com
+#.facebook.com
+
+{+filter{FacebookStyle3}}
+#.facebook.com
 
 #---------------------------------------
 # -
@@ -24,3 +30,6 @@
 .facebook.com/ajax/
 .facebook.com/notifications/
 .facebook.com/typeahead/
+
+{-filter{gg-new-style}}
+sites.google.com

@@ -13,54 +13,34 @@ for-privoxy-version=3.0.26
  allow-popups       = -filter{all-popups} -filter{unsolicited-popups}
 
 # Bypass filter for some sites
--normal-filter 	    = -filter{noopenpopup} -filter{float-ck} -filter{banners-by-link} -filter{banners-by-size} -filter{ads3}
--spc-filter 	    = -filter{blockwebrtc} -filter{Troll} -filter{ads4} \
+-normal-filter 	    = -filter{noopenpopup} -filter{float-ck} -filter{banners-by-link} -filter{banners-by-size}
+-spc-filter 	    = -filter{blockwebrtc} -filter{ads4} \
 		      -filter{refresh-tags} -filter{img-reorder} -filter{webbugs} -filter{jumping-windows}
 
 #----------------------------------------------------------------------------
 # Golbal settings
 
 #-------------------------------------------------------
-# Add by kjll
-{ \
-+server-header-tagger{content-type} \
-#+server-header-filter{removecontentsecuritypolicy} \
-+filter{injection} \
-+filter{ads3} \
-+filter{ads4} \
-+filter{noopenpopup} \
-+filter{banners-by-link} \
-+filter{float-ck} \
-+filter{blockwebrtc} \
-+filter{Troll} \
-+hide-referer{forge} \
-}
-/
-
-#{+forward-override{forward 127.0.0.1:8081}}
-#TAG:.*?ProxHTTPSProxyMII
-
-#-------------------------------------------------------
-# Default settings
+# Default settings + Add by kjll 
 { \
 +change-x-forwarded-for{block} \
++server-header-tagger{content-type} \
 +client-header-tagger{css-requests} \
 +client-header-tagger{image-requests} \
 +client-header-tagger{range-requests} \
-#+deanimate-gifs{last} \
-#+filter{refresh-tags} \
-#+filter{img-reorder} \
++filter{injection} \
 +filter{banners-by-size} \
 +filter{webbugs} \
-#+filter{jumping-windows} \
-#+filter{ie-exploits} \
++filter{unsolicited-popups} \
++filter{noopenpopup} \
++filter{banners-by-link} \
++filter{float-ck} \
++filter{Troll} \
++hide-referer{forge} \
 +hide-from-header{block} \
 +hide-referrer{conditional-block} \
-#+session-cookies-only \
-#+set-image-blocker{pattern} \
 +set-image-blocker{blank} \
 }
-standard.Medium
 /
 
 #-------------------------------------------------------
@@ -117,7 +97,7 @@ browserleaks.com
 #-------------------------------------------------------
 # Block DF by ads4
 {+block{kjll_ads4}}
-.kjll.sidaall.
+.fuck_off_ads.
 
 #-------------------------------------------------------
 # Handle by file types
@@ -223,14 +203,19 @@ ixquick-proxy.com/
 #-------------------------------------------------------
 # Specific Action
 
+{+forward-override{forward 10.15.10.9:8080}}
+#/
+
 {+server-header-filter{cors} +hide-referer{block}}
-.wedata.
-.translate.google*.
+#
 
 {+server-header-filter{bettercache}}
 .greasyfork.org/.*?\.user.js$
 .userscripts-mirror.org/.*?\.js$
 .githubusercontent.com/kjllmeplz/.*?\.(gif|GIF|jpg|js)$
+
+{+server-header-filter{removecontentsecuritypolicy}}
+#
 
 {+hide-user-agent{Nothing} -crunch-incoming-cookies -crunch-outgoing-cookies}
 .ip-check.info
@@ -241,25 +226,17 @@ ixquick-proxy.com/
 {+redirect{http://config.privoxy.org/}}
 .privoxy.org/config
 
-{+redirect{s@^(https?://)?[^,%]+\b(angular|backbone|dojo|ember|ext.core|jquery.ui|jquery|modernizr.min|mootools-yui-compressed|prototype|scriptaculous|swfobject|underscore.min)\b[^/]*\.js[^,%]*@https://config.privoxy.org/user-manual/$2.js@}}
-#.aspnetcdn.com
-#.baidu.com
-#.cloudflare.com
-#.googleapis.com
-#.jquery.com
-#.jsdelivr.net
-#.microsoft.com
-#.sinaapp.com
-#.upaiyun.com
-#.yandex.st
-#.yastatic.net
-
-{-redirect}
-#.googleapis.com/.+/2\.2\.0/
-
 {+prevent-compression}
 .youtube.com
 .facebook.com
+.steamanalyst.com
+.nyaa.si
+.hanime.tv
+.google.com.vn
+.hentai.cafe
+.nhentai.net
+.github.io
+.adf.ly
 
 #-------------------------------------------------------
 # Deny all
@@ -297,6 +274,23 @@ TAG:^CSS-REQUEST$
 {-filter -deanimate-gifs}
 TAG:^RANGE-REQUEST$
 
+#-------------------------------------------------------
+# Depends on type tagger
+{-filter}
+TAG:^application/octet-stream
+TAG:^application/font
+
+{-prevent-compression}
+TAG:^text/css
+TAG:^text/xml
+TAG:^application/json
+TAG:^application/octet-stream
+TAG:^application/(x-)?font
+TAG:^image/
+TAG:^IMAGE-REQUEST$
+TAG:^CSS-REQUEST$
+TAG:^RANGE-REQUEST$
+
 #----------------------------------------------------------------------------
 # Sections that reject global filter
 
@@ -327,6 +321,8 @@ kuteteen.tv
 .windowscentral.com
 .hamtruyen.vn
 .cgv.vn
+truyentranhlh.com
+rawlh.com
 
 {-filter{banners-by-size}}
 .pricegrabber.com/search_getprod.php
@@ -360,63 +356,44 @@ kggp.de/
 .possession.tokyo
 .cgv.vn
 
-{-filter{ads3}}
-/.*?\.css
-/.*?\.dtd
-/.*?\.xsd
-/.*?\.json
-TAG:^text/css
-TAG:^text/xml
-TAG:^application/json
-TAG:^IMAGE-REQUEST$
-.youtube.com
-.vnexpress.net
-.4chan.org
-.sourceforge.net
-vcplayer.vcmedia.vn
-dantri*.vcmedia.vn
-.deviantart.com
-.miui.vn
-.xem.vn
-.hamtruyen.vn
-.speedtest.net
-.softpedia.com
-.cgv.vn
-muachung.vn
+{-filter{banners-by-link}}
+.wikia.com
+
+{-filter{webbugs}}
+.wikia.com
 
 {-filter{ads4}}
 .youtube.com
+
+{-filter{Troll}}
+/.*?\.js
 
 #---------------------------------------
 # Exception all
 
 {-normal-filter}
+api.skype.com
 .sourceforge.net
 .soundcloud.com
 .greasyfork.org
-.agar.io
-api.skype.com
-.gametv.vn
-.dantri.com.vn
-dantri*.vcmedia.vn
 .androidfilehost.com
-.vnsharing.site
-.deviantart.com
 .tumblr.com
 .possession.tokyo
 .cgv.vn
-.facebook.com
 .vimeo.com
 .imgur.com
+.genk.vn
+.kenh14.vn
 
 {-normal-filter -spc-filter}
 .google.com.vn
 .google.com
+.facebook.com
 
 {-normal-filter -spc-filter -filter{injection}}
 /.*?\.js
 TAG:^(application|text)/(x-)?javascript$
-.kenh14.vn/timeline/laytinmoi.*?.chn$
+vcplayer.mediacdn.vn
 
 {-filter}
 /.*?\.css
@@ -494,3 +471,4 @@ quoka.de
 .youtube.com/.*?frags=comments
 static.xx.fbcdn.net/rsrc.php/.*?\.(css|js)$
 .ytimg.com/sb/.*?/storyboard
+.embedly.com/widgets/

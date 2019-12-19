@@ -3,6 +3,11 @@
 
 {+filter{ads} +filter{ads2}}
 #.miui.vn
+.valvrareteam.com
+.vetv.vn
+
+{+filter{UTF-8}}
+.xda-developers.com
 
 {+filter{popunder}}
 .truyentranhtuan.com
@@ -11,8 +16,10 @@
 .truyentranh8.
 .manga24h.
 .hamtruyen.
+.truyensieuhay.
 .dammetruyen.
 .animetvn.
+.truyenqq.
 
 {+filter{disableDHTML}}
 .24h.com.vn
@@ -20,20 +27,32 @@
 {+filter{vns}}
 .vnsharing.
 
+{+filter{hako}}
+.hako.re
+
 {+filter{vozforums}}
 vozforums.com
+.voz.vn
 
 {+filter{blogtruyen}}
-.blogtruyen.com
+.blogtruyen.
 
 {+filter{manga24h}}
 .manga24h.
+
+{+filter{academy}}
+.academyvn.
+.hocvientruyentranh.
 
 {+filter{truyentranhtuan}}
 .truyentranhtuan.com
 
 {+filter{nyaa}}
 .nyaa.se
+
+{+filter{4chan}}
+.4chan.org
+.4cdn.org
 
 {+filter{youtube}}
 .youtube.
@@ -42,13 +61,33 @@ vozforums.com
 .kissmanga.com
 .kissanime.
 .kisscartoon.me
-.kisshentai.net
+.kisshentai.
+.kissdoujin.
+
+{+filter{batoto}}
+.bato.to
 
 {+filter{openload}}
 .openload.
 
 {+filter{h-ani}}
 .hanime.tv
+
+{+filter{hitomi}}
+.hitomi.la
+
+{+filter{nht}}
+.nhentai.
+.hentaivn.
+
+{+filter{h2r}}
+.hentai2read.
+
+{+filter{mal}}
+.myanimelist.
+
+{+filter{mangatail}}
+.mangatail.
 
 {+filter{mangadeer}}
 .mangadeer.com
@@ -66,6 +105,19 @@ vozforums.com
 {+filter{mangafox}}
 .mangafox.
 
+{+filter{mangarock}}
+.mangarock.
+
+{+filter{mangadex}}
+.mangadex.
+
+{+filter{mangakakalot}}
+.mangakakalot.
+.manganelo.
+
+{+filter{truyentranhlh}}
+.truyentranhlh.
+
 {+filter{pixiv}}
 .pixiv.net
 
@@ -78,8 +130,20 @@ vozforums.com
 {+filter{miui-vn}}
 .miui.vn
 
+{+filter{xiaomieu}}
+.xiaomi.eu
+
+{+filter{notebookcheck}}
+.notebookcheck.net
+
 {+filter{softpedia}}
 .softpedia.com
+
+{+filter{reddit}}
+.reddit.com
+
+{+filter{wikia}}
+.wikia.com
 
 {+filter{tuoitre}}
 .tuoitre.vn
@@ -93,6 +157,15 @@ vozforums.com
 {+filter{vnexpress}}
 .vnexpress.net
 
+{+filter{vnexpress-video}}
+.vnecdn.net
+
+{+filter{genk}}
+.genkcdn.vn/web_js/
+
+{+filter{garena}}
+garena.live
+
 {+filter{hdvn}}
 .hdvietnam.com
 
@@ -105,6 +178,15 @@ vozforums.com
 {+filter{game8}}
 .game8.
 
+{+filter{gametv}}
+.gametv.
+
+{+filter{vcmedia}}
+.vcmedia.vn
+
+{+filter{hltv}}
+.hltv.org
+
 {+filter{senmanga}}
 .senmanga.com
 
@@ -114,17 +196,33 @@ vozforums.com
 {+filter{bongdaso}}
 .bongdaso.com
 
+{+filter{bongdaf}}
+.bongdaf.
+.ngoac.tv
+
+{+filter{90phut}}
+.90phut.
+.90m.tv
+
+{+filter{hltv}}
+.hltv.org
+
 {+filter{up4share}}
 .4share.vn
 
 {+filter{hamtruyen}}
 .hamtruyen.
+.truyensieuhay.
 
 {+filter{mangak}}
 .mangak.
 
+{+filter{commicvn}}
+.comicvn.net
+
 {+filter{truyentranh8}}
 .truyentranh8.
+.truyentranhtam.
 
 {+filter{mobitruyen}}
 .truyen.hay.
@@ -133,8 +231,24 @@ vozforums.com
 {+filter{webtruyen}}
 .webtruyen.com
 
+{+filter{truyenfull}}
+.truyenfull.
+.sstruyen.
+
 {+filter{truyentranh}}
 .truyentranh.net
+
+{+filter{truyenqq}}
+.truyenqq.
+
+{+filter{lhmanga}}
+.lhscan.net
+
+{+filter{valvrareteam}}
+.valvrareteam.com
+
+{+filter{animetvn}}
+.animetvn.tv
 
 {+filter{ani47}}
 .anime47.com
@@ -163,6 +277,12 @@ vozforums.com
 {+filter{hayhaytv}}
 .hayhaytv.vn
 
+{+filter{phimmoi}}
+.phimmoi.net
+
+{+filter{vungtv}}
+.vung.tv
+
 {+filter{vnreview}}
 .vnreview.
 
@@ -172,6 +292,13 @@ pose.com.vn
 {+filter{gg}}
 .google.com.vn
 .google.com
+
+{+filter{twitter}}
+.twitter.
+
+{+filter{twitch}}
+.twitch.
+.twitchcdn.net/.*.js
 
 {+filter{chiasenhac}}
 chiasenhac.com
@@ -194,6 +321,9 @@ closershq.com
 {+filter{horriblesubs}}
 horriblesubs.info
 
+{+filter{rapidvideo}}
+.rapidvideo.
+
 {+filter{anticlickjacking}}
 www.clickjack.net
 
@@ -206,13 +336,23 @@ api.adtimaserver.vn/zad/
 {+filter{fptplay}}
 play.fpt.vn
 fptplay.net
+fptplay.vn
+
+{+filter{fshare}}
+.fshare.vn
 
 {+filter{talk-tv}}
 .csmtalk.vcdn.vn
 talktv.vn
 
+{+filter{bilutv}}
+.bilutv.com
+
 {+filter{secufiles}}
 .secufiles.com
+
+{+filter{shink}}
+.shink.in
 
 #---------------------------------------
 # -

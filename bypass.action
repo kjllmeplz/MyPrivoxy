@@ -3,10 +3,39 @@
 # Initialize
 {{alias}}
 +bypass    = -crunch-incoming-cookies -crunch-outgoing-cookies -filter -fast-redirects -hide-referer	
-+bypassall = -block -crunch-incoming-cookies -crunch-outgoing-cookies -filter -fast-redirects -hide-referer
++bypassall = -block -crunch-incoming-cookies -crunch-outgoing-cookies -filter -fast-redirects -hide-referer \
+	     -server-header-tagger{content-type} -change-x-forwarded-for{block} -client-header-tagger{css-requests} \
+             -client-header-tagger{image-requests} -client-header-tagger{range-requests} -set-image-blocker{blank} -hide-from-header{block}
 
 #---------------------------------------
 # +
+
+{-filter}
+/.*?\.css
+/.*?\.dtd
+/.*?\.xsd
+/.*?\.json
+TAG:^text/css
+TAG:^text/xml
+TAG:^application/json
+TAG:^application/octet-stream
+TAG:^application/(x-)?font
+TAG:^video
+TAG:^IMAGE-REQUEST$
+TAG:^CSS-REQUEST$
+TAG:^RANGE-REQUEST$
+.cvs.
+/.*(cvs(view|web)|viewcvs)
+/.*(jpg|png)$
+.svn.
+.websvn.
+/(.*/)?svn/
+.youtube.com/.*?frags=comments
+static.xx.fbcdn.net/rsrc.php/.*?\.(css|js)$
+.ytimg.com/sb/.*?/storyboard
+.embedly.com/widgets/
+.sublightnovel.com
+
 {+bypass}
 #MS
 otf.msn.com
@@ -28,9 +57,13 @@ clientlogin.cdn.skype.com
 .vo.llnwd.net/hls/
 .outlook.com/Microsoft-Server-ActiveSync?
 eas.outlook.com
-trouter.io/socket.io/
+.trouter.io/socket.io/
 .apps.skype.com/comscore/index.html\?event=Message*?
 .tiles.virtualearth.net
+outlook.office.com
+.skype.com/ui/.*/upgrade
+activity.windows.com
+.skype.com/socket.io/
 #GG
 chrome.google.com
 clients*.google.com
@@ -41,13 +74,22 @@ docs.google.com
 fonts.google.com
 i.ytimg.com
 .twimg.com
-.google.com/recaptcha/
 fonts.googleapis.com/css\?
 .gstatic.com/recaptcha/
 .google.com/carddav/
 .googleusercontent.com/caldav/
 .youtube.com/.*?frags=comments
 .googleapis.com
+keep.google.com
+*.client*.google.com
+ogs.google.com
+play.google.com
+fonts.gstatic.com
+.gstatic.com/keep/
+.youtube.com/live_chat/
+# FB
+.facebook.com/ajax/pagelet/
+.messenger.com/login/
 #OT
 regex101.com
 sync.services.mozilla.com
@@ -56,7 +98,6 @@ sync.opera.com
 .ebank.tpb.vn
 .vietcombank.com.vn
 .audioscrobbler.com
-.steampowered.com/depot/
 .contrejour.ie
 kjllmeplz.wordpress.com
 kjllmeplz.files.wordpress.com
@@ -77,8 +118,52 @@ home.scpd.live/client/
 fpt.com.vn/AutoDiscover/
 .dsvn.vn
 .muachung.vn/.*?act=cart
+.possession.tokyo
+.fptcloud.mail.onmicrosoft.com/AutoDiscover/
+.steampowered.com
+api.windscribe.com
+.bilibili.com/v/flashplay/
+.nocookie.net
+disqus.com/embed/comments/
+.chat.twitch.tv
+usher.ttvnw.net
+id.g2a.com
+irc-ws.chat.twitch.tv
+livecdn.fptplay.net
+socketio.fptplay.net
+.fptplay.vn/show/
+gist.github.com
+.poperblocker.com/view/update
+events.vungtv.net
+events.phimhoangu.net
+.wss.redditmedia.com
+.insight.fis.vn
+.discordapp.com
+gbf-raidfinder.aikats.us
+granblue-raidfinder.herokuapp.com
+event-api.analytics.mbga.jp
+gbf.wiki
+.lhscanlation.club/images/
+.vuighe.net/api/
+storage.fshare.vn
+mangadex.org/data/
+imageinstant.com/.*?\.(gif|GIF|jpg|js)$
+dev1.notebook-check.com
+.hltv.org/socket.io/
 
 {+bypassall}
 .privoxy.org
 p.p
 .googlevideo.
+.sacombank.com.vn
+.google.com/recaptcha/
+.google.com/js/bg/
+.sap.com
+chat.garena.tv
+steampipe.akamaized.net
+steam.apac.*.com
+/socketcluster/
+.granbluefantasy.jp
+.mobage.jp
+.mbga.jp
+203.104.248.5
