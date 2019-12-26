@@ -550,13 +550,22 @@ s@<script[^>]*?>[^<]*?(?:adEngine|wikia_beacon_id|_comscore|_qevents|quantcastLa
 #s@<script[^>]*?(?:nocookie\.net\/__load/)[^>]*?><\/script>@@gi
 
 FILTER: softpedia
-s@<div[^>]*?class="[^"]*?(ad ad|ad_native)[^"]*?"[\s\S]*?<\/div>@@g
+s@<div[^>]*?(Softpedia___)[^>]*?>[\s\S]*?<\/div>@@gi
+s@<div[^>]*?class="[^"]*?(ad_native|ad adl)[^"]*?"[\s\S]*?<\/div>@@g
 s@<a[^>]*?class="mgleft[^"]*?"[^>]*?(softpedia.com\/_out)[^>]*?target="_blank"[\s\S]*?<\/a>@@g
+s@<script[^>]*?>[^<]*?(pubads|APS_GO|DFP_GO)[\s\S]*?<\/script>@@gi
+s@<script[^>]*?(?:admicro|logdantri)[^>]*?><\/script>@@gi
 
 FILTER: reddit
 s@__perfMark\(\'ads_dot_js_fetch_start\'\);@@g
 s@"suggestedSort":"qa","isBlank":false@"suggestedSort":"qa","isBlank":true@gi
 s@"suggestedSort":"qa","isRoadblock":false@"suggestedSort":"qa","isRoadblock":true@gi
+s†(<\!-- END INJECTION2 -->)†\n<style>\n\
+\.promotedlink\n\
+{\n\
+display:none!important;\n\
+}\n\
+</style>\n$1†i
 
 FILTER: tuoitre
 s@<head[^>]*?>@$1<script>function NoWrite(e){return 1}document.write=NoWrite;document.writeln=NoWrite</script>@i
@@ -566,10 +575,11 @@ s@<script type='text\/javascript'>[^<]*?googletag[^<]*?<\/script>@@gi
 FILTER: dantri
 s@<script[^>]*?(?:admicro|logdantri)[^>]*?><\/script>@@gi
 s@<script[^>]*?>[^<]*?(logdantri|admicro|GetLikeF\*\*kbook)[\s\S]*?<\/script>@@gi
-s@<div[^>]*?(admzone|top-ads)[^>]*?>[\s\S]*?<\/div>@@gi
+s@<div[^>]*?(admzone|top-ads|adv-box|d7254)[^>]*?>[\s\S]*?<\/div>@@gi
+s@<a[^>]*?(fica\.vn)[^>][\s\S]*?<\/a>@@gi
 s@allowF\*\*kbook@allowFacebook@g
 s†(<\!-- END INJECTION2 -->)†\n<style>\n\
-\.bqtm-w, \.hqt-g, \.hqt-r, \.admzone221\n\
+\.bqtm-w, \.hqt-g, \.hqt-r, \.admzone221, \.fica\n\
 {\n\
 display:none!important;\n\
 }\n\
@@ -580,11 +590,12 @@ s@<script[^>]*?>[^<]*?(_trackEvent)[\s\S]*?<\/script>@@gi
 
 FILTER: vnexpress
 s@<iframe[^>]*?(id|class|src)="[^"]*?eclick[^"]*?"[\s\S]*?<\/iframe>@@gi
-s@<script[^>]*?>[^<]*?(?:Poly_|cpxad)[^<]*?<\/script>@@g
-s@<script[^>]*?(?:Poly_|polyad|eclick.vn)[^>]*?><\/script>@@g
+s@<script[^>]*?>[^<]*?(?:Poly_|cpxad|runUTMTrack|adsbyeclick)[^<]*?<\/script>@@g
+#s@<script[^>]*?>[^<]*?(?:switchoversea)[\s\S]*?<\/script>@@g
+s@<script[^>]*?(?:Poly_|polyad|eclick.vn|mads\.js)[^>]*?><\/script>@@g
 s@<div[^>]*?(box_splienquan|div-gpt-ad)[^>]*?>[\s\S]*?<\/div>@@gi
 s@<ins[^>]*?(adsby)[^>]*?>[\s\S]*?<\/ins>@@gi
-s@<section[^>]*?(sidebar_raovat|box_shopvne|banner_top)[^>]*?>[\s\S]*?<\/section>@@gi
+s@<section[^>]*?(sidebar_raovat|box_shopvne|banner_top|box_shop_|ads_large|inner_section|section_ads_)[^>]*?>[\s\S]*?<\/section>@@gi
 s@<a[^>]*?(tainangtrevietnam)[^>]*?target="_blank"[\s\S]*?<\/a>@@gi
 s@crawler\.showWidgetRaovat@@g
 s@Poly_showads\(\)@@g
@@ -594,6 +605,13 @@ s@eclick_zoneid = [^;]*?;@eclick_zoneid = 0;@
 s@is_show_ads = 1;@is_show_ads = 0;@gi
 s@ads_url = [^;]*?;@ads_url = \'\';@gi
 s@showads=1@showads=0@gi
+s@\<\!--[^>]*?(?:BANNER ADS|BLOCK TAG)--\>@@gi
+s†(<\!-- END INJECTION2 -->)†\n<style>\n\
+\.box_shop_vne, \.item_shop, \.inner_ads\n\
+{\n\
+display:none!important;\n\
+}\n\
+</style>\n$1†i
 
 FILTER: vnexpress-video
 #s@removeAdData\(\)@'nothing'@

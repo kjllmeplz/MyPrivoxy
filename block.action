@@ -23224,6 +23224,12 @@ stat.s3blog.org
 logsbin.dantri.com.vn
 ftigken.
 .upapi.net
+.reddit.com/api/jail/
+.redditmedia.com/gtm/jail*
+alb.reddit.com
+.reddit.com/timings/rum
+.twitter.com/1.1/jot/client_event.json
+.twitter.com/i/jot
 
 {-block{Custom}}
 .livechart.me
