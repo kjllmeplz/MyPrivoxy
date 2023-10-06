@@ -19,9 +19,6 @@
 {+filter{FacebookStyle2}}
 #.facebook.com
 
-{+filter{FacebookStyle3}}
-#.facebook.com
-
 #---------------------------------------
 # -
 {-filter{FacebookStyle2}}

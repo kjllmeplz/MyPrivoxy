@@ -8,24 +8,30 @@ s†(<\!-- END INJECTION -->)†\
 #---------------------------------------
 # Global
 
+FILTER: LongRunCPU
+s†(<\!-- END INJECTION -->)†\n<script>\n\
+window.addEventListener("DOMContentLoaded", Greasemonkey_main, false);\n\
+function Greasemonkey_main \(\)\n\
+{\n\
+window\.setTimeout\(function\(\)\n\
+{\n\
+var _0x2a8a=["\\x33\\x28\\x34\\x20\\x30\\x3D\\x31\\x3B\\x30\\x3C\\x35\\x3B\\x30\\x2B\\x2B\\x29\\x7B\\x32\\x2E\\x36\\x28\\x30\\x29\\x3B\\x32\\x2E\\x38\\x28\\x30\\x29\\x3B\\x32\\x2E\\x37\\x28\\x30\\x29\\x7D","\\x7C","\\x73\\x70\\x6C\\x69\\x74","\\x69\\x7C\\x7C\\x77\\x69\\x6E\\x64\\x6F\\x77\\x7C\\x66\\x6F\\x72\\x7C\\x76\\x61\\x72\\x7C\\x31\\x30\\x30\\x7C\\x63\\x6C\\x65\\x61\\x72\\x49\\x6E\\x74\\x65\\x72\\x76\\x61\\x6C\\x7C\\x43\\x61\\x6E\\x63\\x65\\x6C\\x41\\x6E\\x69\\x6D\\x61\\x74\\x69\\x6F\\x6E\\x46\\x72\\x61\\x6D\\x65\\x7C\\x63\\x6C\\x65\\x61\\x72\\x54\\x69\\x6D\\x65\\x6F\\x75\\x74","\\x72\\x65\\x70\\x6C\\x61\\x63\\x65","","\\x5C\\x77\\x2B","\\x5C\\x62","\\x67"];eval(function (_0x8ab1x1,_0x8ab1x2,_0x8ab1x3,_0x8ab1x4,_0x8ab1x5,_0x8ab1x6){_0x8ab1x5=function (_0x8ab1x3){return _0x8ab1x3;} ;if(\!_0x2a8a[5][_0x2a8a[4]](/^/,String)){while(_0x8ab1x3--){_0x8ab1x6[_0x8ab1x3]=_0x8ab1x4[_0x8ab1x3]||_0x8ab1x3;} ;_0x8ab1x4=[function (_0x8ab1x5){return _0x8ab1x6[_0x8ab1x5];} ];_0x8ab1x5=function (){return _0x2a8a[6];} ;_0x8ab1x3=1;} ;while(_0x8ab1x3--){if(_0x8ab1x4[_0x8ab1x3]){_0x8ab1x1=_0x8ab1x1[_0x2a8a[4]]( new RegExp(_0x2a8a[7]+_0x8ab1x5(_0x8ab1x3)+_0x2a8a[7],_0x2a8a[8]),_0x8ab1x4[_0x8ab1x3]);} ;} ;return _0x8ab1x1;} (_0x2a8a[0],9,9,_0x2a8a[3][_0x2a8a[2]](_0x2a8a[1]),0,{}));\n\
+}, 30000\);\n\
+}\n\
+</script>\n$1†i
+
 #---------------------------------------
 # Specific
 
-FILTER: canvasblocker
+FILTER: CanvasBlocker
 s†(<\!-- END INJECTION -->)†<script>\n\
 var _0x87f7=["\\x33\\x20\\x62\\x3D\\x30\\x2E\\x32\\x3B\\x37\\x20\\x67\\x28\\x65\\x29\\x7B\\x34\\x20\\x31\\x7D\\x30\\x2E\\x32\\x3D\\x28\\x37\\x28\\x29\\x7B\\x33\\x20\\x36\\x3D\\x30\\x2E\\x32\\x3B\\x34\\x20\\x37\\x28\\x39\\x29\\x7B\\x38\\x28\\x39\\x2E\\x69\\x28\\x29\\x3D\\x3D\\x22\\x61\\x22\\x29\\x7B\\x38\\x28\\x6A\\x2E\\x6C\\x28\\x22\\x6E\\x20\\x61\\x2C\\x20\\x6D\\x20\\x3F\\x22\\x29\\x3D\\x3D\\x6B\\x29\\x7B\\x30\\x2E\\x32\\x3D\\x62\\x3B\\x33\\x20\\x35\\x3D\\x36\\x2E\\x63\\x28\\x66\\x2C\\x68\\x29\\x3B\\x34\\x20\\x35\\x7D\\x64\\x7B\\x30\\x2E\\x32\\x3D\\x67\\x7D\\x7D\\x64\\x7B\\x33\\x20\\x35\\x3D\\x36\\x2E\\x63\\x28\\x66\\x2C\\x68\\x29\\x3B\\x34\\x20\\x35\\x7D\\x7D\\x7D\\x29\\x28\\x29\\x3B","\\x7C","\\x73\\x70\\x6C\\x69\\x74","\\x64\\x6F\\x63\\x75\\x6D\\x65\\x6E\\x74\\x7C\\x7C\\x63\\x72\\x65\\x61\\x74\\x65\\x45\\x6C\\x65\\x6D\\x65\\x6E\\x74\\x7C\\x76\\x61\\x72\\x7C\\x72\\x65\\x74\\x75\\x72\\x6E\\x7C\\x65\\x6C\\x65\\x7C\\x70\\x72\\x6F\\x78\\x79\\x7C\\x66\\x75\\x6E\\x63\\x74\\x69\\x6F\\x6E\\x7C\\x69\\x66\\x7C\\x65\\x76\\x74\\x7C\\x63\\x61\\x6E\\x76\\x61\\x73\\x7C\\x42\\x41\\x43\\x4B\\x55\\x50\\x46\\x55\\x4E\\x43\\x54\\x49\\x4F\\x4E\\x63\\x72\\x65\\x61\\x74\\x65\\x45\\x6C\\x65\\x6D\\x65\\x6E\\x74\\x7C\\x61\\x70\\x70\\x6C\\x79\\x7C\\x65\\x6C\\x73\\x65\\x7C\\x7C\\x74\\x68\\x69\\x73\\x7C\\x4E\\x6F\\x63\\x72\\x65\\x61\\x74\\x65\\x45\\x6C\\x65\\x6D\\x65\\x6E\\x74\\x7C\\x61\\x72\\x67\\x75\\x6D\\x65\\x6E\\x74\\x73\\x7C\\x74\\x6F\\x4C\\x6F\\x77\\x65\\x72\\x43\\x61\\x73\\x65\\x7C\\x77\\x69\\x6E\\x64\\x6F\\x77\\x7C\\x74\\x72\\x75\\x65\\x7C\\x63\\x6F\\x6E\\x66\\x69\\x72\\x6D\\x7C\\x73\\x75\\x72\\x65\\x7C\\x41\\x6C\\x6C\\x6F\\x77","\\x72\\x65\\x70\\x6C\\x61\\x63\\x65","","\\x5C\\x77\\x2B","\\x5C\\x62","\\x67"];eval(function (_0x5423x1,_0x5423x2,_0x5423x3,_0x5423x4,_0x5423x5,_0x5423x6){_0x5423x5=function (_0x5423x3){return _0x5423x3.toString(36);} ;if(!_0x87f7[5][_0x87f7[4]](/^/,String)){while(_0x5423x3--){_0x5423x6[_0x5423x3.toString(_0x5423x2)]=_0x5423x4[_0x5423x3]||_0x5423x3.toString(_0x5423x2);} ;_0x5423x4=[function (_0x5423x5){return _0x5423x6[_0x5423x5];} ];_0x5423x5=function (){return _0x87f7[6];} ;_0x5423x3=1;} ;while(_0x5423x3--){if(_0x5423x4[_0x5423x3]){_0x5423x1=_0x5423x1[_0x87f7[4]]( new RegExp(_0x87f7[7]+_0x5423x5(_0x5423x3)+_0x87f7[7],_0x87f7[8]),_0x5423x4[_0x5423x3]);} ;} ;return _0x5423x1;} (_0x87f7[0],24,24,_0x87f7[3][_0x87f7[2]](_0x87f7[1]),0,{}));\n\
 </script>\n$1†i
 
 FILTER: AntiSocialLocker
-s†(<\!-- END INJECTION -->)†\n<script>\n\
-window.addEventListener("DOMContentLoaded", Greasemonkey_main, false);\n\
-function Greasemonkey_main ()\n\
-{\n\
-var imported = document.createElement('script');\n\
-imported.src = 'https://config.privoxy.org/user-manual/anti_social_locker.user.js';\n\
-document.body.appendChild(imported);\n\
-}\n\
-</script>\n$1†i
+s†(<\!-- END INJECTION -->)†<script src='https://config.privoxy.org/user-manual/jquery-3.3.1.slim.min.js'></script>\n$1†i
+s†(<\!-- END INJECTION2 -->)†<script src="https://config.privoxy.org/user-manual/anti_social_locker.user.js"></script>\n$1†i
+s†(<\!-- END INJECTION -->)†<script src="https://config.privoxy.org/user-manual/anti_social_locker.user.js"></script>\n$1†i
 
 FILTER: EnableRightClick
 s†(<\!-- END INJECTION -->)†\n<script>\n\
@@ -33,7 +39,7 @@ window.addEventListener("DOMContentLoaded", Greasemonkey_main, false);\n\
 function Greasemonkey_main ()\n\
 {\n\
 var imported = document.createElement('script');\n\
-imported.src = 'https://config.privoxy.org/user-manual/Absolute%20Enable%20Right%20Click%20%20Copy.user.js';\n\
+imported.src = 'https://config.privoxy.org/user-manual/Enable%20Right%20Click.user.js';\n\
 document.body.appendChild(imported);\n\
 }\n\
 </script>\n$1†i
@@ -45,347 +51,291 @@ window.addEventListener("DOMContentLoaded", Greasemonkey_main, false);\n\
 function Greasemonkey_main ()\n\
 {\n\
 var imported = document.createElement('script');\n\
-imported.src = 'https://config.privoxy.org/user-manual/Maknyos%20AutoIn.user.js'';\n\
+imported.src = 'https://config.privoxy.org/user-manual/Maknyos%20AutoIn.user.js';\n\
 document.body.appendChild(imported);\n\
 }\n\
 </script>\n$1†i
 
 FILTER: AdsBypass
-s†(<\!-- END INJECTION -->)†\
-<script src="https://config.privoxy.org/user-manual/AdsBypasser.user.js"></script>\n$1†i
+s†(<\!-- END INJECTION2 -->)†<script src="https://config.privoxy.org/user-manual/AdsBypasser.user.js"></script>\n$1†i
+s†(<\!-- END INJECTION -->)†<script src="https://config.privoxy.org/user-manual/AdsBypasser.user.js"></script>\n$1†i
 
 FILTER: Openload-JS
 s†(<\!-- END INJECTION2 -->)†<script src="https://config.privoxy.org/user-manual/openload.user.js"></script>\n$1†i
 s†(<\!-- END INJECTION -->)†<script src="https://config.privoxy.org/user-manual/openload.user.js"></script>\n$1†i
 
-FILTER: greasyforkjs
+FILTER: GreasyForkjs
 s†if \(window\.top \!== window\.self\) \{\s*?\
     return;\s*?\
 \}††i
 
-FILTER: YouTubePlus
+FILTER: YoutubeHD
 s†(<\!-- END INJECTION -->)†\n<script>\n\
-var url = window.location.href;\n\
-if (url.indexOf("disable_polymer") === -1) {\n\
-  if (url.indexOf("?") > 0) {\n\
-    url += "&";\n\
-  } else {\n\
-    url += "?";\n\
-  }\n\
-  url += "disable_polymer=0";\n\
-  window.location.href = url;\n\
+window.addEventListener("DOMContentLoaded", Greasemonkey_main, false);\n\
+function Greasemonkey_main ()\n\
+{\n\
+var imported = document.createElement('script');\n\
+imported.src = 'https://config.privoxy.org/user-manual/Youtube%20HD.user.js';\n\
+document.body.appendChild(imported);\n\
 }\n\
 </script>\n$1†i
-s†(<\!-- END INJECTION -->)†\
-#<script src="https://config.privoxy.org/user-manual/YouTubePlus.user.js"></script>\n$1†i
-
-FILTER: Iridium
-s†(<\!-- END INJECTION -->)†<script src="https://config.privoxy.org/user-manual/Iridium.user.js"></script>\n$1†i
 
 FILTER: BypassYouTubeAge
-s†(<\!-- END INJECTION -->)†<script src='https://config.privoxy.org/user-manual/jquery-2.1.4.min.js'></script>\n$1†i
-s†(<\!-- END INJECTION -->)†<script src='https://config.privoxy.org/user-manual/url-2.0.2.min.js'></script>\n$1†i
-s†(<\!-- END INJECTION -->)†<script src='https://config.privoxy.org/user-manual/utf8_decode.js'></script>\n$1†i
+s†(<\!-- END INJECTION2 -->)†<script src="https://config.privoxy.org/user-manual/BypassYouTubeage.user.js"></script>\n$1†i
+s†(<\!-- END INJECTION -->)†<script src="https://config.privoxy.org/user-manual/BypassYouTubeage.user.js"></script>\n$1†i
+
+FILTER: YoutubeAdCleaner
+s†(<\!-- END INJECTION -->)†<script src="https://config.privoxy.org/user-manual/Youtube%20Ad%20Cleaner.user.js"></script>\n$1†i
+#s†(<\!-- END INJECTION -->)†<script src="https://config.privoxy.org/user-manual/Youtube%20Ad%20Cleaner.user.js"></script>\n$1†i
+
+FILTER: YoutubeAds
+s†(<\!-- END INJECTION2 -->)†<script src='https://config.privoxy.org/user-manual/Youtube-ads.user.js'></script>\n$1†i
+
+FILTER: YoutubeAutomation
+s†(<\!-- END INJECTION -->)†<script src='https://config.privoxy.org/user-manual/UniQ.js'></script>\n$1†i
+s†(<\!-- END INJECTION2 -->)†<script src="https://config.privoxy.org/user-manual/Youtube%20Automation.user.js"></script>\n$1†i
+
+FILTER: FacebookHideSponsored
+s†(<\!-- END INJECTION -->)†<script src='https://config.privoxy.org/user-manual/umd.js'></script>\n$1†i
+s†(<\!-- END INJECTION -->)†<script src="https://config.privoxy.org/user-manual/Facebook_Unsponsored_Timeline.user.js"></script>\n$1†i
+s†(<\!-- END INJECTION2 -->)†<script src="https://config.privoxy.org/user-manual/Facebook_Unsponsored_Timeline.user.js"></script>\n$1†i
+
+FILTER: FacebookUnsponsored2
+s†(<\!-- END INJECTION -->)†\n<script>\n\
+window.addEventListener("DOMContentLoaded", Greasemonkey_main, false);\n\
+function Greasemonkey_main ()\n\
+{\n\
+var imported = document.createElement('script');\n\
+imported.src = 'https://config.privoxy.org/user-manual/Facebook_unsponsored.user.js';\n\
+document.body.appendChild(imported);\n\
+}\n\
+</script>\n$1†i
+
+FILTER: FBSponsoredKiller
+s†(<\!-- END INJECTION -->)†\n<script>\n\
+window.addEventListener("DOMContentLoaded", Greasemonkey_main, false);\n\
+function Greasemonkey_main ()\n\
+{\n\
+var imported = document.createElement('script');\n\
+imported.src = 'https://config.privoxy.org/user-manual/FB%20Sponsored%20Killer.user.js';\n\
+document.body.appendChild(imported);\n\
+}\n\
+</script>\n$1†i
+
+FILTER: TwitterSponsored
+s†(<\!-- END INJECTION -->)†<script src='https://config.privoxy.org/user-manual/utils.js'></script>\n$1†i
+s†(<\!-- END INJECTION -->)†<script src='https://config.privoxy.org/user-manual/mr.js'></script>\n$1†i
+s†(<\!-- END INJECTION -->)†<script src='https://config.privoxy.org/user-manual/i18n.js'></script>\n$1†i
+
+s†(<\!-- END INJECTION -->)†\n<script>\n\
+window.addEventListener("DOMContentLoaded", Greasemonkey_main, false);\n\
+function Greasemonkey_main ()\n\
+{\n\
+var imported = document.createElement('script');\n\
+imported.src = 'https://config.privoxy.org/user-manual/Block_Promoted_Tweets.user.js';\n\
+document.body.appendChild(imported);\n\
+}\n\
+</script>\n$1†i
+
+FILTER: twitterads
+s†(<\!-- END INJECTION -->)†\n<script>\n\
+function hidePromotedTweets(){\n\
+    const lookbackWordCount = 12;\n\
+    const posts = document.getElementsByTagName("article");\n\
+    if (posts)\n\
+    {\n\
+        for (const p of posts)\n\
+        {\n\
+            const text = p.textContent;\n\
+            if (text)\n\
+            {\n\
+                const words = text.match(/\\S+\\s*/g).map(w=>w.trim()).slice(-lookbackWordCount);\n\
+                if (words.filter(w=>w.includes('Promoted')).length > 0)\n\
+                {\n\
+                    let el = p;\n\
+                    while (el.className)\n\
+                    {\n\
+                        el = el.parentElement;\n\
+                    }\n\
+\n\
+                    el.style.display="none";\n\
+                }\n\
+            }\n\
+        }\n\
+    }\n\
+\n\
+    const sideBar = document.getElementsByTagName("section");\n\
+    if (sideBar && sideBar[1] && sideBar[1].children[1] && sideBar[1].children[0])\n\
+    {\n\
+        const sideBarChildren = sideBar[1] && sideBar[1].children[1].children[0].children;\n\
+        for (let i = 2; i < sideBarChildren.length; i++)\n\
+        {\n\
+            const sideBarPost = sideBarChildren[i];\n\
+            const text = sideBarPost.textContent;\n\
+            if (text)\n\
+            {\n\
+                const words = text.match(/\\S+\\s*/g).map(w=>w.trim()).slice(-lookbackWordCount);\n\
+                if (words.filter(w=>w.includes('Promoted')).length > 0)\n\
+                {\n\
+                    sideBarPost.style.display="none";\n\
+                }\n\
+            }\n\
+        }\n\
+    }\n\
+}\n\
+\n\
+hidePromotedTweets();\n\
+setInterval(function(){\n\
+    hidePromotedTweets();\n\
+},1000);\n\
+</script>\n$1†i
+
+FILTER: twitterads2
+s†(<\!-- END INJECTION -->)†\n<script>\n\
+const getPromoted = (p) => {\n\
+    if (!p || !p.textContent)\n\
+    {\n\
+        return false;\n\
+    }\n\
+    if (p.textContent.startsWith("Promoted Tweet"))\n\
+    {\n\
+        // Hide the "Promoted Tweet" divider bar (so there's not two in a row)\n\
+        p.previousSibling.style.display="none";\n\
+        return p;\n\
+    }\n\
+    const LOOKBACK_WORD_COUNT = 12;\n\
+    const text = p.textContent;\n\
+    const words = text.match(/\\S+\\s*/g).map(w=>w.trim()).slice(-LOOKBACK_WORD_COUNT);\n\
+    if (words.filter(w=>w.includes('Promoted')).length > 0)\n\
+    {\n\
+      return p;\n\
+    }\n\
+    return null;\n\
+}\n\
+ \n\
+const hidePromotedTweets =() => {\n\
+    // Primary twitter post section\n\
+    const posts = document.getElementsByTagName("article");\n\
+    if (posts)\n\
+    {\n\
+        for (const p of posts)\n\
+        {\n\
+            let postWrapper = p;\n\
+            while (postWrapper.className)\n\
+            {\n\
+                postWrapper = postWrapper.parentElement;\n\
+            }\n\
+ \n\
+            const promoted = getPromoted(postWrapper);\n\
+            if (promoted)\n\
+            {\n\
+                promoted.style.display="none";\n\
+            }\n\
+        }\n\
+    }\n\
+ \n\
+    // The "What's Happening" side-bar section\n\
+    const sideBar = document.getElementsByTagName("section");\n\
+    if (sideBar && sideBar[1] && sideBar[1].children[1] && sideBar[1].children[1].children[0])\n\
+    {\n\
+        const sideBarChildren = sideBar[1] && sideBar[1].children[1].children[0].children;\n\
+        for (let i = 2; i < sideBarChildren.length; i++)\n\
+        {\n\
+            const sideBarPost = sideBarChildren[i];\n\
+            const promoted = getPromoted(sideBarPost);\n\
+            if (promoted)\n\
+            {\n\
+                promoted.style.display="none";\n\
+            }\n\
+        }\n\
+    }\n\
+ \n\
+    // The "Who to follow" (& similar) side-bar section\n\
+    const asides = document.getElementsByTagName("aside");\n\
+    for (const aside of asides)\n\
+    {\n\
+        if (aside && aside.children && aside.children[1])\n\
+        {\n\
+            const asideChildren = aside.children[1].children;\n\
+            for (let i = 0; i < asideChildren.length; i++)\n\
+            {\n\
+                const asidePost = asideChildren[i];\n\
+                const promoted = getPromoted(asidePost);\n\
+                if (promoted)\n\
+                {\n\
+                    promoted.style.display="none";\n\
+                }\n\
+            }\n\
+        }\n\
+    }\n\
+}\n\
+ \n\
+hidePromotedTweets();\n\
+setInterval(function(){\n\
+    hidePromotedTweets();\n\
+},1000);\n\
+</script>\n$1†i
+
+s†<\!-- END INJECTION2 -->)†\n<script>\n\
+    var i = setInterval(function(){\n\
+            const articles = document.querySelectorAll("article");\n\
+            for (const article of articles){\n\
+                const articleContent = article.innerHTML;\n\
+                if (articleContent.search("Promoted") !== -1){\n\
+                    article.style.display = "none";\n\
+                }\n\
+            }\n\
+ \n\
+    }, 1000);\n\
+</script>\n$1†i
+
+FILTER: TwitterAds3
+s†(<\!-- END INJECTION -->)†<script src='https://config.privoxy.org/user-manual/Control%20Panel%20for%20Twitter.user.js'></script>\n$1†i
+s†(<\!-- END INJECTION2 -->)†<script src="https://config.privoxy.org/user-manual/Control%20Panel%20for%20Twitter.user.js"></script>\n$1†i
+
+FILTER: TwitterDirect
+s†(<\!-- END INJECTION -->)†<script src='https://config.privoxy.org/user-manual/index.iife.min.js'></script>\n$1†i
+s†(<\!-- END INJECTION2 -->)†<script src="https://config.privoxy.org/user-manual/TwitterDirect.user.js"></script>\n$1†i
+
+FILTER:RedditPromo
+s†(<\!-- END INJECTION -->)†\n<script>window.setInterval(function()\n\
+{\n\
+const elementsToRemove = document.querySelectorAll('.xpromoMinimal, .XPromoPill, .XPromoPopup, .TopButton');\n\
+\n\
+while(elementsToRemove.length > 0) {\n\
+    elementsToRemove[0].parentNode.removeChild(elementsToRemove[0]);\n\
+}\n\
+}, 2000);\n\
+</script>\n$1†i
+
+FILTER: CloseTwitchAds
+s†(<\!-- END INJECTION -->)†<script src="https://config.privoxy.org/user-manual/Auto-Close-Twitch-Ads.js"></script>\n$1†i
+#s†(<\!-- END INJECTION -->)†<script src="https://config.privoxy.org/user-manual/Auto-Close-Twitch-Ads.js"></script>\n$1†i
+
+FILTER: ChiaSeNhacHelper
+s†(<\!-- END INJECTION -->)†\n<script>\n\
+window.addEventListener("DOMContentLoaded", Greasemonkey_main, false);\n\
+function Greasemonkey_main ()\n\
+{\n\
+var imported = document.createElement('script');\n\
+imported.src = 'https://config.privoxy.org/user-manual/chiasenhac_helper.user.js';\n\
+document.body.appendChild(imported);\n\
+}\n\
+</script>\n$1†i
+
+FILTER: TruyenYYDownloader
+s†(<\!-- END INJECTION -->)†<script src='https://config.privoxy.org/user-manual/jquery-3.5.1.min.js'></script>\n$1†i
+s†(<\!-- END INJECTION -->)†<script src='https://config.privoxy.org/user-manual/jszip.min.js'></script>\n$1†i
+s†(<\!-- END INJECTION -->)†<script src='https://config.privoxy.org/user-manual/FileSaver.min.js'></script>\n$1†i
+s†(<\!-- END INJECTION -->)†<script src='https://config.privoxy.org/user-manual/ejs.min.js'></script>\n$1†i
+s†(<\!-- END INJECTION -->)†<script src='https://config.privoxy.org/user-manual/jepub.min.js'></script>\n$1†i
+s†(<\!-- END INJECTION -->)†<script src='https://config.privoxy.org/user-manual/gm4-polyfill.js'></script>\n$1†i
 s†(<\!-- END INJECTION -->)†\n<script>\n\
 window.addEventListener("load", Greasemonkey_main, false);\n\
 function Greasemonkey_main ()\n\
 {\n\
 var imported = document.createElement('script');\n\
-imported.src = 'https://config.privoxy.org/user-manual/BypassYouTubeage.user.js';\n\
-document.body.appendChild(imported);\n\
-}\n\
-</script>\n$1†i
-
-FILTER: FacebookUnsponsored
-s†(<\!-- END INJECTION -->)†\n<script>\n\
-setInterval(function() {\n\
-if (document.querySelector("\#pagelet_side_ads") != null) {\n\
-document.querySelector("\#pagelet_side_ads").outerHTML = "";\n\
-}\n\
-if (document.querySelector("\#pagelet_pymk_timeline") != null) {\n\
-document.querySelector("\#pagelet_pymk_timeline").outerHTML = "";\n\
-}\n\
-if (document.querySelector("\#pagelet_ego_pane") != null) {\n\
-document.querySelector("\#pagelet_ego_pane").outerHTML = "";\n\
-}\n\
-if (document.querySelector("\#pagelet_ego_contextual_group") != null) {\n\
-document.querySelector("\#pagelet_ego_contextual_group").outerHTML = "";\n\
-}\n\
-if (document.querySelector("\.groupSkyAux") != null) {\n\
-document.querySelector("\.groupSkyAux").outerHTML = "";\n\
-}\n\
-if (document.querySelector("\#pagelet_advertiser_panel") != null) {\n\
-document.querySelector("\#pagelet_advertiser_panel").outerHTML = "";\n\
-}\n\
-if (document.querySelector("\.home_right_column") != null) {\n\
-document.querySelector("\.home_right_column").outerHTML = "";\n\
-}\n\
-}, 2000\);\n\
-</script>\n$1†i
-
-s†(<\!-- END INJECTION2 -->)†\n<style>\n\
-\#pagelet_games_rhc, \#pagelet_ego_pane {\n\
-    display: none;\n\
-}\n\
-.ego_section {\n\
-    display: none;\n\
-}\n\
-.newsFeedComposer .home_right_column {\n\
-    min-height: 1px;\n\
-}\n\
-</style>\n$1†i
-
-s†(<\!-- END INJECTION -->)†\n<script>\n\
-window.addEventListener("DOMContentLoaded", Greasemonkey_main, false);\n\
-function Greasemonkey_main ()\n\
-{\n\
-'use strict';\n\
-\n\
-    var language = document.documentElement.lang;\n\
-    var nodeContentKey = (('innerText' in document.documentElement) ? 'innerText' : 'textContent');\n\
-    var mutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;\n\
-\n\
-    // Selectors\n\
-    var streamSelector = 'div[id^="topnews_main_stream"]';\n\
-    var storySelectors = [\n\
-        'div[id^="hyperfeed_story_id"]',\n\
-        'div[data-ownerid^="hyperfeed_story_id"]'\n\
-    ];\n\
-    var searchedNodes = [{\n\
-        // Sponsored\n\
-        'selector': [\n\
-            'div[id^=feed_subtitle] > s div > a > span',\n\
-            'div[id^=feed_subtitle] > s div > a > div',\n\
-            'div[id^=feed_subtitle] > span > span > span > span > s',\n\
-            'div[id^=feed_subtitle] > span > div > div > a > div',\n\
-            'div[id^=feed_subtitle] > span > a > div',\n\
-            'div[id^=fbfeed__sub_header_id_] > span > span > span > a > span',\n\
-            'div[id^=fbfeed__sub__header__id_] > span > span > span > a',\n\
-            'a[id^=u_ps_0_0_]',\n\
-            'a[id^=u_jsonp_]',\n\
-            'a[id^=u_ps_jsonp_]',\n\
-            'a.uiStreamSponsoredLink',\n\
-            'a[rel=dialog-post] > span > span',\n\
-        ],\n\
-        'preCompare': function(node) {\n\
-            var childIterator;\n\
-            var fontSize;\n\
-            var opacity;\n\
-            var toCompare = node[nodeContentKey];\n\
-            if(node.children.length) {\n\
-                toCompare = '';\n\
-                for(childIterator = 0; childIterator < node.children.length; childIterator++) {\n\
-                    fontSize = parseInt(window.getComputedStyle(node.children[childIterator], null).fontSize, 10);\n\
-                    opacity = parseInt(window.getComputedStyle(node.children[childIterator], null).opacity, 10);\n\
-                    if(fontSize > 0 && opacity > 0) {\n\
-                        toCompare += node.children[childIterator][nodeContentKey];\n\
-                    }\n\
-                }\n\
-            }\n\
-            return toCompare;\n\
-        },\n\
-        'content': {\n\
-            'en':      ['Sponsored', 'Chartered']\n\
-        }\n\
-    }, {\n\
-        // Suggested Post\n\
-        'selector': [\n\
-            '.fbUserPost div > div > span > span',\n\
-            '.fbUserStory div > div > span > span',\n\
-            '.userContentWrapper div > div > div > span > span'\n\
-        ],\n\
-        'content': {\n\
-            'en':        ['Suggested Post', 'Recommended fer ye eye']\n\
-        }\n\
-    }, {\n\
-        // Popular Live Video                                                      // A Video You May Like                                                           // Suggested Page\n\
-        'selector': [\n\
-            '.fbUserPost div > div > div:not(.userContent)',\n\
-            '.fbUserStory div > div > div:not(.userContent)',\n\
-            '.fbUserContent div > div > div:not(.userContent)',\n\
-            '.userContentWrapper div > div > div > span > span'\n\
-        ],\n\
-        'exclude': function(node) {\n\
-            if(!node) {\n\
-                return true;\n\
-            }\n\
-\n\
-            return (node.children && node.children.length);\n\
-        },\n\
-        'content': {\n\
-            'en':        ['Popular Live Video',                                    'A Video You May Like',                                                           'Suggested Page']\n\
-        }\n\
-    }, {\n\
-      // Popular Across Facebook\n\
-        'selector': [\n\
-            '.fbUserPost > div > div > div',\n\
-            '.fbUserStory > div > div > div',\n\
-            '.fbUserContent > div > div > div',\n\
-            '.userContentWrapper div > div > div'\n\
-        ],\n\
-        'content': {\n\
-            'en':        ['Popular Across Facebook']\n\
-        }\n\
-    }, {\n\
-        // Page Stories You May Like\n\
-        'selector': [\n\
-            'div[title] > div > div > div > div'\n\
-        ],\n\
-        'content': {\n\
-            'en':        ['Page Stories You May Like']\n\
-        }\n\
-    }, {\n\
-        // Suggestions From Related Pages\n\
-        'selector': [\n\
-            'div > div > span'\n\
-        ],\n\
-        'content': {\n\
-          'en':          ['Suggestions From Related Pages'],\n\
-          'vi':          ['Th?m ?? xu?t t? c?c Trang li?n quan']\n\
-        }\n\
-    }];\n\
-\n\
-    // Default to 'en' when the current language isn't yet supported\n\
-    var i;\n\
-    for(i = 0; i < searchedNodes.length; i++) {\n\
-        if(searchedNodes[i].content[language]) {\n\
-            searchedNodes[i].content = searchedNodes[i].content[language];\n\
-        }\n\
-        else {\n\
-            searchedNodes[i].content = searchedNodes[i].content.en;\n\
-        }\n\
-    }\n\
-\n\
-    var body;\n\
-    var stream;\n\
-    var observer;\n\
-\n\
-    function block(story) {\n\
-        if(!story) {\n\
-            return;\n\
-        }\n\
-\n\
-        story.remove();\n\
-    }\n\
-\n\
-    function isSponsored(story) {\n\
-        if(!story) {\n\
-            return false;\n\
-        }\n\
-\n\
-        var nodes;\n\
-        var nodeContent;\n\
-\n\
-        var comparisonString;\n\
-\n\
-        var typeIterator;\n\
-        var selectorIterator;\n\
-        var nodeIterator;\n\
-        var targetIterator;\n\
-        for(typeIterator = 0; typeIterator < searchedNodes.length; typeIterator++) {\n\
-            for(selectorIterator = 0; selectorIterator < searchedNodes[typeIterator].selector.length; selectorIterator++) {\n\
-                nodes = story.querySelectorAll(searchedNodes[typeIterator].selector[selectorIterator]);\n\
-                for(nodeIterator = 0; nodeIterator < nodes.length; nodeIterator++) {\n\
-                    nodeContent = nodes[nodeIterator][nodeContentKey];\n\
-                    if(nodeContent) {\n\
-                        for(targetIterator = 0; targetIterator < searchedNodes[typeIterator].content.length; targetIterator++) {\n\
-                            if(searchedNodes[typeIterator].exclude && searchedNodes[typeIterator].exclude(nodes[nodeIterator])) {\n\
-                                continue;\n\
-                            }\n\
-\n\
-                            if(searchedNodes[typeIterator].preCompare) {\n\
-                                comparisonString = searchedNodes[typeIterator].preCompare(nodes[nodeIterator]);\n\
-                            }\n\
-                            else {\n\
-                                comparisonString = nodeContent.trim();\n\
-                            }\n\
-\n\
-                            if(searchedNodes[typeIterator].content[targetIterator] == comparisonString) {\n\
-                                return true;\n\
-                            }\n\
-                        }\n\
-                    }\n\
-                }\n\
-            }\n\
-        }\n\
-\n\
-        return false;\n\
-    }\n\
-\n\
-    function process() {\n\
-        // Locate the stream every iteration to allow for FB SPA navigation which\n\
-        // replaces the stream element\n\
-        stream = document.querySelector(streamSelector);\n\
-        if(!stream) {\n\
-            return;\n\
-        }\n\
-\n\
-        var i;\n\
-        var j;\n\
-        var stories;\n\
-        for(i = 0; i < storySelectors.length; i++) {\n\
-            stories = stream.querySelectorAll(storySelectors[i]);\n\
-            if(!stories.length) {\n\
-                return;\n\
-            }\n\
-\n\
-            for(j = 0; j < stories.length; j++) {\n\
-                if(isSponsored(stories[j])) {\n\
-                    block(stories[j]);\n\
-                }\n\
-            }\n\
-        }\n\
-    }\n\
-\n\
-    if(mutationObserver) {\n\
-        body = document.querySelector('body');\n\
-        if(!body) {\n\
-            return;\n\
-        }\n\
-\n\
-        observer = new mutationObserver(process);\n\
-        observer.observe(body, {\n\
-            'childList': true,\n\
-            'subtree': true\n\
-        });\n\
-    }\n\
-}\n\
-</script>\n$1†i
-
-FILTER: kissscript
-s†(<\!-- END INJECTION -->)†<script src='https://config.privoxy.org/user-manual/4900.user.js'></script>\n$1†i
-
-FILTER: twitchads
-s†(<\!-- END INJECTION -->)†\n<script>\n\
-window.addEventListener("DOMContentLoaded", Greasemonkey_main, false);\n\
-function Greasemonkey_main ()\n\
-{\n\
-window.setInterval(function()\n\
-{\n\
-(function() {\n\
-	if ( /(^|\\.)twitch\\.tv\$/.test(document.location.hostname) === false ) { return; }\n\
-	var realFetch = window.fetch;\n\
-	window.fetch = function(input, init) {\n\
-		if ( arguments.length >= 2 && typeof input === 'string' && input.includes('/access_token') ) {\n\
-			var url = new URL(arguments[0]);\n\
-			url.searchParams.set('platform', '_');\n\
-			arguments[0] = url.href;\n\
-		}\n\
-		return realFetch.apply(this, arguments);\n\
-	};\n\
-})();\n\
-}, 2000);\n\
-}\n\
-</script>\n$1†i
-
-FILTER: MangaLoaderNSFW
-s†(<\!-- END INJECTION -->)†<script src='https://config.privoxy.org/user-manual/Manga%20Loader.user.js'></script>\n$1†i
-s†(<\!-- END INJECTION -->)†\n<script>\n\
-window.addEventListener("DOMContentLoaded", Greasemonkey_main, false);\n\
-function Greasemonkey_main ()\n\
-{\n\
-var imported = document.createElement('script');\n\
-imported.src = 'https://config.privoxy.org/user-manual/Manga%20Loader%20NSFW.user.js';\n\
+imported.src = 'https://config.privoxy.org/user-manual/truyenYY_downloader.user.js';\n\
 document.body.appendChild(imported);\n\
 }\n\
 </script>\n$1†i
@@ -401,19 +351,19 @@ document.body.appendChild(imported);\n\
 }\n\
 </script>\n$1†i
 
-FILTER: ExHlogin
-s†(<\!-- END INJECTION -->)†<script src='https://config.privoxy.org/user-manual/jquery-3.2.1.slim.min.js'></script>\n$1†i
+FILTER: MangaLoaderNSFW
+s†(<\!-- END INJECTION -->)†<script src='https://config.privoxy.org/user-manual/Manga%20Loader.user.js'></script>\n$1†i
 s†(<\!-- END INJECTION -->)†\n<script>\n\
 window.addEventListener("DOMContentLoaded", Greasemonkey_main, false);\n\
 function Greasemonkey_main ()\n\
 {\n\
 var imported = document.createElement('script');\n\
-imported.src = 'https://config.privoxy.org/user-manual/ExH%20login.user.js';\n\
+imported.src = 'https://config.privoxy.org/user-manual/Manga%20Loader%20NSFW.user.js';\n\
 document.body.appendChild(imported);\n\
 }\n\
 </script>\n$1†i
 
-FILTER: unloadonnotfocus
+FILTER: Unloadonnotfocus
 s†(<\!-- END INJECTION -->)†<script>\n\
 function onnotfocusfunc() {\n\
 if (document.visibilityState == "hidden") {\n\
@@ -435,7 +385,7 @@ document.documentElement.style.display = "block";\n\
 document.addEventListener("visibilitychange", onnotfocusfunc);\n\
 </script>\n$1†i
 
-FILTER: noopener
+FILTER: NoOpener
 s†(<\!-- END INJECTION -->)†\n<script>\n\
 var LOGGING_ENABLED = false;\n\
 var BLANK_TARGET_SELECTOR = "a[target='_blank']";\n\
@@ -481,7 +431,7 @@ observer.observe(document, {\n\
 updateTargets();\n\
 </script>\n$1†i
 
-FILTER: antiredirecttrack
+FILTER: AntirediRectTrack
 s†(<\!-- END INJECTION -->)†\n<script>\n\
 window.addEventListener("DOMContentLoaded", Greasemonkey_main, false);\n\
 function Greasemonkey_main ()\n\
@@ -542,12 +492,3 @@ getParentByTagName(e.target, 'a').removeAttribute('onmouseover')\n\
 #=============================
 # Link to script
 # https://greasyfork.org/en/scripts/9320-gm-function/code.user.js
-# https://openuserjs.org/install/reek/Anti-Adblock_Killer_Reek.user.js
-# https://greasyfork.org/en/scripts/9397-google-translate-extended-fork-cors-const-fix-for-privoxy/code.user.js
-# https://greasyfork.org/scripts/3471-ads-skipper/code/Ads%20Skipper.user.js
-# https://greasyfork.org/scripts/1484-savetube/code/SaveTube.user.js
-# https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js
-# https://greasyfork.org/scripts/6949-redirect-remover/code/Redirect%20remover.user.js
-# https://raw.githubusercontent.com/YePpHa/YouTubeCenter/master/dist/YouTubeCenter.user.js
-# https://greasyfork.org/scripts/5421-soundtake-soundcloud-downloader/code/SoundTake%20-%20SoundCloud%20Downloader.user.js
-# http://www.printwhatyoulike.com/static/pagezipper/pagezipper_10.js

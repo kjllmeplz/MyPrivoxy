@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name       Manga Loader
-// @namespace  http://www.fuzetsu.com/MangaLoader
-// @version    1.11.25
+// @namespace  https://github.com/fuzetsu/manga-loader
+// @version    1.11.29
 // @description  Support for over 70 sites! Loads manga chapter into one page in a long strip format, supports switching chapters, minimal script with no dependencies, easy to implement new sites, loads quickly and works on mobile devices through bookmarklet
 // @copyright  2016+, fuzetsu
 // @noframes
@@ -136,7 +136,7 @@ var scriptName = 'Manga Loader';
 var pageTitle = document.title;
 
 var IMAGES = {
-  refresh_large: 'data:image/svg+xml;charset=utf-8,<svg width="1792" height="1792" viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg"><path d="M1639 1056q0 5-1 7-64 268-268 434.5t-478 166.5q-146 0-282.5-55t-243.5-157l-129 129q-19 19-45 19t-45-19-19-45v-448q0-26 19-45t45-19h448q26 0 45 19t19 45-19 45l-137 137q71 66 161 102t187 36q134 0 250-65t186-179q11-17 53-117 8-23 30-23h192q13 0 22.5 9.5t9.5 22.5zm25-800v448q0 26-19 45t-45 19h-448q-26 0-45-19t-19-45 19-45l138-138q-148-137-349-137-134 0-250 65t-186 179q-11 17-53 117-8 23-30 23h-199q-13 0-22.5-9.5t-9.5-22.5v-7q65-268 270-434.5t480-166.5q146 0 284 55.5t245 156.5l130-129q19-19 45-19t45 19 19 45z" fill="#fff"/></svg>'
+  refresh_large: 'data:image/svg+xml;charset=utf-8,<svg width="1792" height="1792" viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg"><path d="M1639 1056q0 5-1 7-64 268-268 434.5t-478 166.5q-146 0-282.5-55t-243.5-157l-129 129q-19 19-45 19t-45-19-19-45v-448q0-26 19-45t45-19h448q26 0 45 19t19 45-19 45l-137 137q71 66 161 102t187 36q134 0 250-65t186-179q11-17 53-117 8-23 30-23h192q13 0 22.5 9.5t9.5 22.5zm25-800v448q0 26-19 45t-45 19h-448q-26 0-45-19t-19-45 19-45l138-138q-148-137-349-137-134 0-250 65t-186 179q-11 17-53 117-8 23-30 23h-199q-13 0-22.5-9.5t-9.5-22.5v-7q65-268 270-434.5t480-166.5q146 0 284 55.5t245 156.5l130-129q19-19 45-19t45 19 19 45z" /></svg>'
 };
 
 // reusable functions to insert in implementations
@@ -518,7 +518,7 @@ var implementations = [{
   img: '#divImage img',
   next: '#divImage img',
   numpages: function() {
-    return W.lstImages.length;
+    return (W.lstOLA || W.lstImages).length;
   },
   curpage: function() {
     if(getEls('#divImage img').length > 1) {
@@ -530,7 +530,7 @@ var implementations = [{
   nextchap: '#selectChapter, .selectChapter',
   prevchap: '#selectChapter, .selectChapter',
   pages: function(url, num, cb, ex) {
-    cb(W.lstImages[num - 1], num);
+    cb((W.lstOLA || W.lstImages)[num - 1], num);
   }
 }, {
   name: 'the-spectrum-scans',
@@ -2381,6 +2381,3 @@ W.document.addEventListener('DOMContentLoaded', function(e) {
   }
 });
 MLoaderLoadImps(implementations);
-
-
-

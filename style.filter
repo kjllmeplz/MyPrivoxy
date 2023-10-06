@@ -663,7 +663,7 @@ FILTER: GoogleHestiaStyle
 s†(<\!-- END INJECTION2 -->)†<style>\n\
 img\#hplogo {\n\
 box-sizing: border-box;\n\
-background: url("https://config.privoxy.org/user-manual/hestia2-PJM_zps2ag0zzve.gif") \
+background: url("https://config.privoxy.org/user-manual/hestia.gif") \
 center no-repeat !important; /* Source image : http://www.pixiv.net/member.php?id=1297105 */\n\
 padding-left: 521px;\n\
 bottom: 155px;\n\
@@ -674,22 +674,22 @@ margin: auto;\n\
 }\n\
 \#hplogo {text-indent: -9000px !important;white-space: nowrap;}\n\
 \#gt-src-wrap {\n\
-background: url("https://config.privoxy.org/user-manual/hestia-PJM-v3_zpsmbschdvp.gif") \
+background: url("https://config.privoxy.org/user-manual/hestia-PJM.gif") \
 \#ffa500 20% 1% no-repeat;\n\
 background-attachment: fixed;\n\
 }\n\
 #textarea { color:\#fff;}\n\
 #  .mw {\n\
-#background: url("https://localhost:8091/Source/Images/hestia-PJM-v3_zpsmbschdvp.gif") 80% 100% no-repeat;\n\
+#background: url("https://localhost:8091/Source/Images/hestia-PJM.gif") 80% 100% no-repeat;\n\
 #background-attachment: fixed;\n\
 #}\n\
 \#logo img {\n\
-background: url("https://config.privoxy.org/user-manual/hestia-PJM-logo-v2_zps5xt3conn.gif") \
+background: url("https://config.privoxy.org/user-manual/hestia-PJM.gif") \
 17% 13% no-repeat !important;\n\
 }\n\
 div\#hplogo {\n\
 box-sizing: border-box;\n\
-background: url("https://config.privoxy.org/user-manual/hestia2-PJM_zps2ag0zzve.gif") \
+background: url("https://config.privoxy.org/user-manual/hestia.gif") \
 center no-repeat !important;\n\
 padding-left: 521px;\n\
 bottom: 155px;\n\
@@ -2064,5 +2064,3 @@ a._5bv4::after{background-position:-25px -20px!important}\n\
 ._6z- .uiHeaderNav{background-image:url('data:image/gif;base64,R0lGODlhAwACAIAAAJ5CQgAAACH5BAAAAAAALAAAAAADAAIAAAIChF8AOw==')!important;background-repeat:repeat-x!important}\n\
 \n\
 </style>\n$1†i
-
-FILTER: Facebookstyle3

@@ -1,44 +1,163 @@
-#-------------------------------------------------------
-#---------------------------------------
+#----------------------------------------------------------------------------
+#------------------------------------------------------
 # Initialize
 {{alias}}
-+bypass    = -crunch-incoming-cookies -crunch-outgoing-cookies -filter -fast-redirects -hide-referer	
-+bypassall = -block -crunch-incoming-cookies -crunch-outgoing-cookies -filter -fast-redirects -hide-referer \
-	     -server-header-tagger{content-type} -change-x-forwarded-for{block} -client-header-tagger{css-requests} \
-             -client-header-tagger{image-requests} -client-header-tagger{range-requests} -set-image-blocker{blank} -hide-from-header{block}
++fragile    = -crunch-incoming-cookies -crunch-outgoing-cookies -filter -fast-redirects -hide-referer -prevent-compression \
+	      -hide-from-header{block} -change-x-forwarded-for{block} -hide-referrer{conditional-block}
 
-#---------------------------------------
-# +
++bypass     = -https-inspection -crunch-incoming-cookies -crunch-outgoing-cookies -filter -fast-redirects -hide-referer -prevent-compression \
+	      -hide-from-header{block} -change-x-forwarded-for{block} -hide-referrer{conditional-block}
 
-{-filter}
-/.*?\.css
++notagger   = -server-header-tagger{content-type} -server-header-tagger{content-length} -client-header-tagger{css-requests} \
+	      -client-header-tagger{image-requests} -client-header-tagger{range-requests} -client-header-tagger{maximum-domain-length}
+
+#----------------------------------------------------------------------------
+# Sections that modify the action settings based on tags.
+
+#-------------------------------------------------------
+# Depends on +client-header-tagger{image-requests}
+{ \
+-handle-as-empty-document \
++handle-as-image \
+-hide-referer{forge} \
+-filter \
+-prevent-compression \
+}
+TAG:^IMAGE-REQUEST$
+
+#-------------------------------------------------------
+# Depends on +client-header-tagger{css-requests}
+{ \
++handle-as-empty-document \
+-handle-as-image \
+-filter \
+-prevent-compression \
+}
+TAG:^CSS-REQUEST$
+
+#-------------------------------------------------------
+# Depends on +client-header-tagger{range-requests}
+{ \
+-filter \
+-deanimate-gifs \
+-prevent-compression \
+}
+TAG:^RANGE-REQUEST$
+
+#-------------------------------------------------------
+# Depends on client type tagger
+{ \
+-filter \
+-hide-referer{forge} \
+-prevent-compression \
+}
+TAG:^application/font
+TAG:^application/(x-)?font
+TAG:^application/json
+TAG:^text/xml
+TAG:^text/css
+TAG:^image/
+
+#----------------------------------------------------------------------------
+# Sections that modify the action settings based on URL.
+
+#-------------------------------------------------------
+# No filter and compression
+{ \
+-filter \
+-prevent-compression \
+}
 /.*?\.dtd
 /.*?\.xsd
-/.*?\.json
-TAG:^text/css
-TAG:^text/xml
-TAG:^application/json
-TAG:^application/octet-stream
-TAG:^application/(x-)?font
-TAG:^video
-TAG:^IMAGE-REQUEST$
-TAG:^CSS-REQUEST$
-TAG:^RANGE-REQUEST$
-.cvs.
 /.*(cvs(view|web)|viewcvs)
-/.*(jpg|png)$
-.svn.
-.websvn.
 /(.*/)?svn/
-.youtube.com/.*?frags=comments
-static.xx.fbcdn.net/rsrc.php/.*?\.(css|js)$
-.ytimg.com/sb/.*?/storyboard
-.embedly.com/widgets/
-.sublightnovel.com
+liveupdate.symantec.com
+liveupdate.liveupdatesymantec.com
+liveupdate.symantecliveupdate.com
+.bookmarklets.com
+.squarefree.com/bookmarklets/
+swquery.apple.com
+swscan.apple.com
+.speakeasy.net/\d+k
+.debian.org
+bugzilla.
+.tldp.org
+webmail.
+.wiki*.
+.*wiki.
+#/.*wiki/
+.wiktionary.org/
+maps.google.
+.google.com/(calendar|reader)
+code.
+developer.
+.mozdev.org
+.mozilla.org
+.perl.org
+.cpan.org
+.webdeveloper.com
+.ibm.com/developerworks
+.apache.org/docs
+.comptechdoc.org
+.webmonkey.com
+.webreference.com
+docs.sun.com
+java.sun.com
+.thescripts.com
+.php.net
+.phpdeveloper.org
+.oreillynet.com/pub
+.devshed.com
+.htmlgoodies.com
+.javascript.com
+javascript.internet.com
+.w3schools.com
+.devguru.com
+javascriptkit.com
+.xulplanet.com
+.perl.com/language/newdocs
+.freebsd.org
+.watson.org
+.netbsd.org
+.openbsd.org
+.dragonflybsd.org
+.freedesktop.org
+.gnu.org
+.fedoraproject.org
+.userscripts.org
+/(.*/)?flyspray/
+/(.*/)?mail(man|archive|inglists?)/
+bugs.
+quoka.de
+.hdslb.com/bfs/.*?\.(css|js)$
+.mangadex.org/_nuxt/
 
-{+bypass}
-#MS
+
+# For privoxy only
+{ \
+-filter \
+-prevent-compression \
+-hide-referer{forge} \
+}
+.privoxy.org
+
+#--------------------------------------------------------
+# Alias's time
+
+# No tag
+{+notagger}
+#
+.phucnx.name.vn
+
+# Fragile with no filter https
+{+fragile -https-inspection}
+# Tag
+TAG:^video/
+TAG:^application/octet-stream
+/.*?\.(ts|m3u8|mp4|mkv|woff2)$
+# Microsoft
 otf.msn.com
+.windowsupdate.com
 .microsoft.com
 .microsoft.net
 .1drive.com
@@ -52,59 +171,173 @@ services.msn.com
 .livefilestore.com
 .xboxlive.com
 .platform.bing.com
-.bing.com/speech_render.*?
-clientlogin.cdn.skype.com
-.vo.llnwd.net/hls/
-.outlook.com/Microsoft-Server-ActiveSync?
+.clientlogin.cdn.skype.com
 eas.outlook.com
-.trouter.io/socket.io/
-.apps.skype.com/comscore/index.html\?event=Message*?
+.mail.onmicrosoft.com
 .tiles.virtualearth.net
+edge.microsoft.com
 outlook.office.com
-.skype.com/ui/.*/upgrade
+outlook.office365.com
+outlook.live.com
+.cdn.office.net
 activity.windows.com
-.skype.com/socket.io/
-#GG
+login.live.com
+.last.fm
+adfs.fpt.com.vn
+# Google
+apis.google.com
+.googleusercontent.com
+.client*.google.com
 chrome.google.com
-clients*.google.com
 drive.google.com
 mail.google.com
 accounts.google.com
 docs.google.com
+keep.google.com
+ogs.google.com
 fonts.google.com
+play.google.com
+pay.google.com
+payments.google.com
+.cloud.google.com
+fonts.gstatic.com
+meet.google.com
+.googleapis.com
 i.ytimg.com
 .twimg.com
-fonts.googleapis.com/css\?
-.gstatic.com/recaptcha/
-.google.com/carddav/
-.googleusercontent.com/caldav/
-.youtube.com/.*?frags=comments
-.googleapis.com
-keep.google.com
-*.client*.google.com
-ogs.google.com
-play.google.com
-fonts.gstatic.com
-.gstatic.com/keep/
-.youtube.com/live_chat/
-# FB
-.facebook.com/ajax/pagelet/
-.messenger.com/login/
-#OT
-regex101.com
+.ggpht.com
+# Others
+addons.mozilla.org
+addons.cdn.mozilla.net
+#regex101.com
+.python.org
+pypi.org
+.pythonhosted.org
 sync.services.mozilla.com
 sync.opera.com
 .paypal.com
 .ebank.tpb.vn
+.tpb.vn
 .vietcombank.com.vn
-.audioscrobbler.com
 .contrejour.ie
-kjllmeplz.wordpress.com
-kjllmeplz.files.wordpress.com
-.xml.weather.com/weather/
-mail.fpt.com.vn
 checkip.dyndns.org
+.steamcontent.com
+.steampowered.com
+steampipe.akamaized.net
+edge-chat.facebook.com
+chat.mixer.com
+chat.bilibili.com
+usher.ttvnw.net
+irc-ws.chat.twitch.tv
+livecdn.fptplay.net
+socketio.fptplay.net
+gist.github.com
+github.com
+.gitlab.com
+.gitlab-static.net
+*-auth.github.com
+.wss.redditmedia.com
+storage.fshare.vn
+cf*-scorebot.hltv.org
+dev1.notebook-check.com
+steam.apac.*.com
+.discordapp.com
+.discord.gg
+forums.e-hentai.org
+api.windscribe.com
+.audioscrobbler.com
+.hls.ttvnw.net
+*-dal.mixerusercontent.com
+.pavietnam.vn
+ton.smf1.twitter.com
+api.twitter.com
+imagepi.otakuscan.net
+.support.sap.com
+.pximg.net
+.sync.services.mozilla.com
+.accounts.firefox.com
+content-signature-*.cdn.mozilla.net
+open.spotify.com
+gae-dealer.spotify.com
+.privoxy.org
+.mega.nz
+.static.mega.co.nz
+.oraclecloud.com
+pubsub-edge.twitch.tv
+static.xx.fbcdn.net
+# GBF
+gbf-raidfinder.aikats.us
+granblue-raidfinder.herokuapp.com
+event-api.analytics.mbga.jp
+.granbluefantasy.jp
+.mobage.jp
+# Socket
+chat-ws.shopee.vn
+seller-push-ws.shopee.vn
+constellation.mixer.com
+# Video
+.googlevideo.com
+videoplayback.sohatv.vn
+kms.sohatv.vn
+twistcdn.bunny.sh
+.cdn.bunny.sh
+video.*.fbcdn.net
+video-*.*.fbcdn.net
+video.*.*.fbcdn.net
+scontent.*.fna.fbcdn.net
+videocdn.mixer.com
+video.mixer.com
+.videosvc.mixer.com
+uploads.mixer.com
+*-cdn.jtvnw.net
+video.twimg.com
+upos-hz-*.akamaized.net
+.dmc.nico
+.live*.nicovideo.jp
+eyes.nasa.gov
+.nflxvideo.net
+.nflxso.net
+loadbalance.manga123.net
+.zalo.me
+.bachngocsach.com
+.sponsor.ajay.app
+# Hana
+hana:8200
+.hana.ondemand.com
+# Personal
+.phucnx.name.vn
+my.contabo.com
+
+# Patterns, so no SSL
+{+fragile}
+# Type
+TAG:^SOCKET-REQUEST$
+# Url
+.bing.com/speech_render.*?
+.vo.llnwd.net/hls/
+.outlook.com/Microsoft-Server-ActiveSync?
+.trouter.io/socket.io/
+.apps.skype.com/comscore/index.html\?event=Message*?
+.skype.com/ui/.*/upgrade
+.skype.com/socket.io/
+fonts.googleapis.com/css\?
+.google.com/js/bg/
+.google.com/recaptcha/
+.gstatic.com/recaptcha/
+.google.com/carddav/
+contacts.google.com/widget/
+.youtube.com/.*?frags=comments
+.youtube.com/comment_service_ajax?
+.gstatic.com/keep/
+.youtube.com/live_chat/
+.youtube.com/live_chat?
+.facebook.com/ajax/pagelet/
+.facebook.com/ajax/bnzai?
+.messenger.com/login/
+.xml.weather.com/weather/
 .githubusercontent.com/kjllmeplz/.*?\.(gif|GIF|jpg|js)$
+i.blogtruyen.com/.*?\.(gif|jpg|png)$
+.truyenmot.xyz/data/images/
 .allmusic.com/search/
 .last.fm/music/.*?\+wiki$
 .search.dongting.com/song/search/
@@ -112,58 +345,34 @@ checkip.dyndns.org
 .lp.music.ttpod.com/lrc/down\?lrcid
 .ttlrcct.qianqian.com/dll/
 .music.163.com/api/
-forums.e-hentai.org
-.steamcontent.com
-home.scpd.live/client/
-fpt.com.vn/AutoDiscover/
-.dsvn.vn
-.muachung.vn/.*?act=cart
-.possession.tokyo
-.fptcloud.mail.onmicrosoft.com/AutoDiscover/
-.steampowered.com
-api.windscribe.com
 .bilibili.com/v/flashplay/
-.nocookie.net
 disqus.com/embed/comments/
-.chat.twitch.tv
-usher.ttvnw.net
-id.g2a.com
-irc-ws.chat.twitch.tv
-livecdn.fptplay.net
-socketio.fptplay.net
 .fptplay.vn/show/
-gist.github.com
 .poperblocker.com/view/update
-events.vungtv.net
-events.phimhoangu.net
-.wss.redditmedia.com
-.insight.fis.vn
-.discordapp.com
-gbf-raidfinder.aikats.us
-granblue-raidfinder.herokuapp.com
-event-api.analytics.mbga.jp
-gbf.wiki
-.lhscanlation.club/images/
-.vuighe.net/api/
-storage.fshare.vn
-mangadex.org/data/
-imageinstant.com/.*?\.(gif|GIF|jpg|js)$
-dev1.notebook-check.com
+hatde.tv/desktop/assets/embed/socketcluster/
 .hltv.org/socket.io/
+mixer.com/_latest/
+static.xx.fbcdn.net/rsrc.php/.*?\.(css|js)$
+.ytimg.com/sb/.*?/storyboard
+.shopee.vn/api/v.*?/
+pibook.vn/action_pro.php?
+oauth.reddit.com/api/jail/
+gateway.reddit.com/desktopapi/v1/subreddits/
+api.bilibili.com/x/space/
+.spotify.com/playlist/
+.spotify.com/track-playback/
+.spotify.com/connect-state/
+.twitch.tv/oauth2/
+.twitchcdn.net/assets/
+api.bilibili.com/x/
+voz.vn/cdn-cgi/challenge-platform/
 
-{+bypassall}
-.privoxy.org
-p.p
-.googlevideo.
-.sacombank.com.vn
-.google.com/recaptcha/
-.google.com/js/bg/
-.sap.com
-chat.garena.tv
-steampipe.akamaized.net
-steam.apac.*.com
-/socketcluster/
-.granbluefantasy.jp
-.mobage.jp
-.mbga.jp
-203.104.248.5
+
+# Bypass all
+{+bypass}
+# Local
+192.168.1.1
+192.168.1.111
+192.168.13.1
+# PowerTunner
+powertunnelmonitor13.info

@@ -1,582 +1,1369 @@
 // ==UserScript==
-// @name        Bypass YouTube age verification Improved
-// @id          DelvinFox.Userscript.Bypass-YouTube-age-verification
-// @namespace   delvin@userscripts.org
-// @description A script that bypasses YouTube age verification without logging in.
-// @author      DelvinFox, Volkan K.
-// @license     GNU General Public License version 3 or any later version; https://www.gnu.org/licenses/gpl-3.0.html
-// @copyright   2011 DelvinFox, 2012-2017+ Volkan K.
-// @homepageURL https://greasyfork.org/en/scripts/3848-bypass-youtube-age-verification-improved
-// @supportURL  https://greasyfork.org/en/scripts/3848-bypass-youtube-age-verification-improved/feedback
-// @version     4.6
-// @domain      youtube.com
-// @domain      www.youtube.com
-// @include     http://youtube.com/*
-// @include     http://www.youtube.com/*
-// @include     https://youtube.com/*
-// @include     https://www.youtube.com/*
-// @grant 		unsafeWindow
-// @grant 		GM_xmlhttpRequest
-// @grant 		GM_registerMenuCommand
-// @grant 		GM_addStyle
-// @require 	https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js
-// @require 	https://cdnjs.cloudflare.com/ajax/libs/js-url/2.0.2/url.min.js
-// @require 	https://cdn.jsdelivr.net/phpjs/0.1/xml/utf8_decode.js
-// @run-at 		document-end
+// @name            Simple YouTube Age Restriction Bypass
+// @description     Watch age restricted videos on YouTube without login and without age verification :)
+// @description:de  Schaue YouTube Videos mit Altersbeschränkungen ohne Anmeldung und ohne dein Alter zu bestätigen :)
+// @description:fr  Regardez des vidéos YouTube avec des restrictions d'âge sans vous inscrire et sans confirmer votre âge :)
+// @description:it  Guarda i video con restrizioni di età su YouTube senza login e senza verifica dell'età :)
+// @version         2.5.2
+// @author          Zerody (https://github.com/zerodytrash)
+// @namespace       https://github.com/zerodytrash/Simple-YouTube-Age-Restriction-Bypass/
+// @supportURL      https://github.com/zerodytrash/Simple-YouTube-Age-Restriction-Bypass/issues
+// @license         MIT
+// @match           https://www.youtube.com/*
+// @match           https://m.youtube.com/*
+// @match           https://www.youtube-nocookie.com/*
+// @match           https://music.youtube.com/*
+// @grant           none
+// @run-at          document-start
+// @compatible      chrome Chrome + Tampermonkey or Violentmonkey
+// @compatible      firefox Firefox + Greasemonkey or Tampermonkey or Violentmonkey
+// @compatible      opera Opera + Tampermonkey or Violentmonkey
+// @compatible      edge Edge + Tampermonkey or Violentmonkey
+// @compatible      safari Safari + Tampermonkey or Violentmonkey
 // ==/UserScript==
 
-/* #################### SETTINGS START #################### */
-var yt_autostart = 1; // 1= enable autoplay, 0= disable autoplay. only for SWFobject inclusions. (embed)
-var yt_showrelated = 1; // 1=enable related videos, 0=disable related videos. only for SWFobject inclusions. (embed)
-var bypass_method = 3;
-// 1 = Googlebot useragent method (use GM_xmlhttpRequest to get player and replace current page)
-// 2 = SWFobject inclusion method (call http://youtube.com/v/VIDEO_ID SWF object from the current page)
-// 3 = Get embed variables and load player using these variables
-var force_html5 = 0;
-// 0= use HTML5 if HTMLVideoElement is supported (default)
-// 1= force HTML5 player
-var debug_internal = 1; // 1=enable debug , 0 =disable debug
-var disable_material = 0; // 1=disable polymer , 0=dont disable.
-var disable_spf = 1; // disable Red Bar aka SPF
-// INTERNALS
-var please_no_more_action = false;
-var base_tag_needed = false;
-var url=null;
-/* #################### SETTINGS END #################### */
+/*
+    This is a transpiled version to achieve a clean code base and better browser compatibility.
+	
+    You can find the nicely readable source code at https://github.com/zerodytrash/Simple-YouTube-Age-Restriction-Bypass
+*/
 
-this.$ = this.jQuery = jQuery.noConflict(true);
-
-var bypass_method_original=bypass_method;
-
-function debugLog(message) {
-	if (debug_internal==1) {
-		console.log("USER-SCRIPT YT-BYPASS | " + message);
-	}
-}
-
-function create_world(){
-	debugLog("create_world function called");
-	please_no_more_action = false;
-	base_tag_needed = false;
-	bypass_method = bypass_method_original;
-	if ( !(/watch/i.test(window.location)) ) { // this is not a video page?
-		debugLog("this is not a video page?");
-		bypass_method = 1;
-	}
-	if ( $( "a[data-sessionlink*='feature=private_video']" ).length > 0 ) { // this is private video? we can not access private videos.
-		debugLog("this is private video? we can not access private videos.");
-		bypass_method = 0;
-		please_no_more_action = true;
-	}
-	var gm_page_changed = $('meta[name="GM_PAGE_CHANGED"]').attr("content");
-	if (gm_page_changed == "YES"){
-		please_no_more_action = true;
-		debugLog("we already processed this page, it shouldn't be processed again."); // for debugging only.
-	}
-
-	if ( window.location.pathname.match("/verify_controversy") ) {
-		please_no_more_action = true;
-		if ( ignorecont=document.getElementById('ignorecont') ) {
-			ignorecont.checked=true;
-			ignorecont.form.submit();
-		} 
-		else if ( verify_actions=document.getElementById('verify-actions') ) {
-			buttons=verify_actions.getElementsByTagName('button');
-			for (var i=0;i<buttons.length;i++) {
-				if ( buttons[i].getAttribute("type")=="submit" ) {
-					buttons[i].click();
-				}
-			}
-		}
-	}
-
-	var match_next_url = window.location.search.match( /[^?&]*next_url=([^&]*)/ );
-	if (match_next_url!=null){
-		var base_tag_needed = true;
-		var url = decodeURIComponent( match_next_url[1] );
-		if ( (typeof please_no_more_action == "undefined") || (please_no_more_action != true) ){
-			var ref = document.referrer;
-			if (ref.match(/^https?:\/\/([^\/]+\.)?youtube\.com(\/|$)/i) || (window.url("?wait_a_minute")=="YES" || window.url("?wait_a_minute",url)=="YES") ) { // we don't want infinite loop. in case YT redirects us back to verify page.
-				debugLog("Came from YouTube. won't redirect!"); // for debugging
-			} else { 
-				// notice: it re-executes the script when we replace the page. WTF?!?
-				if ( is_it_bypass_page() ) { // thats why we will triple-check. run the shit-detector..
-					if (window.url('query',url)){
-						window.location.assign(url+'&wait_a_minute=YES');
-					} else {
-						window.location.assign(url+'?wait_a_minute=YES');
-					}
-					please_no_more_action = true;
-				}
-			}
-		}
-	}
-}
-
-function worker_html_create( url ) {
-	debugLog("worker_html_create function called with url ="+url);
-	var VIDEO_ID=get_video_id_from_yturl(url);
-	if ( jQuery( "[data-videoid='"+VIDEO_ID+"']" ).length>0 ) {
-		return true;
-	}
-	jQuery( "iframe#ytplayer, embed#movie_player_neo" ).remove();
-	var videoElement = document.createElement('video');
-	var videoCompatible = videoElement && videoElement.canPlayType;
-	if ( (force_html5==1) || (videoCompatible) ) {
-		var use_html5 = true;
-	} else {
-		var use_html5 = false;
-	}
-	if ($('#error-screen').length > 0) {
-		//alert("smth"); // are we running?
-		$('#error-screen').children().hide();
-		var mytarget_dom_node=$("#error-screen").css('padding', '0').append('<div id="player-api_neo"></div>')[0];
-		//$("#top #player").empty().width($("#player.skeleton .player-api").width()).height($("#player.skeleton .player-api").height()).attr("id", "player-api_neo");
-		dont_play_with_class=true;
-	}else if ($('#player-api').length > 0) {
-		var mytarget_dom_node=document.getElementById('player-api');
-		$("#player-api").attr("id", "player-api_neo");
-	} else if ($('#player-unavailable').length > 0) {
-		var mytarget_dom_node=document.getElementById('player-unavailable');
-		$("#player-unavailable").attr("id", "player-api_neo");
-	} 
-	if (mytarget_dom_node == null) { // we don't have ready space for player, lets use verify section
-		var mytarget_dom_node=document.getElementById('verify');
-		//mytarget_dom_node.className += " " + 'player-height player-width';
-		$("#verify").attr("id", "player-api_neo");
-		$('#player-api_neo').css('width', '');
-		$("#player-api_neo").css("margin-top","1em");
-		$("#player-api_neo").css("margin-left","auto");
-		$("#player-api_neo").css("margin-right","auto");
-	} 
-	$('#player-unavailable, #verify').empty().addClass("hid").hide();
-	$("#player-api_neo").removeClass("player-unavailable hid off-screen-target");
-	if (typeof dont_play_with_class == "undefined") {
-		$("#player-api_neo").addClass("player-height player-width player-api");
-	}
-	while (mytarget_dom_node.firstChild) { // clear error messages etc
-		mytarget_dom_node.removeChild(mytarget_dom_node.firstChild);
-	}
-	var yt_src_suffix = '?enablejsapi=1&playerapiid=ytplayer';
-	if (yt_showrelated==0){
-		yt_src_suffix += '&rel=0';
-	} else {
-		yt_src_suffix += '&rel=1';
-	}
-	if (yt_autostart==0){
-		yt_src_suffix += '&autoplay=0';
-	} else {
-		yt_src_suffix += '&autoplay=1';
-	}
-	if ( use_html5 ) {
-		// ADD HTML5 FRAME
-		var yt_src_url = '//www.youtube.com/embed/'+VIDEO_ID + yt_src_suffix + '&html5=1&fs=1';
-		$( mytarget_dom_node ).append('<iframe data-videoid="'+VIDEO_ID+'" id="ytplayer" type="text/html" frameborder="0" height="100%" width="100%" style="overflow:hidden;height:100%;width:100%" src="'+yt_src_url+'" webkitallowfullscreen mozallowfullscreen allowfullscreen />')
-	} else {
-	// ADD DEFAULT FLASH PLAYER
-	var newEmbed = document.createElement("embed"); // create our player
-	newEmbed.setAttribute('name','movie_player_neo');
-	newEmbed.setAttribute('id','movie_player_neo');
-	newEmbed.setAttribute('data-videoid',VIDEO_ID);
-	newEmbed.setAttribute('width','100%');
-	newEmbed.setAttribute('height','100%');
-	newEmbed.setAttribute('wmode','opaque');
-	newEmbed.setAttribute('bgcolor','#000000');
-	newEmbed.setAttribute('allowscriptaccess','always');
-	newEmbed.setAttribute('allowfullscreen','true');
-	var yt_src_url = '//www.youtube.com/v/'+VIDEO_ID + yt_src_suffix;
-	newEmbed.setAttribute('src',yt_src_url); 
-	newEmbed.setAttribute('type','application/x-shockwave-flash');
-	mytarget_dom_node.appendChild(newEmbed);
-	}
-	GM_registerMenuCommand("YT Cinema Mode", function(){
-		if( $('#player-unavailable').length ){
-			$("#page").removeClass("watch-non-stage-mode").addClass("watch-stage-mode");
-			$("#watch7-container").addClass("watch-wide");
-		} else {
-			$("#page").css("background-color","#1b1b1b");
-		}
-		$("#content").addClass("watch-medium watch-multicamera");
-		$("#player").removeClass("watch-small").addClass("watch-medium watch-multicamera");
-		$("#player-api_neo").css("margin-top","0");
-	});
-	check_and_fill_rvs (VIDEO_ID);
-}
-
-function check_and_fill_rvs (VIDEO_ID) {
-	debugLog("check_and_fill_rvs function called with VIDEO_ID ="+VIDEO_ID);
-	if ($('#error-screen').length > 0) {
-		GM_addStyle("ul.video-list {list-style: none !important;}");
-		GM_addStyle(".video-list-item a{position: relative; padding: 0 5px; display: block; overflow: hidden; color: #333}.video-list-item .content-wrapper a{padding: 0}.video-list-item a:hover{background: #fff; text-decoration: none}.yt-tile-default.video-list-item a:hover{background: transparent}.video-list-item a:visited .title{color: #408}.video-list-item a:hover .title{text-decoration: underline}.video-list-item a:visited .video-thumb .img{opacity: .75; filter: alpha(opacity=75)}.video-list-item a:hover .video-thumb .img{opacity: 1; filter: none}.video-list-item .title{display: block; font-size: 1.1666em; font-weight: normal; line-height: 1.2; color: #03c; max-height: 3.6em; margin-bottom: 2px; overflow: hidden; cursor: pointer; cursor: hand}.video-list-item .episodic-item .title{overflow: hidden; white-space: nowrap; word-wrap: normal; -o-text-overflow: ellipsis; text-overflow: ellipsis}.video-list-item .stat{display: block; font-size: .9166em; color: #666; line-height: 1.4em; height: 1.4em; white-space: nowrap}.video-list-item .stat .time-created{margin-left: .25em; padding-left: .5em; border-left: 1px solid #ccc; white-space: nowrap}.video-list-item .mix-playlist .stat{white-space: normal}.video-list-item .stat strong{color: #333}.video-list-item .views{color: #333; font-weight: 500}.video-list-item .alt{float: right; margin-right: 5px}.video-list-item .playlist-video-count{margin-left: 10px}.video-list-item .playlist-video{height: 15px; overflow: hidden}.video-list-item .ux-thumb-wrap .video-count{position: absolute; top: 2px; right: 2px; padding: 2px; background: rgba(0,0,0,.8); color: #fff; font-weight: normal; font-size: 90%; line-height: 1; text-align: center}.video-list-item .ux-thumb-wrap .video-count strong{display: block}.video-grid .video-list-item{float: left; clear: none; width: 116px}.video-grid .video-list-item .video-thumb{float: none; margin: 0}.video-grid .video-list-item .title{width: 100%; max-height: 3.6em; overflow: hidden}.ad-badge-byline{margin-right: 3px}.video-list .video-list-item .title{color: #333; font-size: 14px; font-weight: 500}.video-list .video-list-item .title:hover{text-decoration: underline}.video-list .video-list-item .title:visited{color: #036}.video-list .video-list-item .description,.video-list .video-list-item .stat{color: #767676; font-size: 11px}.video-list .video-list-item .description{line-height: 1.2em; max-height: 2.4em; overflow: hidden}.video-list .video-list-item a.related-channel{padding-left: 61px}.video-list .yt-thumb-64 .yt-thumb-square{background-color: #333}.video-list .related-list-item-compact-movie-vertical-poster a.related-movie{text-align: center}.video-list .related-list-item-compact-movie-vertical-poster .content-wrapper,.video-list .related-list-item-compact-movie-vertical-poster .content-wrapper .content-link{height: 100%}.video-list .movie-data{font-size: 11px; line-height: 1.4em; color: #767676; text-overflow: ellipsis; overflow: hidden}.video-list .movie-data li{white-space: nowrap}.video-list .related-list-item-compact-movie-vertical-poster .movie-data{margin-top: 2px}.video-list .movie-description{margin-top: 4px}.video-list .related-list-item-compact-movie-vertical-poster .movie-description{margin-top: 7px}.video-list .movie-bottom-aligned-badge{position: absolute; bottom: 0; left: 0}.related-list-item .content-wrapper{margin-left: 181px}.related-list-item .content-link{display: block; min-height: 94px; text-decoration: none}.related-list-item .thumb-wrapper{position: absolute; top: 0; margin: 0 5px; width: 168px; height: 94px; overflow: hidden}.related-list-item.related-list-item-compact-movie,.related-list-item.related-list-item-compact-movie .thumb-wrapper{height: 94px}.related-list-item.related-list-item-compact-movie-vertical-poster,.related-list-item.related-list-item-compact-movie-vertical-poster .thumb-wrapper{height: 174px}.related-list-item .thumb-wrapper a{padding: 0}.related-list-item .video-actions{position: absolute; right: -60px; bottom: 2px}.related-list-item .video-time,.related-list-item .video-time-overlay,.related-list-item .video-actions:focus,.related-list-item:hover .video-actions{right: 2px}.related-list-item:hover .video-time,.related-list-item:hover .video-time-overlay{right: -60px}.related-list-item.show-video-time:hover .video-time,.related-list-item.show-video-time:hover .video-time-overlay{right: 2px}.video-list-item .yt-uix-simple-thumb-wrap{float: left; margin: 0 8px 0 0}a:hover .yt-uix-simple-thumb-wrap .video-time,a:hover .yt-uix-simple-thumb-wrap .video-time-overlay{display: none}.video-time,.video-time-overlay{position: absolute; right: 2px; bottom: 2px;}.video-time{margin-top: 0; margin-right: 0; padding: 0 4px; font-weight: 500; font-size: 11px; background-color: #000; color: #fff!important; height: 14px; line-height: 14px; opacity: .75; filter: alpha(opacity=75); display: -moz-inline-stack; vertical-align: top; display: inline-block;}.yt-uix-simple-thumb-wrap{position: relative; overflow: hidden; display: inline-block}#watch7-sidebar .video-list-item:hover .title,#watch7-sidebar .video-list-item:hover .title .yt-deemphasized-text{color: #167ac6; text-decoration: none}.video-list-item a:hover{text-decoration: none}a{text-decoration: none}");
-	}
-	if ($('div#watch7-sidebar-modules div.watch-sidebar-section').length < 1) {
-		$('div#watch7-sidebar-modules, #related').append('<div class="watch-sidebar-section"></div>');
-	}
-	if ($('div.watch-sidebar-section div.watch-sidebar-body').length < 1) {
-		$('div.watch-sidebar-section:first').append('<div class="watch-sidebar-body"></div>');
-	}
-	if ($('ul#watch-related').length < 1) {
-		$('div.watch-sidebar-body:first').append('<ul id="watch-related" class="video-list"></ul>');
-	}
-	var emptyRvs = $("ul#watch-related").filter(function() {
-		return $.trim($(this).text()) === "" && $(this).children().length === 0;
-	});
-
-	if (emptyRvs.length>0 && $("ul#watch-related li").length==0 && $("ytd-compact-video-renderer").length==0){
-		debugLog("we dont have related videos in page source!");
-		if (yt_showrelated!=0){
-		GM_xmlhttpRequest({
-			method: "GET",
-			headers: { 'Referer': 'https://www.youtube.com/', 'X-Requested-With': 'ShockwaveFlash/19.0.0.245' },
-			url: 'http://www.youtube.com/get_video_info?asv=3&hl=en_US&el=embedded&eurl=https%3A%2F%2Fwww.youtube.com%2F&video_id='+VIDEO_ID,
-			onload: function( response ) {
-				if ( response.status == 200 ) {
-					rvs_decoded = loadStringVar("rvs", response.responseText);
-					//rvs_decoded_2 = urldecode(rvs_decoded); // for debugging, do not leave this uncommented, double urldecode breaks some strings.
-					//alert(rvs_decoded_2); /*alert(rvs_decoded);*/ // for debugging
-					if (rvs_decoded!=""){ // I guess we got something, lets continue
-						$.each(rvs_decoded.split(","), function( index, value ) {
-							rv_id=loadStringVar("id", value);
-							rv_time=loadStringVar("length_seconds", value);
-							minutes = Math.floor(rv_time / 60);
-							seconds = rv_time - minutes * 60;
-							rv_time=minutes+":"+(seconds  < 10 ? "0" + seconds : seconds);
-							rv_title=utf8_decode(urldecode(loadStringVar("title", value)));
-							rv_author=utf8_decode(urldecode(loadStringVar("author", value)));
-							if (rv_author==""){rv_author="<i>UnKnown</i>";rv_author_style='display:none;'} else {rv_author_style='';}
-							rv_hits=loadStringVar("view_count", value);
-							if (rv_hits==""){rv_hits="<i>UnKnown</i>";rv_hits_style='display:none;'} else {rv_hits_style='';}
-							// for related playlists
-							rv_vid=loadStringVar("video_id", value);
-							rv_list=loadStringVar("list", value);
-							rv_pl_title=utf8_decode(urldecode(loadStringVar("playlist_title", value)));
-							rv_pl_length=loadStringVar("playlist_length", value);
-							rv_pl_author=utf8_decode(urldecode(loadStringVar("playlist_author", value)));
-							if (rv_pl_author==""){rv_pl_author="<i>UnKnown</i>";rv_pl_author_style='display:none;'} else {rv_pl_author_style='';}
-							rv_html="";
-							if (rv_id!=""){
-								rv_html=""
-+'<li class="video-list-item related-list-item">  <a class=" related-video yt-uix-sessionlink" href="/watch?v='+rv_id+'"><span class="yt-uix-simple-thumb-wrap yt-uix-simple-thumb-related"><img width="120" height="90" src="//i.ytimg.com/vi/'+rv_id+'/default.jpg" aria-hidden="true">'
-+'<span class="video-time">'+rv_time+'</span></span>'
-+'<span title="'+rv_title+'" class="title" dir="ltr">'+rv_title+'</span>'
-+'<span class="stat attribution" style="'+rv_author_style+'"><span data-name="relmfu" class="g-hovercard">by <span class=" g-hovercard">'+rv_author+'</span></span></span>'
-+'<span class="stat view-count" style="'+rv_hits_style+'">'+rv_hits+' views</span></a></li>';
-							} else if (rv_vid!="") {
-								rv_html=""
-+'<li class="video-list-item related-list-item"><a class="related-playlist yt-pl-thumb-link  mix-playlist resumable-list yt-uix-sessionlink" href="/watch?v='+rv_vid+'&amp;list='+rv_list+'">'  
-+'<span class="yt-pl-thumb  is-small"><span class="video-thumb  yt-thumb yt-thumb-120"><span class="yt-thumb-default"><span class="yt-thumb-clip"><img width="120" src="//i.ytimg.com/vi/'+rv_vid+'/default.jpg" alt="" aria-hidden="true"><span class="vertical-align"></span></span></span></span>'
-+'<span class="sidebar"><span class="yt-pl-sidebar-content yt-valign"><span class="yt-valign-container"><span class="formatted-video-count-label"><b>'+rv_pl_length+'</b> videos</span><span class="yt-pl-icon yt-pl-icon-mix yt-sprite"></span></span></span></span>'
-+'<span class="yt-pl-thumb-overlay"><span class="yt-pl-thumb-overlay-content"><span class="play-icon yt-sprite"></span><span class="yt-pl-thumb-overlay-text">Play all</span></span></span></span>'
-+'<span title="'+rv_pl_title+'" class="title" dir="ltr">'+rv_pl_title+'</span><span class="stat attribution" style="'+rv_pl_author_style+'">by '+rv_pl_author+'</span></a></li>';
-							}
-							$( "ul#watch-related" ).append( rv_html );
-						});
-					}
-				}
-			}
-		});
-		}
-	}
-}
-
-function worker_js_create( url ) {
-	debugLog("worker_js_create function called with url ="+url);
- 	var VIDEO_ID=get_video_id_from_yturl(url);
-	if ($('#error-screen').length > 0) {
-		$('#error-screen').css('padding', '0').children().hide();
-		$('#player-container').children().remove();
-		target_node="error-screen";
-	}else if ($('#player-api').length > 0) {
-		$('#player-api').css({'padding': '0','left':'0'}).children().hide();
-		target_node="player-api";
-		$('#player-unavailable').remove();
-	} else if ($('#player-unavailable').length > 0) {
-		$('#player-unavailable').css('padding', '0').children().hide();
-		target_node="player-unavailable";
-	}
-	addScript(document.body, "var ytplayer = ytplayer || {};"
-+"yt.setConfig=function (){ ytplayer.config = {'VIDEO_ID': \""+VIDEO_ID+"\"};"
-+"ytplayer.config['args']={'autoplay':"+yt_autostart+",'rel':"+yt_showrelated+",'c':'WEB_EMBEDDED_PLAYER','el':'embedded','video_id':\""+VIDEO_ID+"\"};}");
-	addScript(document.body, 'ytplayer.load = function() {'
-+'    yt.player.Application.create("'+target_node+'", ytplayer.config);'
-+'    ytplayer.config.loaded = true;'
-+'};'
-+'writeEmbed = function() {'
-+'    ytplayer.load();/*alert("writeEmbed called")*/'
-+'};yt.setConfig();writeEmbed();');
- check_and_fill_rvs (VIDEO_ID);
-}
-
-function worker_http_request( url , base_tag_needed ) {
-	debugLog("worker_http_request function called with url ="+url);
- //alert(url); return false; // for debug
- GM_xmlhttpRequest({
-  method: "GET",
-  headers: {
-   "User-Agent": "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
-  },
-  url: url,
-  onload: function( response ) {
-   if ( response.status == 200 ) {
-    if( response.finalUrl.match( "/verify_controversy" ) ) {
-     window.location.href = url + "&skipcontrinter=1";
-    } else {
-	 result=response.responseText;
-	 result = result.replace(/(<head[^>]*>)([ \t]*)([\r]?[\n]?)/ig, '$1$2$3<meta name="GM_PAGE_CHANGED" content="YES">$3');
-	 if (base_tag_needed && !(/<base /i.test(response.responseText)) && response.finalUrl) {
-     	result = result.replace(/(<head[^>]*>)([ \t]*)([\r]?[\n]?)/ig, '$1$2$3<base href="'+response.finalUrl+'">$3');
-		replace_my_page(result);
-     } else {
-		replace_my_page(result);
-     }
-    }
-   }
-  }
- });
-}
-
-function get_video_id_from_yturl (yturl) {
-	var parser = document.createElement('a');
-	parser.href = yturl;
-	return loadStringVar("v", parser.search);
-}
-
-function loadStringVar (sVar, mystring) {
-  if ( !(/^[&?]/.test(mystring)) ) {
-    mystring="?"+mystring;
-  }
-  return unescape(mystring.replace(new RegExp("^(?:.*[&\\?]" + escape(sVar).replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));
-}
-function loadPageVar (sVar) {
-  return unescape(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + escape(sVar).replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));
-}
- 
-function replace_my_page(resultHTML){
-	unsafeWindow.my_resultHTML=resultHTML;
-	replace_js='document.open( "text/html", "replace" );'+"\r\n"
-	+'document.write(my_resultHTML);'+"\r\n"
-	+'document.close();'+"\r\n";
-	addScript(document.body, replace_js);
-}
-
-function urldecode(str) {
-//       discuss at: http://phpjs.org/functions/urldecode/
-  return decodeURIComponent((str + '')
-    .replace(/%(?![\da-f]{2})/gi, function() {
-      // PHP tolerates poorly formed escape sequences
-      return '%25';
-    })
-    .replace(/\+/g, '%20'));
-}
-
-// Function : addScript()
-// Source: http://userscripts.org/groups/51
-
-function addScript(body, js, link) {
-	if (!body){
-		var body = document.body; 
-	}
-	script = document.createElement('script');
-    if (!body) return;
-    script.type = 'text/javascript';
-	if ( (js=='') && (link!='') ){
-		script.src = link;
-	} else {
-		script.textContent = js;
-	}
-    body.appendChild(script);
-	//return script;
-}
-
-function are_we_on_youtube(url) {
-	if (!(typeof url === 'string' || url instanceof String)){
-		url = window.location.href;
-	}
-	if (url && url.match( /^\/|(https?:\/\/([^\/]+\.)?youtube\.com(\/|$))/i ) ){
-		return true;
-	}
-	return false;
-}
-
-function is_it_bypass_page() {
-	if (document.getElementById( "verify" )) {
-		return true;
-	}
-	if (document.getElementById('watch7-player-age-gate-content')) {
-		return true;
-	}
-	if ($("ytd-button-renderer.ytd-player-error-message-renderer").length>0) {
-		return true;
-	}
-	if (document.getElementsByTagName( "ytd-player-error-message-renderer" ).length>0) {
-		return true;
-	}	
-	return false;
-}
-
-function helloworld(){
-	debugLog("helloworld function called");
-	create_world();
-	jQuery( "a.spf-link" ).removeClass( "spf-link" );
-
-	if( url && are_we_on_youtube(url) && is_it_bypass_page()) {
-		debugLog("DEBUG: SECTION HELLO 1");
-		// notice: it re-executes the script when we replace the page. WTF?!?
-		if ( (typeof please_no_more_action == "undefined") || (please_no_more_action != true) ){
-			if ( bypass_method == 1 ) { // 
-				debugLog("DEBUG: FUNC CALL AT H.1-1");
-				worker_http_request(url, base_tag_needed);
-			} else if ( bypass_method == 2 ) {
-				debugLog("DEBUG: FUNC CALL AT H.1-2");
-				worker_html_create(url);
-			} else { // 3
-				debugLog("DEBUG: FUNC CALL AT H.1-3");
-				worker_js_create(url);
-			}
-			please_no_more_action = true;
-		}
-	} else if ( is_it_bypass_page() ) { 
-		debugLog("DEBUG: SECTION HELLO 2"); debugLog("ytd-player-error-message-renderer="+document.getElementsByTagName( "ytd-player-error-message-renderer" ).length);
-		// notice: it re-executes the script when we replace the page. WTF?!?
-		if ( (typeof please_no_more_action == "undefined") || (please_no_more_action != true) ){
-			if ( bypass_method == 1 ) {
-				debugLog("DEBUG: FUNC CALL AT H.2-1");
-				worker_http_request(window.location.href);
-			} else if ( bypass_method == 2 ) {
-				debugLog("DEBUG: FUNC CALL AT H.2-2");
-				worker_html_create(window.location.href);
-			} else { // 3
-				debugLog("DEBUG: FUNC CALL AT H.2-3");
-				worker_js_create(window.location.href);
-			}
-			please_no_more_action = true;
-		}
-	}
-	// Thanks to Polymer, videos need to be paused manually
-	if ( ($('iframe#ytplayer').length > 0) && !(jQuery('iframe#ytplayer').is(':visible'))){
-		$('iframe#ytplayer')[0].contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
-	}
-	if ( ($('#video-player').length > 0) && !(jQuery('#video-player').is(':visible'))){
-		$('#video-player')[0].pauseVideo();
-	}
-	debugLog("DEBUG: AT HELLOWORLD EXIT");
-
-}
-
-// unwraps the element so we can use its methods freely
-function unwrap(elem) {
-	if (elem) {
-		if ( typeof XPCNativeWrapper === 'function' && typeof XPCNativeWrapper.unwrap === 'function' ) {
-			return XPCNativeWrapper.unwrap(elem);
-		} else if (elem.wrappedJSObject) {
-			return elem.wrappedJSObject;
-		}
-	}
-	return elem;
-}
-
-var uw;
-
-// get the raw window object of the YouTube page
-uw = typeof unsafeWindow !== 'undefined' ? unsafeWindow : unwrap(window);
-
-// disable Red Bar aka SPF
-if (disable_spf==1){
-	uw._spf_state = uw._spf_state || {};
-	uw._spf_state.enabled = false;
-	uw._spf_state.config = uw._spf_state.config || {};
-	uw._spf_state.config['navigate-limit'] = 0;
-	uw._spf_state.config['reload-identifier'] =null;
-	uw.ytspf = uw.ytspf || {};
-	uw.ytspf.enabled = false;
-	uw.ytspf.config = uw.ytspf.config || {};
-	uw.ytspf.config['navigate-limit'] = 0;
-
-	/*disable_spf=function(stateobj,title,url){
-		var a = document.createElement('a');
-		a.href = url;
-		if (window.location.href!=a.href){
-			$('body').fadeOut("normal", function() {
-				$(this).remove();
-			});
-			window.location.assign(url);
-		}
-	}
-	history.pushState=disable_spf;
-	history.replaceState=disable_spf;*/
-	if (typeof ytcfg != "undefined" && typeof ytcfg.data_.EXPERIMENT_FLAGS.pbj_navigate_limit != "undefined") {
-		ytcfg.data_.EXPERIMENT_FLAGS.pbj_navigate_limit=0
-	}
-}
-
-$( window ).load(helloworld);
-window.addEventListener("yt-page-data-updated", helloworld_caller, false);
-window.addEventListener("yt-navigate-start", helloworld_caller, false);
-window.addEventListener("yt-navigate-finish", helloworld_caller, false);
-window.addEventListener("popstate", helloworld_caller, false);
-window.addEventListener("spfdone", helloworld_caller, false);
-window.addEventListener("spfpartdone", helloworld_caller, false);
-helloworld();
-function helloworld_caller() {
-	//setTimeout(helloworld,1000);
-	helloworld();
-}
-
-debugLog("DEBUG: AT EXIT");
-
-function updateQueryStringParameter(uri, key, value) {
-    var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
-    var separator = uri.indexOf('?') !== -1 ? "&" : "?";
-    if (uri.match(re)) {
-        return uri.replace(re, '$1' + key + "=" + value + '$2');
-    } else {
-        return uri + separator + key + "=" + value;
-    }
-}
-
-function start() {
-    var cookie = getPref(),
-        pref = "f6=8";
-    if(cookie === "fIsAlreadySet") {
+(function iife(inject) {
+    // Trick to get around the sandbox restrictions in Greasemonkey (Firefox)
+    // Inject code into the main window if criteria match
+    if (this !== window && inject) {
+        window.eval('(' + iife.toString() + ')();');
         return;
-    } else if(cookie !== "noPref"){
-        for(var i = 0; i < cookie.length; ++i) {
-            pref = pref + "&" + cookie[i].key + "=" + cookie[i].value;
-        }
     }
-    changePref(pref);
-}
-    
-function changePref(values) {
-    var d = new Date();
-    d.setTime(d.getTime() + (100*24*60*60*1000));
-    var expires = "expires="+ d.toUTCString();
-    document.cookie = "PREF=" + values + ";" + expires + ";domain=.youtube.com;hostonly=false;path=/";
-    location.reload();
-}
 
-function getPref() {
-    var cookie = document.cookie,
-        splitC = cookie.split(";");
-    for(var i = 0; i < splitC.length; ++i) {
-        if(splitC[i].trim().indexOf("PREF") === 0) {
-            if(splitC[i].trim().indexOf("f6=8") > -1) {
-                return "fIsAlreadySet";
-            }
-            var c = [],
-                splitValues = splitC[i].substring(5).split("&");
-            for(var k = 0; k < splitValues.length; ++k) {
-                var splitV = splitValues[k].split("=");
-                if(splitV[0] !== "f6") {
-                    var kv = {};
-                    kv.key = splitV[0];
-                    kv.value = splitV[1];
-                    c.push(kv);
+    // Script configuration variables
+    const UNLOCKABLE_PLAYABILITY_STATUSES = ['AGE_VERIFICATION_REQUIRED', 'AGE_CHECK_REQUIRED', 'CONTENT_CHECK_REQUIRED', 'LOGIN_REQUIRED'];
+    const VALID_PLAYABILITY_STATUSES = ['OK', 'LIVE_STREAM_OFFLINE'];
+
+    // These are the proxy servers that are sometimes required to unlock videos with age restrictions.
+    // You can host your own account proxy instance. See https://github.com/zerodytrash/Simple-YouTube-Age-Restriction-Bypass/tree/main/account-proxy
+    // To learn what information is transferred, please read: https://github.com/zerodytrash/Simple-YouTube-Age-Restriction-Bypass#privacy
+    const ACCOUNT_PROXY_SERVER_HOST = 'https://youtube-proxy.zerody.one';
+    const VIDEO_PROXY_SERVER_HOST = 'https://phx.4everproxy.com';
+
+    // User needs to confirm the unlock process on embedded player?
+    let ENABLE_UNLOCK_CONFIRMATION_EMBED = true;
+
+    // Show notification?
+    let ENABLE_UNLOCK_NOTIFICATION = true;
+
+    // Disable content warnings?
+    let SKIP_CONTENT_WARNINGS = true;
+
+    // Some Innertube bypass methods require the following authentication headers of the currently logged in user.
+    const GOOGLE_AUTH_HEADER_NAMES = ['Authorization', 'X-Goog-AuthUser', 'X-Origin'];
+
+    // Whether a thumbnail is blurred can be detected by the following "sqp" parameter values in the thumbnail URL.
+    // Seems to be base64 encoded protobuf objects, see https://stackoverflow.com/a/51203860
+    const THUMBNAIL_BLURRED_SQPS = [
+        '-oaymwEpCOADEI4CSFryq4qpAxsIARUAAAAAGAElAADIQj0AgKJDeAHtAZmZGUI=', // Desktop 480x270
+        '-oaymwEiCOADEI4CSFXyq4qpAxQIARUAAIhCGAFwAcABBu0BmZkZQg==', // Desktop 480x270
+        '-oaymwEiCOgCEMoBSFXyq4qpAxQIARUAAIhCGAFwAcABBu0BZmbmQQ==', // Desktop 360x202
+        '-oaymwEiCNAFEJQDSFXyq4qpAxQIARUAAIhCGAFwAcABBu0BZmZmQg==', // Desktop 720x404
+        '-oaymwEdCNAFEJQDSFryq4qpAw8IARUAAIhCGAHtAWZmZkI=', // Desktop 720x404
+        '-oaymwEdCNACELwBSFryq4qpAw8IARUAAIhCGAHtAT0K10E=', // Desktop 336x188
+        '-oaymwESCMACELQB8quKqQMG7QHMzMxB', // Mobile 320x180
+        '-oaymwESCOADEOgC8quKqQMG7QGZmRlC', // Mobile 480x360
+    ];
+
+    // If the injection is done through the browser extension, this window property is set.
+    // This allows the extension to override the settings that can be set via the extension popup.
+    if (window.SYARB_CONFIG) {
+        function applyConfig(options) {
+            for (const option in options) {
+                switch (option) {
+                    case 'unlockNotification':
+                        ENABLE_UNLOCK_NOTIFICATION = options[option];
+                        break;
+                    case 'unlockConfirmation':
+                        ENABLE_UNLOCK_CONFIRMATION_EMBED = options[option];
+                        break;
+                    case 'skipContentWarnings':
+                        SKIP_CONTENT_WARNINGS = options[option];
+                        break;
                 }
             }
-            return c;
+        }
+
+        // Apply initial extension configuration
+        applyConfig(window.SYARB_CONFIG);
+
+        // Listen for config changes
+        window.addEventListener('SYARB_CONFIG_CHANGE', (e) => applyConfig(e.detail));
+    }
+
+    function attach$4(obj, prop, onCall) {
+        if (!obj || typeof obj[prop] !== 'function') {
+            return;
+        }
+
+        let original = obj[prop];
+
+        obj[prop] = function () {
+            try {
+                onCall(arguments);
+            } catch {}
+            original.apply(this, arguments);
+        };
+    }
+
+    const nativeJSONParse = window.JSON.parse;
+    const nativeXMLHttpRequestOpen = window.XMLHttpRequest.prototype.open;
+
+    const isDesktop = window.location.host !== 'm.youtube.com';
+    const isMusic = window.location.host === 'music.youtube.com';
+    const isEmbed = window.location.pathname.indexOf('/embed/') === 0;
+    const isConfirmed = window.location.search.includes('unlock_confirmed');
+
+    class Deferred {
+        constructor() {
+            return Object.assign(
+                new Promise((resolve, reject) => {
+                    this.resolve = resolve;
+                    this.reject = reject;
+                }),
+                this
+            );
         }
     }
-    return "noPref";
-}
-if (disable_material==1){ start(); }
+
+    function createElement(tagName, options) {
+        const node = document.createElement(tagName);
+        options && Object.assign(node, options);
+        return node;
+    }
+
+    function isObject(obj) {
+        return obj !== null && typeof obj === 'object';
+    }
+
+    function findNestedObjectsByAttributeNames(object, attributeNames) {
+        var results = [];
+
+        // Does the current object match the attribute conditions?
+        if (attributeNames.every((key) => typeof object[key] !== 'undefined')) {
+            results.push(object);
+        }
+
+        // Diggin' deeper for each nested object (recursive)
+        Object.keys(object).forEach((key) => {
+            if (object[key] && typeof object[key] === 'object') {
+                results.push(...findNestedObjectsByAttributeNames(object[key], attributeNames));
+            }
+        });
+
+        return results;
+    }
+
+    function pageLoaded() {
+        if (document.readyState === 'complete') return Promise.resolve();
+
+        const deferred = new Deferred();
+
+        window.addEventListener('load', deferred.resolve, { once: true });
+
+        return deferred;
+    }
+
+    function createDeepCopy(obj) {
+        return nativeJSONParse(JSON.stringify(obj));
+    }
+
+    function getYtcfgValue(name) {
+        var _window$ytcfg;
+        return (_window$ytcfg = window.ytcfg) === null || _window$ytcfg === void 0 ? void 0 : _window$ytcfg.get(name);
+    }
+
+    function getSignatureTimestamp() {
+        return (
+            getYtcfgValue('STS') ||
+            (() => {
+                var _document$querySelect;
+                // STS is missing on embedded player. Retrieve from player base script as fallback...
+                const playerBaseJsPath =
+                    (_document$querySelect = document.querySelector('script[src*="/base.js"]')) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.src;
+
+                if (!playerBaseJsPath) return;
+
+                const xmlhttp = new XMLHttpRequest();
+                xmlhttp.open('GET', playerBaseJsPath, false);
+                xmlhttp.send(null);
+
+                return parseInt(xmlhttp.responseText.match(/signatureTimestamp:([0-9]*)/)[1]);
+            })()
+        );
+    }
+
+    function isUserLoggedIn() {
+        // LOGGED_IN doesn't exist on embedded page, use DELEGATED_SESSION_ID or SESSION_INDEX as fallback
+        if (typeof getYtcfgValue('LOGGED_IN') === 'boolean') return getYtcfgValue('LOGGED_IN');
+        if (typeof getYtcfgValue('DELEGATED_SESSION_ID') === 'string') return true;
+        if (parseInt(getYtcfgValue('SESSION_INDEX')) >= 0) return true;
+
+        return false;
+    }
+
+    function getCurrentVideoStartTime(currentVideoId) {
+        // Check if the URL corresponds to the requested video
+        // This is not the case when the player gets preloaded for the next video in a playlist.
+        if (window.location.href.includes(currentVideoId)) {
+            var _ref;
+            // "t"-param on youtu.be urls
+            // "start"-param on embed player
+            // "time_continue" when clicking "watch on youtube" on embedded player
+            const urlParams = new URLSearchParams(window.location.search);
+            const startTimeString =
+                (_ref = urlParams.get('t') || urlParams.get('start') || urlParams.get('time_continue')) === null || _ref === void 0 ? void 0 : _ref.replace('s', '');
+
+            if (startTimeString && !isNaN(startTimeString)) {
+                return parseInt(startTimeString);
+            }
+        }
+
+        return 0;
+    }
+
+    function setUrlParams(params) {
+        const urlParams = new URLSearchParams(window.location.search);
+        for (const paramName in params) {
+            urlParams.set(paramName, params[paramName]);
+        }
+        window.location.search = urlParams;
+    }
+
+    function waitForElement(elementSelector, timeout) {
+        const deferred = new Deferred();
+
+        const checkDomInterval = setInterval(() => {
+            const elem = document.querySelector(elementSelector);
+            if (elem) {
+                clearInterval(checkDomInterval);
+                deferred.resolve(elem);
+            }
+        }, 100);
+
+        if (timeout) {
+            setTimeout(() => {
+                clearInterval(checkDomInterval);
+                deferred.reject();
+            }, timeout);
+        }
+
+        return deferred;
+    }
+
+    function parseRelativeUrl(url) {
+        if (typeof url !== 'string') {
+            return null;
+        }
+
+        if (url.indexOf('/') === 0) {
+            url = window.location.origin + url;
+        }
+
+        try {
+            return url.indexOf('https://') === 0 ? new window.URL(url) : null;
+        } catch {
+            return null;
+        }
+    }
+
+    const logPrefix = '%cSimple-YouTube-Age-Restriction-Bypass:';
+    const logPrefixStyle = 'background-color: #1e5c85; color: #fff; font-size: 1.2em;';
+    const logSuffix = '\uD83D\uDC1E You can report bugs at: https://github.com/zerodytrash/Simple-YouTube-Age-Restriction-Bypass/issues';
+
+    function error(err, msg) {
+        console.error(logPrefix, logPrefixStyle, msg, err, getYtcfgDebugString(), '\n\n', logSuffix);
+        if (window.SYARB_CONFIG) {
+            window.dispatchEvent(
+                new CustomEvent('SYARB_LOG_ERROR', {
+                    detail: {
+                        message: (msg ? msg + '; ' : '') + (err && err.message ? err.message : ''),
+                        stack: err && err.stack ? err.stack : null,
+                    },
+                })
+            );
+        }
+    }
+
+    function info(msg) {
+        console.info(logPrefix, logPrefixStyle, msg);
+        if (window.SYARB_CONFIG) {
+            window.dispatchEvent(
+                new CustomEvent('SYARB_LOG_INFO', {
+                    detail: {
+                        message: msg,
+                    },
+                })
+            );
+        }
+    }
+
+    function getYtcfgDebugString() {
+        try {
+            return (
+                `InnertubeConfig: ` +
+                `innertubeApiKey: ${getYtcfgValue('INNERTUBE_API_KEY')} ` +
+                `innertubeClientName: ${getYtcfgValue('INNERTUBE_CLIENT_NAME')} ` +
+                `innertubeClientVersion: ${getYtcfgValue('INNERTUBE_CLIENT_VERSION')} ` +
+                `loggedIn: ${getYtcfgValue('LOGGED_IN')} `
+            );
+        } catch (err) {
+            return `Failed to access config: ${err}`;
+        }
+    }
+
+    /**
+     * And here we deal with YouTube's crappy initial data (present in page source) and the problems that occur when intercepting that data.
+     * YouTube has some protections in place that make it difficult to intercept and modify the global ytInitialPlayerResponse variable.
+     * The easiest way would be to set a descriptor on that variable to change the value directly on declaration.
+     * But some adblockers define their own descriptors on the ytInitialPlayerResponse variable, which makes it hard to register another descriptor on it.
+     * As a workaround only the relevant playerResponse property of the ytInitialPlayerResponse variable will be intercepted.
+     * This is achieved by defining a descriptor on the object prototype for that property, which affects any object with a `playerResponse` property.
+     */
+    function attach$3(onInitialData) {
+        interceptObjectProperty('playerResponse', (obj, playerResponse) => {
+            info(`playerResponse property set, contains sidebar: ${!!obj.response}`);
+
+            // The same object also contains the sidebar data and video description
+            if (isObject(obj.response)) onInitialData(obj.response);
+
+            // If the script is executed too late and the bootstrap data has already been processed,
+            // a reload of the player can be forced by creating a deep copy of the object.
+            // This is especially relevant if the userscript manager does not handle the `@run-at document-start` correctly.
+            playerResponse.unlocked = false;
+            onInitialData(playerResponse);
+            return playerResponse.unlocked ? createDeepCopy(playerResponse) : playerResponse;
+        });
+
+        // The global `ytInitialData` variable can be modified on the fly.
+        // It contains search results, sidebar data and meta information
+        // Not really important but fixes https://github.com/zerodytrash/Simple-YouTube-Age-Restriction-Bypass/issues/127
+        window.addEventListener('DOMContentLoaded', () => {
+            if (isObject(window.ytInitialData)) {
+                onInitialData(window.ytInitialData);
+            }
+        });
+    }
+
+    function interceptObjectProperty(prop, onSet) {
+        var _Object$getOwnPropert;
+        // Allow other userscripts to decorate this descriptor, if they do something similar
+        const dataKey = '__SYARB_' + prop;
+        const { get: getter, set: setter } =
+            (_Object$getOwnPropert = Object.getOwnPropertyDescriptor(Object.prototype, prop)) !== null && _Object$getOwnPropert !== void 0
+                ? _Object$getOwnPropert
+                : {
+                      set(value) {
+                          this[dataKey] = value;
+                      },
+                      get() {
+                          return this[dataKey];
+                      },
+                  };
+
+        // Intercept the given property on any object
+        // The assigned attribute value and the context (enclosing object) are passed to the onSet function.
+        Object.defineProperty(Object.prototype, prop, {
+            set(value) {
+                setter.call(this, isObject(value) ? onSet(this, value) : value);
+            },
+            get() {
+                return getter.call(this);
+            },
+            configurable: true,
+        });
+    }
+
+    // Intercept, inspect and modify JSON-based communication to unlock player responses by hijacking the JSON.parse function
+    function attach$2(onJsonDataReceived) {
+        window.JSON.parse = function () {
+            const data = nativeJSONParse.apply(this, arguments);
+            return isObject(data) ? onJsonDataReceived(data) : data;
+        };
+    }
+
+    function attach$1(onRequestCreate) {
+        if (typeof window.Request !== 'function') {
+            return;
+        }
+
+        window.Request = new Proxy(window.Request, {
+            construct(target, args) {
+                const [url, options] = args;
+                try {
+                    const parsedUrl = parseRelativeUrl(url);
+                    const modifiedUrl = onRequestCreate(parsedUrl, options);
+
+                    if (modifiedUrl) {
+                        args[0] = modifiedUrl.toString();
+                    }
+                } catch (err) {
+                    error(err, `Failed to intercept Request()`);
+                }
+
+                return Reflect.construct(...arguments);
+            },
+        });
+    }
+
+    function attach(onXhrOpenCalled) {
+        XMLHttpRequest.prototype.open = function (method, url) {
+            try {
+                let parsedUrl = parseRelativeUrl(url);
+
+                if (parsedUrl) {
+                    const modifiedUrl = onXhrOpenCalled(method, parsedUrl, this);
+
+                    if (modifiedUrl) {
+                        arguments[1] = modifiedUrl.toString();
+                    }
+                }
+            } catch (err) {
+                error(err, `Failed to intercept XMLHttpRequest.open()`);
+            }
+
+            nativeXMLHttpRequestOpen.apply(this, arguments);
+        };
+    }
+
+    function isPlayerObject(parsedData) {
+        return (
+            (parsedData === null || parsedData === void 0 ? void 0 : parsedData.videoDetails) &&
+            (parsedData === null || parsedData === void 0 ? void 0 : parsedData.playabilityStatus)
+        );
+    }
+
+    function isEmbeddedPlayerObject(parsedData) {
+        return typeof (parsedData === null || parsedData === void 0 ? void 0 : parsedData.previewPlayabilityStatus) === 'object';
+    }
+
+    function isAgeRestricted(playabilityStatus) {
+        var _playabilityStatus$er,
+            _playabilityStatus$er2,
+            _playabilityStatus$er3,
+            _playabilityStatus$er4,
+            _playabilityStatus$er5,
+            _playabilityStatus$er6,
+            _playabilityStatus$er7,
+            _playabilityStatus$er8;
+        if (!(playabilityStatus !== null && playabilityStatus !== void 0 && playabilityStatus.status)) return false;
+        if (playabilityStatus.desktopLegacyAgeGateReason) return true;
+        if (UNLOCKABLE_PLAYABILITY_STATUSES.includes(playabilityStatus.status)) return true;
+
+        // Fix to detect age restrictions on embed player
+        // see https://github.com/zerodytrash/Simple-YouTube-Age-Restriction-Bypass/issues/85#issuecomment-946853553
+        return (
+            isEmbed &&
+            ((_playabilityStatus$er = playabilityStatus.errorScreen) === null || _playabilityStatus$er === void 0
+                ? void 0
+                : (_playabilityStatus$er2 = _playabilityStatus$er.playerErrorMessageRenderer) === null || _playabilityStatus$er2 === void 0
+                ? void 0
+                : (_playabilityStatus$er3 = _playabilityStatus$er2.reason) === null || _playabilityStatus$er3 === void 0
+                ? void 0
+                : (_playabilityStatus$er4 = _playabilityStatus$er3.runs) === null || _playabilityStatus$er4 === void 0
+                ? void 0
+                : (_playabilityStatus$er5 = _playabilityStatus$er4.find((x) => x.navigationEndpoint)) === null || _playabilityStatus$er5 === void 0
+                ? void 0
+                : (_playabilityStatus$er6 = _playabilityStatus$er5.navigationEndpoint) === null || _playabilityStatus$er6 === void 0
+                ? void 0
+                : (_playabilityStatus$er7 = _playabilityStatus$er6.urlEndpoint) === null || _playabilityStatus$er7 === void 0
+                ? void 0
+                : (_playabilityStatus$er8 = _playabilityStatus$er7.url) === null || _playabilityStatus$er8 === void 0
+                ? void 0
+                : _playabilityStatus$er8.includes('/2802167'))
+        );
+    }
+
+    function isWatchNextObject(parsedData) {
+        var _parsedData$currentVi, _parsedData$currentVi2;
+        if (
+            !(parsedData !== null && parsedData !== void 0 && parsedData.contents) ||
+            !(
+                parsedData !== null &&
+                parsedData !== void 0 &&
+                (_parsedData$currentVi = parsedData.currentVideoEndpoint) !== null &&
+                _parsedData$currentVi !== void 0 &&
+                (_parsedData$currentVi2 = _parsedData$currentVi.watchEndpoint) !== null &&
+                _parsedData$currentVi2 !== void 0 &&
+                _parsedData$currentVi2.videoId
+            )
+        )
+            return false;
+        return !!parsedData.contents.twoColumnWatchNextResults || !!parsedData.contents.singleColumnWatchNextResults;
+    }
+
+    function isWatchNextSidebarEmpty(parsedData) {
+        var _parsedData$contents2, _parsedData$contents3, _parsedData$contents4, _parsedData$contents5, _content$find;
+        if (isDesktop) {
+            var _parsedData$contents, _parsedData$contents$, _parsedData$contents$2, _parsedData$contents$3;
+            // WEB response layout
+            const result =
+                (_parsedData$contents = parsedData.contents) === null || _parsedData$contents === void 0
+                    ? void 0
+                    : (_parsedData$contents$ = _parsedData$contents.twoColumnWatchNextResults) === null || _parsedData$contents$ === void 0
+                    ? void 0
+                    : (_parsedData$contents$2 = _parsedData$contents$.secondaryResults) === null || _parsedData$contents$2 === void 0
+                    ? void 0
+                    : (_parsedData$contents$3 = _parsedData$contents$2.secondaryResults) === null || _parsedData$contents$3 === void 0
+                    ? void 0
+                    : _parsedData$contents$3.results;
+            return !result;
+        }
+
+        // MWEB response layout
+        const content =
+            (_parsedData$contents2 = parsedData.contents) === null || _parsedData$contents2 === void 0
+                ? void 0
+                : (_parsedData$contents3 = _parsedData$contents2.singleColumnWatchNextResults) === null || _parsedData$contents3 === void 0
+                ? void 0
+                : (_parsedData$contents4 = _parsedData$contents3.results) === null || _parsedData$contents4 === void 0
+                ? void 0
+                : (_parsedData$contents5 = _parsedData$contents4.results) === null || _parsedData$contents5 === void 0
+                ? void 0
+                : _parsedData$contents5.contents;
+        const result =
+            content === null || content === void 0
+                ? void 0
+                : (_content$find = content.find((e) => {
+                      var _e$itemSectionRendere;
+                      return (
+                          ((_e$itemSectionRendere = e.itemSectionRenderer) === null || _e$itemSectionRendere === void 0 ? void 0 : _e$itemSectionRendere.targetId) ===
+                          'watch-next-feed'
+                      );
+                  })) === null || _content$find === void 0
+                ? void 0
+                : _content$find.itemSectionRenderer;
+        return typeof result !== 'object';
+    }
+
+    function isGoogleVideoUrl(url) {
+        return url.host.includes('.googlevideo.com');
+    }
+
+    function isGoogleVideoUnlockRequired(googleVideoUrl, lastProxiedGoogleVideoId) {
+        const urlParams = new URLSearchParams(googleVideoUrl.search);
+        const hasGcrFlag = urlParams.get('gcr');
+        const wasUnlockedByAccountProxy = urlParams.get('id') === lastProxiedGoogleVideoId;
+
+        return hasGcrFlag && wasUnlockedByAccountProxy;
+    }
+
+    function isSearchResult(parsedData) {
+        var _parsedData$contents6, _parsedData$contents7, _parsedData$contents8, _parsedData$onRespons, _parsedData$onRespons2, _parsedData$onRespons3;
+        return (
+            typeof (parsedData === null || parsedData === void 0
+                ? void 0
+                : (_parsedData$contents6 = parsedData.contents) === null || _parsedData$contents6 === void 0
+                ? void 0
+                : _parsedData$contents6.twoColumnSearchResultsRenderer) === 'object' || // Desktop initial results
+            (parsedData === null || parsedData === void 0
+                ? void 0
+                : (_parsedData$contents7 = parsedData.contents) === null || _parsedData$contents7 === void 0
+                ? void 0
+                : (_parsedData$contents8 = _parsedData$contents7.sectionListRenderer) === null || _parsedData$contents8 === void 0
+                ? void 0
+                : _parsedData$contents8.targetId) === 'search-feed' || // Mobile initial results
+            (parsedData === null || parsedData === void 0
+                ? void 0
+                : (_parsedData$onRespons = parsedData.onResponseReceivedCommands) === null || _parsedData$onRespons === void 0
+                ? void 0
+                : (_parsedData$onRespons2 = _parsedData$onRespons.find((x) => x.appendContinuationItemsAction)) === null || _parsedData$onRespons2 === void 0
+                ? void 0
+                : (_parsedData$onRespons3 = _parsedData$onRespons2.appendContinuationItemsAction) === null || _parsedData$onRespons3 === void 0
+                ? void 0
+                : _parsedData$onRespons3.targetId) === 'search-feed' // Desktop & Mobile scroll continuation
+        );
+    }
+
+    var tDesktop = '<tp-yt-paper-toast></tp-yt-paper-toast>\n';
+
+    var tMobile =
+        '<c3-toast>\n    <ytm-notification-action-renderer>\n        <div class="notification-action-response-text"></div>\n    </ytm-notification-action-renderer>\n</c3-toast>\n';
+
+    const template = isDesktop ? tDesktop : tMobile;
+
+    const nToastContainer = createElement('div', { id: 'toast-container', innerHTML: template });
+    const nToast = nToastContainer.querySelector(':scope > *');
+
+    // On YT Music show the toast above the player controls
+    if (isMusic) {
+        nToast.style['margin-bottom'] = '85px';
+    }
+
+    if (!isDesktop) {
+        nToast.nMessage = nToast.querySelector('.notification-action-response-text');
+        nToast.show = (message) => {
+            nToast.nMessage.innerText = message;
+            nToast.setAttribute('dir', 'in');
+            setTimeout(() => {
+                nToast.setAttribute('dir', 'out');
+            }, nToast.duration + 225);
+        };
+    }
+
+    async function show(message) {
+        let duration = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 5;
+        if (!ENABLE_UNLOCK_NOTIFICATION) return;
+        if (isEmbed) return;
+
+        await pageLoaded();
+
+        // Do not show notification when tab is in background
+        if (document.visibilityState === 'hidden') return;
+
+        // Append toast container to DOM, if not already done
+        if (!nToastContainer.isConnected) document.documentElement.append(nToastContainer);
+
+        nToast.duration = duration * 1000;
+        nToast.show(message);
+    }
+
+    var Toast = { show };
+
+    const localStoragePrefix = 'SYARB_';
+
+    function set(key, value) {
+        localStorage.setItem(localStoragePrefix + key, JSON.stringify(value));
+    }
+
+    function get(key) {
+        try {
+            return JSON.parse(localStorage.getItem(localStoragePrefix + key));
+        } catch {
+            return null;
+        }
+    }
+
+    function getPlayer$1(payload, useAuth) {
+        return sendInnertubeRequest('v1/player', payload, useAuth);
+    }
+
+    function getNext$1(payload, useAuth) {
+        return sendInnertubeRequest('v1/next', payload, useAuth);
+    }
+
+    function sendInnertubeRequest(endpoint, payload, useAuth) {
+        const xmlhttp = new XMLHttpRequest();
+        xmlhttp.open('POST', `/youtubei/${endpoint}?key=${getYtcfgValue('INNERTUBE_API_KEY')}&prettyPrint=false`, false);
+
+        if (useAuth && isUserLoggedIn()) {
+            xmlhttp.withCredentials = true;
+            GOOGLE_AUTH_HEADER_NAMES.forEach((headerName) => {
+                xmlhttp.setRequestHeader(headerName, get(headerName));
+            });
+        }
+
+        xmlhttp.send(JSON.stringify(payload));
+        return nativeJSONParse(xmlhttp.responseText);
+    }
+
+    var innertube = {
+        getPlayer: getPlayer$1,
+        getNext: getNext$1,
+    };
+
+    let nextResponseCache = {};
+
+    function getGoogleVideoUrl(originalUrl) {
+        return VIDEO_PROXY_SERVER_HOST + '/direct/' + btoa(originalUrl.toString());
+    }
+
+    function getPlayer(payload) {
+        // Also request the /next response if a later /next request is likely.
+        if (!nextResponseCache[payload.videoId] && !isMusic && !isEmbed) {
+            payload.includeNext = 1;
+        }
+
+        return sendRequest('getPlayer', payload);
+    }
+
+    function getNext(payload) {
+        // Next response already cached? => Return cached content
+        if (nextResponseCache[payload.videoId]) {
+            return nextResponseCache[payload.videoId];
+        }
+
+        return sendRequest('getNext', payload);
+    }
+
+    function sendRequest(endpoint, payload) {
+        const queryParams = new URLSearchParams(payload);
+        const proxyUrl = `${ACCOUNT_PROXY_SERVER_HOST}/${endpoint}?${queryParams}&client=js`;
+
+        try {
+            const xmlhttp = new XMLHttpRequest();
+            xmlhttp.open('GET', proxyUrl, false);
+            xmlhttp.send(null);
+
+            const proxyResponse = nativeJSONParse(xmlhttp.responseText);
+
+            // Mark request as 'proxied'
+            proxyResponse.proxied = true;
+
+            // Put included /next response in the cache
+            if (proxyResponse.nextResponse) {
+                nextResponseCache[payload.videoId] = proxyResponse.nextResponse;
+                delete proxyResponse.nextResponse;
+            }
+
+            return proxyResponse;
+        } catch (err) {
+            error(err, 'Proxy API Error');
+            return { errorMessage: 'Proxy Connection failed' };
+        }
+    }
+
+    var proxy = {
+        getPlayer,
+        getNext,
+        getGoogleVideoUrl,
+    };
+
+    function getUnlockStrategies$1(videoId, reason) {
+        const clientName = getYtcfgValue('INNERTUBE_CLIENT_NAME') || 'WEB';
+        const clientVersion = getYtcfgValue('INNERTUBE_CLIENT_VERSION') || '2.20220203.04.00';
+        const signatureTimestamp = getSignatureTimestamp();
+        const startTimeSecs = getCurrentVideoStartTime(videoId);
+        const hl = getYtcfgValue('HL');
+
+        return [
+            /**
+             * Retrieve the video info by just adding `racyCheckOk` and `contentCheckOk` params
+             * This strategy can be used to bypass content warnings
+             */
+            {
+                name: 'Content Warning Bypass',
+                skip: !reason || !reason.includes('CHECK_REQUIRED'),
+                optionalAuth: true,
+                payload: {
+                    context: {
+                        client: {
+                            clientName: clientName,
+                            clientVersion: clientVersion,
+                            hl,
+                        },
+                    },
+
+                    playbackContext: {
+                        contentPlaybackContext: {
+                            signatureTimestamp,
+                        },
+                    },
+
+                    videoId,
+                    startTimeSecs,
+                    racyCheckOk: true,
+                    contentCheckOk: true,
+                },
+
+                endpoint: innertube,
+            },
+
+            /**
+             * Retrieve the video info by using the TVHTML5 Embedded client
+             * This client has no age restrictions in place (2022-03-28)
+             * See https://github.com/zerodytrash/YouTube-Internal-Clients
+             */
+            {
+                name: 'TV Embedded Player',
+                requiresAuth: false,
+                payload: {
+                    context: {
+                        client: {
+                            clientName: 'TVHTML5_SIMPLY_EMBEDDED_PLAYER',
+                            clientVersion: '2.0',
+                            clientScreen: 'WATCH',
+                            hl,
+                        },
+
+                        thirdParty: {
+                            embedUrl: 'https://www.youtube.com/',
+                        },
+                    },
+
+                    playbackContext: {
+                        contentPlaybackContext: {
+                            signatureTimestamp,
+                        },
+                    },
+
+                    videoId,
+                    startTimeSecs,
+                    racyCheckOk: true,
+                    contentCheckOk: true,
+                },
+
+                endpoint: innertube,
+            },
+
+            /**
+             * Retrieve the video info by using the WEB_CREATOR client in combination with user authentication
+             * Requires that the user is logged in. Can bypass the tightened age verification in the EU.
+             * See https://github.com/yt-dlp/yt-dlp/pull/600
+             */
+            {
+                name: 'Creator + Auth',
+                requiresAuth: true,
+                payload: {
+                    context: {
+                        client: {
+                            clientName: 'WEB_CREATOR',
+                            clientVersion: '1.20210909.07.00',
+                            hl,
+                        },
+                    },
+
+                    playbackContext: {
+                        contentPlaybackContext: {
+                            signatureTimestamp,
+                        },
+                    },
+
+                    videoId,
+                    startTimeSecs,
+                    racyCheckOk: true,
+                    contentCheckOk: true,
+                },
+
+                endpoint: innertube,
+            },
+
+            /**
+             * Retrieve the video info from an account proxy server.
+             * Session cookies of an age-verified Google account are stored on server side.
+             * See https://github.com/zerodytrash/Simple-YouTube-Age-Restriction-Bypass/tree/main/account-proxy
+             */
+            {
+                name: 'Account Proxy',
+                payload: {
+                    videoId,
+                    reason,
+                    clientName,
+                    clientVersion,
+                    signatureTimestamp,
+                    startTimeSecs,
+                    hl,
+                    isEmbed: +isEmbed,
+                    isConfirmed: +isConfirmed,
+                },
+
+                endpoint: proxy,
+            },
+        ];
+    }
+
+    function getUnlockStrategies(videoId, lastPlayerUnlockReason) {
+        const clientName = getYtcfgValue('INNERTUBE_CLIENT_NAME') || 'WEB';
+        const clientVersion = getYtcfgValue('INNERTUBE_CLIENT_VERSION') || '2.20220203.04.00';
+        const hl = getYtcfgValue('HL');
+
+        return [
+            /**
+             * Retrieve the sidebar and video description by just adding `racyCheckOk` and `contentCheckOk` params
+             * This strategy can be used to bypass content warnings
+             */
+            {
+                name: 'Content Warning Bypass',
+                skip: !lastPlayerUnlockReason || !lastPlayerUnlockReason.includes('CHECK_REQUIRED'),
+                optionalAuth: true,
+                payload: {
+                    context: {
+                        client: {
+                            clientName: clientName,
+                            clientVersion: clientVersion,
+                            hl,
+                        },
+                    },
+
+                    videoId,
+                    racyCheckOk: true,
+                    contentCheckOk: true,
+                },
+
+                endpoint: innertube,
+            },
+
+            /**
+             * Retrieve the sidebar and video description from an account proxy server.
+             * Session cookies of an age-verified Google account are stored on server side.
+             * See https://github.com/zerodytrash/Simple-YouTube-Age-Restriction-Bypass/tree/main/account-proxy
+             */
+            {
+                name: 'Account Proxy',
+                payload: {
+                    videoId,
+                    clientName,
+                    clientVersion,
+                    hl,
+                    isEmbed: +isEmbed,
+                    isConfirmed: +isConfirmed,
+                },
+
+                endpoint: proxy,
+            },
+        ];
+    }
+
+    var buttonTemplate =
+        '<div style="margin-top: 15px !important; padding: 3px 10px 3px 10px; margin: 0px auto; background-color: #4d4d4d; width: fit-content; font-size: 1.2em; text-transform: uppercase; border-radius: 3px; cursor: pointer;">\r\n    <div class="button-text"></div>\r\n</div>';
+
+    let buttons = {};
+
+    async function addButton(id, text, backgroundColor, onClick) {
+        const errorScreenElement = await waitForElement('.ytp-error', 2000);
+        const buttonElement = createElement('div', { class: 'button-container', innerHTML: buttonTemplate });
+        buttonElement.getElementsByClassName('button-text')[0].innerText = text;
+
+        if (backgroundColor) {
+            buttonElement.querySelector(':scope > div').style['background-color'] = backgroundColor;
+        }
+
+        if (typeof onClick === 'function') {
+            buttonElement.addEventListener('click', onClick);
+        }
+
+        // Button already attached?
+        if (buttons[id] && buttons[id].isConnected) {
+            return;
+        }
+
+        buttons[id] = buttonElement;
+        errorScreenElement.append(buttonElement);
+    }
+
+    function removeButton(id) {
+        if (buttons[id] && buttons[id].isConnected) {
+            buttons[id].remove();
+        }
+    }
+
+    const confirmationButtonId = 'confirmButton';
+    const confirmationButtonText = 'Click to unlock';
+
+    function isConfirmationRequired() {
+        return !isConfirmed && isEmbed && ENABLE_UNLOCK_CONFIRMATION_EMBED;
+    }
+
+    function requestConfirmation() {
+        addButton(confirmationButtonId, confirmationButtonText, null, () => {
+            removeButton(confirmationButtonId);
+            confirm();
+        });
+    }
+
+    function confirm() {
+        setUrlParams({
+            unlock_confirmed: 1,
+            autoplay: 1,
+        });
+    }
+
+    const messagesMap = {
+        success: 'Age-restricted video successfully unlocked!',
+        fail: 'Unable to unlock this video 🙁 - More information in the developer console',
+    };
+
+    let lastPlayerUnlockVideoId = null;
+    let lastPlayerUnlockReason = null;
+
+    let lastProxiedGoogleVideoUrlParams;
+    let cachedPlayerResponse = {};
+
+    function getLastProxiedGoogleVideoId() {
+        var _lastProxiedGoogleVid;
+        return (_lastProxiedGoogleVid = lastProxiedGoogleVideoUrlParams) === null || _lastProxiedGoogleVid === void 0 ? void 0 : _lastProxiedGoogleVid.get('id');
+    }
+
+    function unlockResponse$1(playerResponse) {
+        var _playerResponse$video, _playerResponse$playa, _playerResponse$previ, _unlockedPlayerRespon, _unlockedPlayerRespon3;
+        // Check if the user has to confirm the unlock first
+        if (isConfirmationRequired()) {
+            info('Unlock confirmation required.');
+            requestConfirmation();
+            return;
+        }
+
+        const videoId =
+            ((_playerResponse$video = playerResponse.videoDetails) === null || _playerResponse$video === void 0 ? void 0 : _playerResponse$video.videoId) ||
+            getYtcfgValue('PLAYER_VARS').video_id;
+        const reason =
+            ((_playerResponse$playa = playerResponse.playabilityStatus) === null || _playerResponse$playa === void 0 ? void 0 : _playerResponse$playa.status) ||
+            ((_playerResponse$previ = playerResponse.previewPlayabilityStatus) === null || _playerResponse$previ === void 0 ? void 0 : _playerResponse$previ.status);
+
+        if (!SKIP_CONTENT_WARNINGS && reason.includes('CHECK_REQUIRED')) {
+            info(`SKIP_CONTENT_WARNINGS disabled and ${reason} status detected.`);
+            return;
+        }
+
+        lastPlayerUnlockVideoId = videoId;
+        lastPlayerUnlockReason = reason;
+
+        const unlockedPlayerResponse = getUnlockedPlayerResponse(videoId, reason);
+
+        // account proxy error?
+        if (unlockedPlayerResponse.errorMessage) {
+            Toast.show(`${messagesMap.fail} (ProxyError)`, 10);
+            throw new Error(`Player Unlock Failed, Proxy Error Message: ${unlockedPlayerResponse.errorMessage}`);
+        }
+
+        // check if the unlocked response isn't playable
+        if (
+            !VALID_PLAYABILITY_STATUSES.includes(
+                (_unlockedPlayerRespon = unlockedPlayerResponse.playabilityStatus) === null || _unlockedPlayerRespon === void 0 ? void 0 : _unlockedPlayerRespon.status
+            )
+        ) {
+            var _unlockedPlayerRespon2;
+            Toast.show(`${messagesMap.fail} (PlayabilityError)`, 10);
+            throw new Error(
+                `Player Unlock Failed, playabilityStatus: ${
+                    (_unlockedPlayerRespon2 = unlockedPlayerResponse.playabilityStatus) === null || _unlockedPlayerRespon2 === void 0 ? void 0 : _unlockedPlayerRespon2.status
+                }`
+            );
+        }
+
+        // if the video info was retrieved via proxy, store the URL params from the url-attribute to detect later if the requested video file (googlevideo.com) need a proxy.
+        if (
+            unlockedPlayerResponse.proxied &&
+            (_unlockedPlayerRespon3 = unlockedPlayerResponse.streamingData) !== null &&
+            _unlockedPlayerRespon3 !== void 0 &&
+            _unlockedPlayerRespon3.adaptiveFormats
+        ) {
+            var _unlockedPlayerRespon4, _unlockedPlayerRespon5;
+            const cipherText =
+                (_unlockedPlayerRespon4 = unlockedPlayerResponse.streamingData.adaptiveFormats.find((x) => x.signatureCipher)) === null || _unlockedPlayerRespon4 === void 0
+                    ? void 0
+                    : _unlockedPlayerRespon4.signatureCipher;
+            const videoUrl = cipherText
+                ? new URLSearchParams(cipherText).get('url')
+                : (_unlockedPlayerRespon5 = unlockedPlayerResponse.streamingData.adaptiveFormats.find((x) => x.url)) === null || _unlockedPlayerRespon5 === void 0
+                ? void 0
+                : _unlockedPlayerRespon5.url;
+
+            lastProxiedGoogleVideoUrlParams = videoUrl ? new URLSearchParams(new window.URL(videoUrl).search) : null;
+        }
+
+        // Overwrite the embedded (preview) playabilityStatus with the unlocked one
+        if (playerResponse.previewPlayabilityStatus) {
+            playerResponse.previewPlayabilityStatus = unlockedPlayerResponse.playabilityStatus;
+        }
+
+        // Transfer all unlocked properties to the original player response
+        Object.assign(playerResponse, unlockedPlayerResponse);
+
+        playerResponse.unlocked = true;
+
+        Toast.show(messagesMap.success);
+    }
+
+    function getUnlockedPlayerResponse(videoId, reason) {
+        // Check if response is cached
+        if (cachedPlayerResponse.videoId === videoId) return createDeepCopy(cachedPlayerResponse);
+
+        const unlockStrategies = getUnlockStrategies$1(videoId, reason);
+
+        let unlockedPlayerResponse = {};
+
+        // Try every strategy until one of them works
+        unlockStrategies.every((strategy, index) => {
+            var _unlockedPlayerRespon6, _unlockedPlayerRespon7;
+            // Skip strategy if authentication is required and the user is not logged in
+            if (strategy.skip || (strategy.requiresAuth && !isUserLoggedIn())) return true;
+
+            info(`Trying Player Unlock Method #${index + 1} (${strategy.name})`);
+
+            try {
+                unlockedPlayerResponse = strategy.endpoint.getPlayer(strategy.payload, strategy.requiresAuth || strategy.optionalAuth);
+            } catch (err) {
+                error(err, `Player Unlock Method ${index + 1} failed with exception`);
+            }
+
+            return !VALID_PLAYABILITY_STATUSES.includes(
+                (_unlockedPlayerRespon6 = unlockedPlayerResponse) === null || _unlockedPlayerRespon6 === void 0
+                    ? void 0
+                    : (_unlockedPlayerRespon7 = _unlockedPlayerRespon6.playabilityStatus) === null || _unlockedPlayerRespon7 === void 0
+                    ? void 0
+                    : _unlockedPlayerRespon7.status
+            );
+        });
+
+        // Cache response to prevent a flood of requests in case youtube processes a blocked response mutiple times.
+        cachedPlayerResponse = { videoId, ...createDeepCopy(unlockedPlayerResponse) };
+
+        return unlockedPlayerResponse;
+    }
+
+    let cachedNextResponse = {};
+
+    function unlockResponse(originalNextResponse) {
+        const videoId = originalNextResponse.currentVideoEndpoint.watchEndpoint.videoId;
+
+        if (!videoId) {
+            throw new Error(`Missing videoId in nextResponse`);
+        }
+
+        // Only unlock the /next response when the player has been unlocked as well
+        if (videoId !== lastPlayerUnlockVideoId) {
+            return;
+        }
+
+        const unlockedNextResponse = getUnlockedNextResponse(videoId);
+
+        // check if the sidebar of the unlocked response is still empty
+        if (isWatchNextSidebarEmpty(unlockedNextResponse)) {
+            throw new Error(`Sidebar Unlock Failed`);
+        }
+
+        // Transfer some parts of the unlocked response to the original response
+        mergeNextResponse(originalNextResponse, unlockedNextResponse);
+    }
+
+    function getUnlockedNextResponse(videoId) {
+        // Check if response is cached
+        if (cachedNextResponse.videoId === videoId) return createDeepCopy(cachedNextResponse);
+
+        const unlockStrategies = getUnlockStrategies(videoId, lastPlayerUnlockReason);
+
+        let unlockedNextResponse = {};
+
+        // Try every strategy until one of them works
+        unlockStrategies.every((strategy, index) => {
+            if (strategy.skip) return true;
+
+            info(`Trying Next Unlock Method #${index + 1} (${strategy.name})`);
+
+            try {
+                unlockedNextResponse = strategy.endpoint.getNext(strategy.payload, strategy.optionalAuth);
+            } catch (err) {
+                error(err, `Next Unlock Method ${index + 1} failed with exception`);
+            }
+
+            return isWatchNextSidebarEmpty(unlockedNextResponse);
+        });
+
+        // Cache response to prevent a flood of requests in case youtube processes a blocked response mutiple times.
+        cachedNextResponse = { videoId, ...createDeepCopy(unlockedNextResponse) };
+
+        return unlockedNextResponse;
+    }
+
+    function mergeNextResponse(originalNextResponse, unlockedNextResponse) {
+        var _unlockedNextResponse, _unlockedNextResponse2, _unlockedNextResponse3, _unlockedNextResponse4, _unlockedNextResponse5;
+        if (isDesktop) {
+            // Transfer WatchNextResults to original response
+            originalNextResponse.contents.twoColumnWatchNextResults.secondaryResults = unlockedNextResponse.contents.twoColumnWatchNextResults.secondaryResults;
+
+            // Transfer video description to original response
+            const originalVideoSecondaryInfoRenderer = originalNextResponse.contents.twoColumnWatchNextResults.results.results.contents.find(
+                (x) => x.videoSecondaryInfoRenderer
+            ).videoSecondaryInfoRenderer;
+            const unlockedVideoSecondaryInfoRenderer = unlockedNextResponse.contents.twoColumnWatchNextResults.results.results.contents.find(
+                (x) => x.videoSecondaryInfoRenderer
+            ).videoSecondaryInfoRenderer;
+
+            if (unlockedVideoSecondaryInfoRenderer.description) originalVideoSecondaryInfoRenderer.description = unlockedVideoSecondaryInfoRenderer.description;
+
+            return;
+        }
+
+        // Transfer WatchNextResults to original response
+        const unlockedWatchNextFeed =
+            (_unlockedNextResponse = unlockedNextResponse.contents) === null || _unlockedNextResponse === void 0
+                ? void 0
+                : (_unlockedNextResponse2 = _unlockedNextResponse.singleColumnWatchNextResults) === null || _unlockedNextResponse2 === void 0
+                ? void 0
+                : (_unlockedNextResponse3 = _unlockedNextResponse2.results) === null || _unlockedNextResponse3 === void 0
+                ? void 0
+                : (_unlockedNextResponse4 = _unlockedNextResponse3.results) === null || _unlockedNextResponse4 === void 0
+                ? void 0
+                : (_unlockedNextResponse5 = _unlockedNextResponse4.contents) === null || _unlockedNextResponse5 === void 0
+                ? void 0
+                : _unlockedNextResponse5.find((x) => {
+                      var _x$itemSectionRendere;
+                      return (
+                          ((_x$itemSectionRendere = x.itemSectionRenderer) === null || _x$itemSectionRendere === void 0 ? void 0 : _x$itemSectionRendere.targetId) ===
+                          'watch-next-feed'
+                      );
+                  });
+
+        if (unlockedWatchNextFeed) originalNextResponse.contents.singleColumnWatchNextResults.results.results.contents.push(unlockedWatchNextFeed);
+
+        // Transfer video description to original response
+        const originalStructuredDescriptionContentRenderer = originalNextResponse.engagementPanels
+            .find((x) => x.engagementPanelSectionListRenderer)
+            .engagementPanelSectionListRenderer.content.structuredDescriptionContentRenderer.items.find((x) => x.expandableVideoDescriptionBodyRenderer);
+        const unlockedStructuredDescriptionContentRenderer = unlockedNextResponse.engagementPanels
+            .find((x) => x.engagementPanelSectionListRenderer)
+            .engagementPanelSectionListRenderer.content.structuredDescriptionContentRenderer.items.find((x) => x.expandableVideoDescriptionBodyRenderer);
+
+        if (unlockedStructuredDescriptionContentRenderer.expandableVideoDescriptionBodyRenderer)
+            originalStructuredDescriptionContentRenderer.expandableVideoDescriptionBodyRenderer =
+                unlockedStructuredDescriptionContentRenderer.expandableVideoDescriptionBodyRenderer;
+    }
+
+    function processThumbnails(responseObject) {
+        const thumbnails = findNestedObjectsByAttributeNames(responseObject, ['url', 'height']).filter(
+            (x) => typeof x.url === 'string' && x.url.indexOf('https://i.ytimg.com/') === 0
+        );
+        const blurredThumbnails = thumbnails.filter((thumbnail) => THUMBNAIL_BLURRED_SQPS.some((sqp) => thumbnail.url.includes(sqp)));
+
+        // Simply remove all URL parameters to eliminate the blur effect.
+        blurredThumbnails.forEach((x) => (x.url = x.url.split('?')[0]));
+
+        info(blurredThumbnails.length + '/' + thumbnails.length + ' thumbnails detected as blurred.');
+    }
+
+    /**
+     *  Handles XMLHttpRequests and
+     * - Rewrite Googlevideo URLs to Proxy URLs (if necessary)
+     * - Store auth headers for the authentication of further unlock requests.
+     * - Add "content check ok" flags to request bodys
+     */
+    function handleXhrOpen(method, url, xhr) {
+        let proxyUrl = unlockGoogleVideo(url);
+        if (proxyUrl) {
+            // Exclude credentials from XMLHttpRequest
+            Object.defineProperty(xhr, 'withCredentials', {
+                set: () => {},
+                get: () => false,
+            });
+
+            return proxyUrl;
+        }
+
+        if (url.pathname.indexOf('/youtubei/') === 0) {
+            // Store auth headers in storage for further usage.
+            attach$4(xhr, 'setRequestHeader', (_ref2) => {
+                let [headerName, headerValue] = _ref2;
+                if (GOOGLE_AUTH_HEADER_NAMES.includes(headerName)) {
+                    set(headerName, headerValue);
+                }
+            });
+        }
+
+        if (SKIP_CONTENT_WARNINGS && method === 'POST' && ['/youtubei/v1/player', '/youtubei/v1/next'].includes(url.pathname)) {
+            // Add content check flags to player and next request (this will skip content warnings)
+            attach$4(xhr, 'send', (args) => {
+                if (typeof args[0] === 'string') {
+                    args[0] = setContentCheckOk(args[0]);
+                }
+            });
+        }
+    }
+
+    /**
+     *  Handles Fetch requests and
+     * - Rewrite Googlevideo URLs to Proxy URLs (if necessary)
+     * - Store auth headers for the authentication of further unlock requests.
+     * - Add "content check ok" flags to request bodys
+     */
+    function handleFetchRequest(url, requestOptions) {
+        let newGoogleVideoUrl = unlockGoogleVideo(url);
+        if (newGoogleVideoUrl) {
+            // Exclude credentials from Fetch Request
+            if (requestOptions.credentials) {
+                requestOptions.credentials = 'omit';
+            }
+            return newGoogleVideoUrl;
+        }
+
+        if (url.pathname.indexOf('/youtubei/') === 0 && isObject(requestOptions.headers)) {
+            // Store auth headers in authStorage for further usage.
+            for (let headerName in requestOptions.headers) {
+                if (GOOGLE_AUTH_HEADER_NAMES.includes(headerName)) {
+                    set(headerName, requestOptions.headers[headerName]);
+                }
+            }
+        }
+
+        if (SKIP_CONTENT_WARNINGS && ['/youtubei/v1/player', '/youtubei/v1/next'].includes(url.pathname)) {
+            // Add content check flags to player and next request (this will skip content warnings)
+            requestOptions.body = setContentCheckOk(requestOptions.body);
+        }
+    }
+
+    /**
+     * If the account proxy was used to retrieve the video info, the following applies:
+     * some video files (mostly music videos) can only be accessed from IPs in the same country as the innertube api request (/youtubei/v1/player) was made.
+     * to get around this, the googlevideo URL will be replaced with a web-proxy URL in the same country (US).
+     * this is only required if the "gcr=[countrycode]" flag is set in the googlevideo-url...
+     * @returns The rewitten url (if a proxy is required)
+     */
+    function unlockGoogleVideo(url) {
+        if (isGoogleVideoUrl(url)) {
+            if (isGoogleVideoUnlockRequired(url, getLastProxiedGoogleVideoId())) {
+                return proxy.getGoogleVideoUrl(url);
+            }
+        }
+    }
+
+    /**
+     * Adds `contentCheckOk` and `racyCheckOk` to the given json data (if the data contains a video id)
+     * @returns {string} The modified json
+     */
+    function setContentCheckOk(bodyJson) {
+        try {
+            let parsedBody = JSON.parse(bodyJson);
+            if (parsedBody.videoId) {
+                parsedBody.contentCheckOk = true;
+                parsedBody.racyCheckOk = true;
+                return JSON.stringify(parsedBody);
+            }
+        } catch {}
+        return bodyJson;
+    }
+
+    try {
+        attach$3(processYtData);
+        attach$2(processYtData);
+        attach(handleXhrOpen);
+        attach$1(handleFetchRequest);
+    } catch (err) {
+        error(err, 'Error while attaching data interceptors');
+    }
+
+    function processYtData(ytData) {
+        try {
+            // Player Unlock #1: Initial page data structure and response from `/youtubei/v1/player` XHR request
+            if (isPlayerObject(ytData) && isAgeRestricted(ytData.playabilityStatus)) {
+                unlockResponse$1(ytData);
+            }
+            // Player Unlock #2: Embedded Player inital data structure
+            else if (isEmbeddedPlayerObject(ytData) && isAgeRestricted(ytData.previewPlayabilityStatus)) {
+                unlockResponse$1(ytData);
+            }
+        } catch (err) {
+            error(err, 'Video unlock failed');
+        }
+
+        try {
+            // Unlock sidebar watch next feed (sidebar) and video description
+            if (isWatchNextObject(ytData) && isWatchNextSidebarEmpty(ytData)) {
+                unlockResponse(ytData);
+            }
+
+            // Mobile version
+            if (isWatchNextObject(ytData.response) && isWatchNextSidebarEmpty(ytData.response)) {
+                unlockResponse(ytData.response);
+            }
+        } catch (err) {
+            error(err, 'Sidebar unlock failed');
+        }
+
+        try {
+            // Unlock blurry video thumbnails in search results
+            if (isSearchResult(ytData)) {
+                processThumbnails(ytData);
+            }
+        } catch (err) {
+            error(err, 'Thumbnail unlock failed');
+        }
+
+        return ytData;
+    }
+})(true);

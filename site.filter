@@ -1,30 +1,56 @@
 #---------------------------------------
-# Global tag
+FILTER: Global-tagger----------------------
+# Global tagger
 
 CLIENT-HEADER-TAGGER: url
-s†^Host†$url†D
+s@^Host@$url@D
 
-CLIENT-HEADER-TAGGER: tagger4https
-s@Tagged: ProxHTTPSProxyMII FrontProxy@$0@i
+SERVER-HEADER-TAGGER: content-length
+s@^Content-Length:\s+(\d+)@$1@i
 
 SERVER-HEADER-FILTER: cors
-s†^HTTP.*†$0\r\nAccess-Control-Allow-Origin: *†i
+s@^HTTP.*@$0\r\nAccess-Control-Allow-Origin: *@i
+
+SERVER-HEADER-FILTER: cors_csstats
+s@^HTTP.*@$0\r\nAccess-Control-Allow-Origin: https:\/\/csgostats.gg@i
 
 SERVER-HEADER-FILTER: removecontentsecuritypolicy
 s@content-security.*@@i
 
+SERVER-HEADER-FILTER: privoxycsp
+s@(content-security.[^;]*?;script-src)(.*$)@$1 *.privoxy.org$2@i
+
+SERVER-HEADER-FILTER: fbcdncsp
+s@(content-security.[^;]*?;script-src)(.*$)@$1 *.fbcdn.net$2@i
+
 SERVER-HEADER-FILTER: bettercache
 #Remove Cache-Control header 
-s†^Cache-Control:.*††i
+s@^Cache-Control:.*@@i
 #Re-Add Cache-Control header, but max-age=7777777,s-maxage=7777777 will make web browser cache contents forever
-s†^HTTP.*†$0\r\nCache-Control: no-transform,public,max-age=7777777,s-maxage=7777777†i
+s@^HTTP.*@$0\r\nCache-Control: no-transform,public,max-age=36000,s-maxage=36000@i
 
+CLIENT-HEADER-TAGGER: tagger4https
+s@Tagged: ProxHTTPSProxyMII FrontProxy@$0@i
+
+CLIENT-HEADER-TAGGER: websocket
+s@^Upgrade:.*websocket$@SOCKET-REQUEST@i
+
+CLIENT-HEADER-TAGGER: maximum-url-length
+s@(^GET\s+\/.{600,}\s+HTTP\/\d\.\d\s*$)@MAXIMUM-URL-LENGTH@i
+
+CLIENT-HEADER-TAGGER: maximum-domain-length
+s@^Host.*.{60,}\.[a-z]*$@MAXIMUM-DOMAIN-LENGTH@D
+	
 #---------------------------------------
+FILTER: Global-Filter-------------------
 # Global Filter
 
 FILTER: injection
 s@^(?=[\s\S]*?script)[\s\S]*?(<head>|<body[^>]*?>|<script[^>]*?>[\s\S]*?<\/script><style[^>]*?>[\s\S]*?<\/style>|<link[^>]*?>|<meta[^>]*?>|<a[^>]*?>)@\n$0\n<!-- START INJECTION -->\n<!-- END INJECTION -->\n\n@i
 s@(?:<\/body>|<\/html>)(?![\s\S]*?script)[\s\S]*?$@\n<!-- START INJECTION2 -->\n<!-- END INJECTION2 -->\n$0\n\n@i
+
+FILTER: injection2
+s@(?:<\/body>|<\/html>)(?![\s\S]*?script>)[\s\S]*?$@\n<!-- START INJECTION2 -->\n<!-- END INJECTION2 -->\n$0\n\n@i
 
 FILTER: ads
 s@<iframe[^>]*?(?!thre)(?:Ads|ads)[^>]*?>[\s\S]*?<\/iframe>@@gi
@@ -42,7 +68,7 @@ FILTER: ads3
 
 FILTER: ads4
 s@<img src="[^"]*?doubleclick\.[^>]*?/>@@g
-s@(google-analytics|googleadservices|googletagmanager|googletagservices|admicro|doubleclick|scorecardresearch|coin-hive|coinhive|traffic2bitcoin|jsecoin)\.@fuck_off_ads.@giT
+#s@(google-analytics|googleadservices|googletagmanager|googletagservices|admicro|doubleclick|scorecardresearch|coin-hive|coinhive|traffic2bitcoin|jsecoin)\.@fuck_off_ads.@giT
 
 FILTER: socialbutton
 s@(platform\.linkedin\.com|platform\.twitter\.com|plusone\.js|connect\.facebook\.|w\.sharethis\.com|like\.php|apis\.google\.com\/js\/platform\.js|js\/api\/share\.js|redditstatic|reddit\.com\/static|addthis_widget\.js)@<!-- Removed by socialbutton -->@gi
@@ -65,20 +91,34 @@ s@btpop\(\);@@g
 s@vtlai_popup\(\);@@g
 
 FILTER: newbannerbylink
-s†<a[^>]*?href=[^>]*?(?:gioi-thieu|www\/delivery|ad\?|goo\.gl)[^>]*?>[^<]*?<img[^>]*?>[^<]*?<\/a>††giT
-s†<a[^>]*?target=[^>]*?(?:_blank)[^>]*?>[^<]*?<img[^>]*?>[^<]*?<\/a>††giT
+s@<a[^>]*?href=[^>]*?(?:gioi-thieu|www\/delivery|ad\?|goo\.gl)[^>]*?>[^<]*?<img[^>]*?>[^<]*?<\/a>@@giT
+s@<a[^>]*?target=[^>]*?(?:_blank)[^>]*?>[^<]*?<img[^>]*?>[^<]*?<\/a>@@giT
 
 FILTER: disableDHTML
-s†(<\!-- END INJECTION -->)†<script>\n\
+s@(<\!-- END INJECTION -->)@<script>\n\
 function NoWrite(e){return 1}document.write=NoWrite;document.writeln=NoWrite\n\
-</script>\n$1†i
-s†(<\!-- END INJECTION -->)†$1<script>\n\
+</script>\n$1@i
+s@(<\!-- END INJECTION -->)@$1<script>\n\
 var _0x5440=["\\x36\\x20\\x30\\x28\\x33\\x29\\x7B\\x32\\x20\\x31\\x7D\\x34\\x2E\\x35\\x3D\\x30\\x3B","\\x7C","\\x73\\x70\\x6C\\x69\\x74","\\x4E\\x6F\\x57\\x72\\x69\\x74\\x65\\x7C\\x7C\\x72\\x65\\x74\\x75\\x72\\x6E\\x7C\\x65\\x7C\\x64\\x6F\\x63\\x75\\x6D\\x65\\x6E\\x74\\x7C\\x77\\x72\\x69\\x74\\x65\\x7C\\x66\\x75\\x6E\\x63\\x74\\x69\\x6F\\x6E","\\x72\\x65\\x70\\x6C\\x61\\x63\\x65","","\\x5C\\x77\\x2B","\\x5C\\x62","\\x67"];eval(function (_0xff18x1,_0xff18x2,_0xff18x3,_0xff18x4,_0xff18x5,_0xff18x6){_0xff18x5=function (_0xff18x3){return _0xff18x3;} ;if(\!_0x5440[5][_0x5440[4]](/^/,String)){while(_0xff18x3--){_0xff18x6[_0xff18x3]=_0xff18x4[_0xff18x3]||_0xff18x3;} ;_0xff18x4=[function (_0xff18x5){return _0xff18x6[_0xff18x5];} ];_0xff18x5=function (){return _0x5440[6];} ;_0xff18x3=1;} ;while(_0xff18x3--){if(_0xff18x4[_0xff18x3]){_0xff18x1=_0xff18x1[_0x5440[4]]( new RegExp(_0x5440[7]+_0xff18x5(_0xff18x3)+_0x5440[7],_0x5440[8]),_0xff18x4[_0xff18x3]);} ;} ;return _0xff18x1;} (_0x5440[0],7,7,_0x5440[3][_0x5440[2]](_0x5440[1]),0,{}));\n\
-</script>†i
+</script>@i
 
 FILTER: blockwebrtc
-s†(<\!-- END INJECTION -->)†\n<script>function NoWebRTC(e){return 1}window.RTCPeerConnection=NoWebRTC; window.webkitRTCPeerConnection=NoWebRTC; window.mozRTCPeerConnection=NoWebRTC;</script>\n\n$1†i
+s@(<\!-- END INJECTION -->)@\n<script>function NoWebRTC(e){return 1}window.RTCPeerConnection=NoWebRTC; window.webkitRTCPeerConnection=NoWebRTC; window.mozRTCPeerConnection=NoWebRTC;</script>\n\n$1@i
+
+FILTER: canvas
 s@(\w\.getImageData\((.*?)\));|(\w\.toDataURL\((.*?)\));@@g
+
+FILTER: anticlickjacking
+s@(<\!-- END INJECTION -->)@\n\
+<script>\n\
+document.addEventListener("mouseover", removeclickjackingfunctionABCXYZ);\n\
+function removeclickjackingfunctionABCXYZ(e){\n\
+if ((e.target.nodeName == "IFRAME") && (e.target.clientWidth < 200) && (e.target.clientHeight < 200)) {\n\
+e.target.outerHTML = "";\n\
+}\n\
+}\n\
+\\x3C/script>\n\
+$1@i
 
 FILTER: Troll
 s/(?!(\.|-|_|\/)[^\s])Macbook(?!(\.|-|_|\/)[^\s])/$1Sidabook$2/g
@@ -91,15 +131,22 @@ s@(?!(\.|-|_|\/)[^\s])Lumia(?!(\.|-|_|\/)[^\s])@$1L\xC3\xBAa\x20m\xC3\xAC$2@g
 s@(?!(\.|-|_|\/)[^\s])Asus(?!(\.|-|_|\/)[^\s])@$1Asuck$2@g
 s@Donald\x20Trump(?!(\.|-|_|\/)[^\s])@\xC4\x90\xE1\xBB\x97\x20Nam\x20Trung$1@g
 s@Galaxy\x20(S|Note|Tab|J|A)@Galasida\x20$1@g
-s@Trung\x20Qu\xE1\xBB\x91c@T\xC3\xA0u\x20kh\xE1\xBB\xB1a$1@g
-s@Nguy\xE1\xBB\x85n\x20Xu\xC3\xA2n\x20Ph\xC3\xBAc(?!(\.|-|_)[^\s])@m\xC3\xA9o\x20ph\xE1\xBA\xA3i\x20th\xE1\xBB\xA7\x20t\xC6\xB0\xE1\xBB\x9Bng\x20nho\xC3\xA9$1@g
+s@Trung\x20Qu\xE1\xBB\x91c(?!(\.|-|_|\/)[^\s])@T\xC3\xA0u\x20kh\xE1\xBB\xB1a$1@g
+s@Nguy\xE1\xBB\x85n\x20Xu\xC3\xA2n\x20Ph\xC3\xBAc(?!(\.|-|_)[^\s])@M\xC3\xA9o\x20ph\xE1\xBA\xA3i\x20Ch\xE1\xBB\xA7\x20t\xE1\xBB\x8Bch\x20nho\xC3\xA9$1@g
+s@\x4e\x67\x75\x79\xe1\xbb\x85\x6e \x54\xe1\xbb\xad \x51\x75\xe1\xba\xa3\x6e\x67@\x51\x75\xe1\xba\xa3\x6e\x67 \x4e\xe1\xbb\x95@g
 #s@\x54\x72\xe1\xba\xa7\x6e \x48\xe1\xba\xa3\x69@\x4c\xc3\xba \xc6\xa1\x69 \x6c\xc3\xa0 \x4c\xc3\xba@g
-
-FILTER: UTF-8
-s@(<head>)@$1\n<meta http-equiv=\"Content-Type\" content=\"text\/html; charset=UTF-8\" \/>\n@
+s@\x63\xc6\xb0\xe1\xbb\xa1\x6e\x67\x20\x68\x69\xe1\xba\xbf\x70@\xe1\xba\xa5\x6e\x20\xc4\x91\xe1\xbb\x99@g
 
 #---------------------------------------
 # Specifiction Site Filter
+
+#-------------------------
+FILTER: Animu-------------------------
+# Animu
+
+#-------------
+FILTER: Misc-------------
+#Misc
 
 FILTER: vns
 #s@<iframe .*?frameborder="0"[\s\S]*?<\/iframe>@@gi
@@ -113,28 +160,57 @@ s@<script>(?![^>]*?<script>).*?popunder.*?<\/script>@@gi
 #</style>@i
 #s@<script[^>]*?(clientscript\/svmt\.js)[^>]*?><\/script>@@gi
 
-FILTER: hako
-s@<iframe[^>]*?(idzone)[^>]*?><\/iframe>@@gi
+FILTER: mal
+s@<script[^>]*?>[^<]*?(?:ad_mal|googletag\.cmd|adRefresh|SkinAd)[\s\S]*?<\/script>@@gi
 
-FILTER: vozforums
-s@(<td[^>]*?width="160">)(?!.*?\1).*?<\/td>@@is
-s@<script[^>]*?>[^<]*?(adScope)[\s\S]*?<\/script>@@g
-s@<div id='[^']*?gpt-ad-[^>]*?>[\s\S]*?<\/div>@@gi
-s@\.neo_column\.side \{max-width[^\}]*?\}@\.neo_column\.side \{max-width\: 0px;\}@
+FILTER: ann
+s@<a[^>]*?(?:\/sponsor\/click)[^>]*?>[\s\S]*?<\/a>@@gi
+s@<iframe[^>]*?(?:\/show\.aframe)[^>]*?>[\s\S]*?<\/iframe>@@gi
+s@(<\!-- END INJECTION -->)@\n<style>\n\
+\.iab\.top, \.iab\.side\n\
+{\n\
+display:none!important;\n\
+}\n\
+</style>\n$1@i
+
+FILTER: sankaku
+s@<div id="(?:left|right)ad"[\s\S]*?<\/div>@@gi
+s@<iframe[^>]*?src='[^']*?zoneid[\s\S]*?<\/iframe>@@gi
+s@<link[^>]*?href="\/\/extra\.sankakucomplex\.com\/css\/default\.css"\/>@@i
+
+FILTER: nyaa
+s@<a[^>]*?"[^"]*?\.nyaa\.se\/(?:[a-z]{2})\/[^"]*?" target="_blank"[\s\S]*?<\/a>@@gi
+s@<iframe width="0" height="0" src="http:\/\/www\.youtube-nocookie\.com\/"[\s\S]*?<\/iframe>@@i
+s@<script[^>]*?>[^<]*?(lead-ad|\.ad_b)[\s\S]*?<\/script>@@gi
+s@<script[^>]*?(lead-ad|js\.spacenine)[^>]*?><\/script>@@gi
+
+FILTER: horriblesubs
+s@\$j\(\'\.[^-]*?-(container|container1)\'\)\.(append|addClass)[^\);]*?\);@@g
+s@var (sq_banners|banners) = \{[^\}]*?\};@var $1 = \{\};@gi
+s@(var (?:sq_banner_link|banner_link) = )[^;]*?;@$1null;@g
+s@<a[^>]*?><img[^>]*?src="[^>]*?(play-asia|utm_campaign)[^>]*?"[^>]*?><\/a>@@gi
+s@<div id="(?:play-asia|rls-spons)"[\s\S]*?<\/div>@@gi
+s@(function get[^\)]*?banner[^\{]*?\{)[^\}]*?\}@$1\}@gi
+
+#-------------
+FILTER: MangaVN-------------
+#MangaVN
 
 FILTER: blogtruyen
 s@<div id="[^"]*?(?:banner|spot-im-root|mbtfloat)[^"]*?"[^>]*?>[\s\S]*?<\/div>@@gi
 s@<div id="[^"]*?(AdsBanner|topbanner|bar_|after|left-300|vng-300)[^"]*?"[^>]*?>[\s\S]*?<\/div>@@gi
 s@<script type="text\/javascript">(?![\s\S]*?<script type="text\/javascript">)[\s\S]*?initFloatBox\(\)[\s\S]*?<\/script>@@i
 s@<script>[^>]*?window.SPOTIM[^>]*?<\/script>@@i
-s@<script[^>]*?>[^<]*?(vitribannerqc|spot-im-root|qcv.\.blogtruyen\.com|360cdn|adnow|ad_idzone|adtrue|ads_banner)[^<]*?<\/script>@@gi
-s@<script[^>]*?>[^<]*?(ScriptRoot)[\s\S]*?<\/script>@@gi
-s@<script[^>]*?(qcv.\.blogtruyen\.com|blogtruyen\.com\/.*iframe.*js\?*|blogtruyen\.com\/.*banner.*js\?*|adnow|xoso86|\/ads\.js|bundles\/modernizr|sbro|bidgear|adtrue)[^>]*?><\/script>@@gi
+s@<script[^>]*?>[^<]*?(vitribannerqc|spot-im-root|qcv.\.blogtruyen\.com|360cdn|adnow|ad_idzone|adtrue|ads_banner|document\.write\(ghz\.|banner_click)[^<]*?<\/script>@@gi
+s@<script[^>]*?>[^<]*?(ScriptRoot|PopupBeta|sin88)[\s\S]*?<\/script>@@gi
+s@<script[^>]*?(qcv.\.blogtruyen\.com|blogtruyen\.com\/.*iframe.*js\?*|blogtruyen\.com\/.*banner.*js\?*|adnow|xoso86|\/ads\.js|bundles\/modernizr|sbro|bidgear|adtrue|bt_script_load|iframe-rand-mobile)[^>]*?><\/script>@@gi
 s@<iframe[^>]*?(phimchieurap|thegioigame|file\/tc-250|doubleclick|mgid|\/embed\/video)[^>]*?><\/iframe>@@gi
-s@<a[^>]*?(888bet|g7bet|nhanthuong88|exdynsrv|7bongda|bongda241|onelink\.me|utm_medium=blogtruyen|datcuoc|11bet|cacuoc24|utm_campaign)[\s\S]*?<\/a>@@gi
+s@<a[^>]*?(888bet|g7bet|nhanthuong88|exdynsrv|7bongda|bongda241|onelink\.me|utm_medium=blogtruyen|datcuoc|11bet|cacuoc24|utm_campaign|i9bet)[\s\S]*?<\/a>@@gi
 s@<div[^>]*?(AdsBanner|topbanner|bar_|after|left-300|vng-300|BT-Ads|bongda241|qc_TC_|qc_M_)[^>]*?>[\s\S]*?<\/div>@@gi
 s@<center>[\s\S]*?(?:maxgate|admicro|x-shockwave-flash)*?<\/center>@@gi
 s@<section id="comment_section"[^>]*?>[\s\S]*?<\/section>@@
+s@<script[^>]*?src=\"\/\/[^\.]{60,}\.[^>]*?><\/script>@@gi
+
 
 FILTER: manga24h
 #s@<div class="float-ck"[\s\S]*?(?:\.manga24h\.|noscript|BidVertiser)[\s\S]*?<\/div><\/div>@@ig
@@ -155,217 +231,23 @@ s@<span class="(ad-)[^"]*?">[\s\S]*?<\/span>@@i
 s@<iframe[^>]*?src="[^"]*?(adtimaserver)[^"]*?"[\s\S]*?<\/iframe>@@gi
 
 FILTER: truyenqq
-s@<a[^>]*?(utm_source=truyenqq|AdTyp|bit\.ly)[^>]*?>[\s\S]*?<\/a>@@gi
+s@<a[^>]*?(utm_source=truyenqq|AdTyp|bit\.ly|refpa\.top|gn\.zing)[^>]*?>[\s\S]*?<\/a>@@gi
 s@<div[^>]*?(ads_|_popup|-banner)[^>]*?>[\s\S]*?<\/div>@@gi
 s@<script[^>]*?>[^<]*?(_ads)[\s\S]*?<\/script>@@gi
 
-FILTER: gg
-s@<li class="ads-ad"[\s\S]*?<\/li>@@gi
-#s@pagead\/drt\/dn\/@@g
-#s@_\.Ad@Sida@g
-#s@<script[^>]*?(cloudfront)[^>]*?><\/script>@@gi
-s@(<\!-- END INJECTION2 -->)@\
-<style type="text/css">\n\
-/* Style sheet inserted by Privoxy's google filter. */\n\
-\#fbc, \#fbl, \#ra, .rhh, .ads-ad {visibility: hidden !important;}\n\
-\#tpa1,\#tpa2,\#tpa3,\#tpa4,\#tpa5,\#tpa5, \#spl, \#ads,\
-\#toolbar, \#google_ads_frame, \#mbEnd {display: none !important;}\n\
-.main_body, .j, \#res, .med, .hd, .g, .s\n\
-{width: 99%; max-width: 100%; margin-left: 0; margin-right: 0;}\n\
-</style>\n$1@
-s@<div style=\"padding-top:11px;min-width:500px\">@<div id="main_body">@
-s@(<table cellspacing=0 cellpadding=0 width=25% align=right bgcolor=\#ffffff border=0\
-|</font></td></tr></tbody></table><table align=\"right\" bgcolor=\"\#ffffff\"\
-|<table cellspacing=0 cellpadding=0 align=right bgcolor=\#ffffff border=0\
-|<table style=\"clear:both\" align=right width=25% cellspacing=\"0\" cellpadding=\"0\"\
- border=\"0\" bgcolor=\"\#ffffff\")@$0 id="ads"@
-s@(<br clear=all><table)( border=0 cellpadding=9><tr><td)@$1 id="toolbar"$2@
-
-FILTER: twitter
-s†(<\!-- END INJECTION -->)†\n<script>\n\
-var css = document.createElement("style");\n\
-css.type = "text/css";\n\
-css.innerHTML = "div[data-component-context=\\"suggest_activity_tweet\\"] { display: none }";\n\
-\n\
-document.head.appendChild(css);\n\
-</script>\n$1†i
-
-FILTER: youtube
-s@<script[^>]*?>[^<]*?(?:ad_creative)[\s\S]*?<\/script>@@gi
-#s@<script[^>]*?(?:desktop_polymer)[^>]*?><\/script>@@gi
-s@product_listing_ads_cards_drawer_auto_open=true@product_listing_ads_cards_drawer_auto_open=false@g
-s@fix_backfill_mpu_api_stats_ads=true@fix_backfill_mpu_api_stats_ads=false@g
-s@yt_unlimited_pts_skip_ads_promo_desktop_always=true@yt_unlimited_pts_skip_ads_promo_desktop_always=false@g
-s@fix_vmap_afc_mpu_api_stats_ads=true@fix_vmap_afc_mpu_api_stats_ads=false@g
-s@\"google_max_num_ads\\\"\:1@\"google_max_num_ads\\\"\:0@g
-s@google_only_pyv_ads\\\"\:true@google_only_pyv_ads\\\"\:false@g
-s@SKIP_RELATED_ADS\'\: false@SKIP_RELATED_ADS\'\: true@g
-s@<div id="(?:ad_creative)[^"]*?"[\s\S]*?<\/div>@@gi
-s@doubleclick_gpt_retagging=true@doubleclick_gpt_retagging=false@gi
-s@yt_unlimited_pts_skip_ads_promo_desktop_always=false@yt_unlimited_pts_skip_ads_promo_desktop_always=true@gi
-#s@\"DISABLE_WARM_LOADS\"\:false@\"DISABLE_WARM_LOADS\"\:true@g
-s@(<\!-- END INJECTION2 -->)@\
-<style type="text/css">\n\
-\#masthead-ad\.ytd-browse {display: none !important;}\n\
-</style>\n$1@
-s@<div[^>]*?(?:video-masthead)[^>]*?>[\s\S]*?<\/div>@@gi
-
-FILTER: twitch
-s@<script[^>]*?>[^<]*?(?:twilightApproximatedFirstPaint=performance)[\s\S]*?<\/script>@@gi
-s@ads_enabled\"\:true@ads_enabled\"\:false@gi
-s@twilight_clips_already\"\:\"on@twilight_clips_already":"off@gi
-s@"amazon_ads_url[^"]*?"\:"[^"]*?",@@gi
-s†(<\!-- END INJECTION2 -->)†\n<style>\n\
-.pl-overlay{display:none;}\n\
-.pl-overlay__fullscreen{display:none;}\n\
-.companion-ad{display:none;}\n\
-</style>\n$1†i
-#s@getClip\:function\(\)\{[\s\S]*?\};@@gi
-
-FILTER: kiss
-s@<iframe[^>]*?(?:Ads|ads|gamesrevenue\.com|animemerchant|mgiframe2|div-bg-ad|check\.aspx)[^>]*?>[\s\S]*?<\/iframe>@@gi
-#s@<div id="[^"]*?(?:FloatLeft|FloatRight|MarketGid|ad[0-9]{1}|Composite)[^"]*?"[\s\S]*?<\/div>@@gi
-s@<script type="text\/javascript">[^<]*?(?:AddCloseButton|joo2ieb\.bid)[\s\S]*?<\/script>@@i
-s@<script type="text\/javascript">[^<]*?DoAdsPosition[^<]*?<\/script>@@gi
-s@\
-<div style="overflow:hidden;width:800px; height:196px;display:inline-block">\s*?\
-\s*?\
-<\/div>\s*?\
-@@i
-s@<div style="[^"]*?overflow:hidden;[^"]*?display:inline-block[^"]*?">[\s\S]*?<\/div>@@i
-s@\
-<div style="font-size: 0; position: relative; width: 300px; height: 250px;">\s*?\
-\s*?\
-<\/div>\s*?\
-@@i
-s@\
-<div class="clear2">&nbsp;<\/div>\s*?\
-@@gi
-s@parent\.DoDetect2\(\)@sida@i
-s@isBlockAds2 = true@isBlockAds2 = false@gi
-s@errorCount++@@
-s@\$\(\"\#selectPlayer\"\)\[0\]\.selectedIndex == 0@\$\(\"\#selectPlayer\"\)\[0\]\.selectedIndex == 1@g
-s@<script[^>]*?>[^<]*?(alreadyPop|BACKUPFUNCTIONaddEventListener|mgid\.com|juicyads)[\s\S]*?<\/script>@@gi
-s@<script[^>]*?(?:joo2ieb\.bid|bebi\.com|juicyads\.com|puhtml\.com|td583|ti553|2mdnsys|puserving)[^>]*?><\/script>@@gi
-s@<script[^>]*?(?:data-cfasync|betterpop|hive\.js)[\s\S]*?<\/script>@@gi
-s@<script[^>]*?(?:2mdnsys)[\s\S]*?<\\\/script>@@gi
-s@<script[^>]*?>[^<]*?(?:div-bg-ad|ovelWrap)[\s\S]*?<\/script>@@gi
-s@<a[^>]*?onclick=\"hideAd[^>]*?>[\s\S]*?<\/a>@@gi
-#s@<div[^>]*?(?:adsIfrme)[^>]*?>[\s\S]*?<\/div>@@gi
-
-FILTER: batoto
-#s@_qevents.push\([^;]*?;@@gi
-
-FILTER: openload
-s@<script[^>]*?(?:googlead|popunder)[^>]*?><\/script>@@gi
-s@window\.popAdsLoaded=true@window\.popAdsLoaded=false@g
-s@<script[^>]*?>[^<]*?(popAdsLoaded|onclickads|adblock)[\s\S]*?<\/script>@@gi
-s@window\._VideoLoaded=false@window\._VideoLoaded=true@g
-
-FILTER: h-ani
-s@\"is_ads_enabled\"\:true@\"is_ads_enabled\"\:false@g
-#s@<script[^>]*?>[^<]*?(contentabc\.com\/ads|BetterJsPop)[\s\S]*?<\/script>@@gi
-#s@<a[^>]*?target="_blank""[^"]*?(?:ads)[^"]*?" [\s\S]*?<\/a>@@gi
-#s@<script[^>]*?(?:\/assets\/application-bundle-client)[^>]*?><\/script>@@gi
-
-FILTER: hitomi
-s@<script[^>]*?(?:hitomi-vertical|hitomi-horizontal)[^>]*?><\/script>@@gi
-s@<script[^>]*?>[^<]*?(hitomi-vertical|hitomi-horizontal)[\s\S]*?<\/script>@@gi
-s@function pick_one_popup@function n0th1ng@g
-s@pick_one_popup\(\);@@g
-
-FILTER: nht
-s@<iframe[^>]*?(?:Ads|ads|contentabc|qx\/qx._pc)[^>]*?>[\s\S]*?<\/iframe>@@gi
-s@show_popunders: true@show_popunders: false@
-
-FILTER: h2r
-s@var ads=1;@var ads=0;@gi
-s@<a[^>]*?"[^"]*?(?:ads\?zone)[^"]*?" target="_blank"[\s\S]*?<\/a>@@gi
-s@<iframe[^>]*?(ads)[^>]*?>[\s\S]*?<\/iframe>@@gi
-s@<div[^>]*?(?:js-rotating)[^>]*?>[\s\S]*?<\/div>@@gi
-
-FILTER: mal
-s@<script[^>]*?>[^<]*?(?:ad_mal|googletag\.cmd|adRefresh|SkinAd)[\s\S]*?<\/script>@@gi
-
-FILTER: mangadeer
-s@<div[^>]*?class="(?:ad-)[^"]*?"[\s\S]*?<\/div>@@gi
-
-FILTER: izmanga
-s@ad360@@gi
-s@<div style="text-align: center;">[\s\S]*?(?:vietad|bacdau|showads)[\s\S]*?<\/div>@@gi
-s@<div[^>]*?(?:qcg)[^>]*?>[\s\S]*?<\/div>@@gi
-
-FILTER: mangak
-s@<script[^>]*?>[^<]*?(somo.vn|adchoice|ballon-right|\/\/ballon-top|ballon-center|360cdn)[\s\S]*?<\/script>@@gi
-s@<script[^>]*?(mob\.vn|cpmbizz)[^>]*?><\/script>@@gi
-s@<div[^>]*?(?:ads-top)[^>]*?>[\s\S]*?<\/div>@@gi
-s@<iframe[^>]*?(\/ad\/|ad-chap)[^>]*?>[\s\S]*?<\/iframe>@@gi
-
-FILTER: commicvn
-s@<a[^>]*?target="_blank"[^>]*?>[\s\S]*?<\/a>@@gi
-s@function MM_openBrWindow[^;]*?;@@
-s@<script[^>]*?>[^<]*?(banner-ads|arrPreload)[\s\S]*?<\/script>@@gi
-
-FILTER: nyaa
-s@<a[^>]*?"[^"]*?\.nyaa\.se\/(?:[a-z]{2})\/[^"]*?" target="_blank"[\s\S]*?<\/a>@@gi
-s@<iframe width="0" height="0" src="http:\/\/www\.youtube-nocookie\.com\/"[\s\S]*?<\/iframe>@@i
-s@<script[^>]*?>[^<]*?(lead-ad|\.ad_b)[\s\S]*?<\/script>@@gi
-s@<script[^>]*?(lead-ad|js\.spacenine)[^>]*?><\/script>@@gi
-
-FILTER: 4chan
-s@<iframe[^>]*?__idm_frm__[^>]*?>[\s\S]*?<\/iframe>@@gi
-#s@this.initAds\(\),@@g
-#s@window._adg&&initAdsAG\(\),@@g
-#s@function initAdsAG\(\)\{[^}]*?\}@@g
-s†(<\!-- END INJECTION2 -->)†\n<style>\n\
-.adg-rects{display:none;}\n\
-</style>\n$1†i
-s@<(div [a-zA-Z]{10}=\"\")>@<$1 style=\"display:none;\">@gi
-
-FILTER: senmanga
-s@<div (id|class)="[^"]*?(?:box|Box)[^"]*?(?:right|left)"[\s\S]*?<\/div>@@gi
-s†i\.src = img\.src;†i\.src = new_image;†i
-s†img\.error = '\/error\.png';\s*?\
-img\.onerror = function\(\) \{\s*?\
-i = document\.getElementById\('picture'\);\s*?\
-i\.src = img\.error;\s*?\
-\};\s*?\
-††i
-s@popads\.net@sida@gi
-s@puhtml\.com@sida@gi
-s@<script[^>]*?(puhtml\.com|onclicktop\.com|tradeadexchange\.com|topads|clickad|onclasrv|patiland)[^>]*?><\/script>@@gi
-s@<script[^>]*?data-cfasync=\"false\"[\s\S]*?<\/script>@@gi
-s@<script[^>]*?>[^<]*?(topads|patiland)[\s\S]*?<\/script>@@gi
-s@<iframe[^>]*?src='[^']*?ads\.senmanga[^']*?'[\s\S]*?<\/iframe>@@gi
-
-FILTER: pixiv
-s@<iframe[^>]*?(?:Ads|ads|ad)[^>]*?>[\s\S]*?<\/iframe>@@gi
-
-FILTER: mangafox
-s@<div id="[^"]*?(MarketGid)[^"]*?"[\s\S]*?<\/div>@@gi
-s@<a[^>]*?target="_blank"[^>]*?>[\s\S]*?<\/a>@@gi
-s@<div[^>]*?class="ad[^"]*?(?:left|right)">[\s\S]*?<\/div>@@gi
-s@<div[^>]*?class="ad\s[^"]*?"[^>]*?>[\s\S]*?<\/div>@@gi
-
-FILTER: mangareader
-s@<div id="[^"]*?(?:adtop|adfooter)[^"]*?"[\s\S]*?<\/div>@@gi
-s@<iframe[^>]*?(?:admaintop|adbottomright)[^>]*?>[\s\S]*?<\/iframe>@@gi
-s@<a[^>]*?style="margin-bottom:10px; width: 100%; float:left;"[^>]*?>[\s\S]*?<\/a>@@gi
-s@<div class="c4">[\s\S]*?<\/div>@@i
-
-FILTER: mangakakalot
-s@<div[^>]*?id="[^"]*?(Preload)[^"]*?"[\s\S]*?<\/div>@@gi
-s@<script[^>]*?>[^<]*?(ScriptRoot)[\s\S]*?<\/script>@@gi
-s@<iframe[^>]*?(?:\/ads\/)[^>]*?>[\s\S]*?<\/iframe>@@gi
-
-FILTER: mangadex
-s@<a[^>]*?\/title[^>]*?><img[^>]*?src='[^']*?banner[^']*?'[^>]*?\/><\/a>@@gi
+FILTER: nettruyen
+s@<script[^>]*?>[^<]*?(_taboola|allmobtip|document\.write\(Ads)[\s\S]*?<\/script>@@gi
+s@<script[^>]*?(?:allmobtip)[^>]*?><\/script>@@gi
+s@<a[^>]*?(qc.789.|debet|utm_source=nettruyen|utm_source=nhattruyen|utm_source=nettruyet&utm_campaign=CPD)[^>]*?>[\s\S]*?<\/a>@@gi
+s@<div[^>]*?(text-center mrb5)[^>]*?>[\s\S]*?<\/div>@@gi
 
 FILTER: truyentranhlh
 s@<div[^>]*?(float_content_left|hide_float_left|float-ck)[^>]*?>[\s\S]*?<\/div>@@gi
 s@<script[^>]*?>[^<]*?(hide_float_left)[\s\S]*?<\/script>@@gi
-s@<script[^>]*?(?:bidgear|)[^>]*?><\/script>@@gi
+#s@<script[^>]*?(?:bidgear|)[^>]*?><\/script>@@gi
 s@<style[^>]*?>[^<]*?(float-ck)[\s\S]*?<\/style>@@gi
+s@<a[^>]*?(refpa.top|dd7.xyz)[^>]*?>[\s\S]*?<\/a>@@gi
+s@<img[^>]*?(credit-tien)[^>]*?>@@gi
 
 FILTER: hamtruyen
 s@<center>[^<]*?(?:<!-- Qc banner -->)[\s\S]*?<\/center>@@i
@@ -394,30 +276,6 @@ FILTER: mobitruyen
 s@<div[^>]*?ad_global[^>]*?>[\s\S]*?<\/div>@@gi
 #s@<script[^>]*?>[\s\S]*?(vietkite-promotion)[\s\S]*?<\/script>@@gi
 
-FILTER: webtruyen
-s@<script[^>]*?(d_bottom\.js|pop\.js|qc_v2\.js|d_ablove_right_content|d_ablove_left_content|es5|zencdn|jsnew|mgid|medi-|load_video|yt_tracking|adstruot|genieessp|adtrue)[^>]*?><\/script>@@gi
-s@<script[^>]*?>[^<]*?(ScriptRoot|googletag\.cmd\.push|var PWT|adtrue_tags)[\s\S]*?<\/script>@@gi
-s@webtruyen\.com\/wp-admin\/jsnew\/d_bottom.js@@
-s@<div class="[^"]*?(?:adsrightcontent|adsleftcontent)[^"]*?"[\s\S]*?<\/div>@@gi
-s@<div[^>]*?(div-gpt-ad-|adsbottom|adtrue_tags)[^>]*?>[\s\S]*?<\/div>@@gi
-s@_HB_native@sida@gi
-
-FILTER: truyenfull
-s@<div[^>]*?(ads-|ad_root)[^>]*?>[\s\S]*?<\/div>@@gi
-s@<iframe[^>]*?(?:ads-|truyenfull\.vn\/ureka|\/quangcao\/)[^>]*?>[\s\S]*?<\/iframe>@@gi
-#s@<script[^>]*?static\.truyenfull[^>]*?><\/script>@@gi
-
-FILTER: ani47
-#s@<script>[\s\S]*?(?:check_adswidth)[\s\S]*?<\/script>@@gi
-#s@<script language="Javascript">[\s\S]*?(?:cpmstar)[\s\S]*?<\/script>@@gi
-s@<div[^>]*?(ads_float|ad-top-300-250)[^>]*?>[\s\S]*?<\/div>@@gi
-s@<iframe[^>]*?(?:Ads|ads|ad|hotso1)[^>]*?>[\s\S]*?<\/iframe>@@gi
-s@<script[^>]*?>[^<]*?(_avlVar|cpmstar|async-ajs)[\s\S]*?<\/script>@@gi
-s@<a[^>]*?ad4game[^>]*?>[\s\S]*?<\/a>@@gi
-s@<a[^>]*?target="_blank"[^>]*?>[\s\S]*?<\/a>@@gi
-s@isAdblock=true@isAdblock=false@gi
-s@document\.getElementById\(\"btn-remove-ad\"\)[^;]*?;@@gi
-
 FILTER: truyentranh
 s@<iframe[^>]*?(?:adx\.kul|haynhucnhoi\.vn)[^>]*?>[\s\S]*?<\/iframe>@@gi
 s@<script[^>]*?(?:sbro\.me|adpop|remind|ad-exchange)[^>]*?><\/script>@@gi
@@ -427,13 +285,122 @@ s@<a[^>]*?fshare\.vn[^>]*?>[\s\S]*?<\/a>@@gi
 s@adx\.kul@sidaall@gi
 
 FILTER: academy
-s@<script[^>]*?>[^<]*?(hienthiAd|showPopUp|admicro|popupURL)[\s\S]*?<\/script>@@gi
+s@<script[^>]*?>[^<]*?(hienthiAd|showPopUp|admicro|popupURL|vListUrl)[\s\S]*?<\/script>@@gi
 s@<script[^>]*?(?:admicro|bidgear)[^>]*?><\\\/script>@@gi
-s@<script[^>]*?(?:admicro|bidgear)[^>]*?><\/script>@@gi
+s@<script[^>]*?(?:admicro|bidgear|vPopup)[^>]*?><\/script>@@gi
 s@<a[^>]*?(ad-explorer|bit\.ly)[^>]*?>[\s\S]*?<\/a>@@gi
-s@<div[^>]*?(float_right_top|div-gpt-ad|float_left|float_right)[^>]*?>[\s\S]*?<\/div>@@gi
+s@<div[^>]*?(float_right_top|div-gpt-ad|float_left|float_right|float_middle|float_bot_mobile|noi-dung-quang-cao|M694911ScriptRoot)[^>]*?>[\s\S]*?<\/div>@@gi
+s@<a[^>]*?(gaixinh18z)[^>]*?>[\s\S]*?<\/a>@@gi
 s@var urls = \[[^\]]*?360game[^\]]*?\];@@gi
 s@googletag.cmd.push@sida@gi
+
+FILTER: otakusan
+s@<script[^>]*?(?:adtrue)[^>]*?><\/script>@@gi
+s@<script[^>]*?>[^<]*?(adConfig|adtrue|mgid|GoogleAnalyticsObject)[\s\S]*?<\/script>@@gi
+s@<iframe[^>]*?(?:exdynsrv)[^>]*?>[\s\S]*?<\/iframe>@@gi
+s@<div[^>]*?(ScriptRoot|adtrue)[^>]*?>[\s\S]*?<\/div>@@gi
+s@<button[^>]*?(fixed-ad)[^>]*?>[\s\S]*?<\/button>@@gi
+s@;text-align\: center;height\: 252px;@;text-align\: center;height\: 0px;@
+s@;overflow\: hidden;max-height\:260px;overflow-y\:hidden;@;overflow\: hidden;max-height\:0px;overflow-y\:hidden;@
+s@height\: 250px;overflow\: hidden;@height\: 0px;overflow\: hidden;@
+
+FILTER: izmanga
+s@ad360@@gi
+s@<div style="text-align: center;">[\s\S]*?(?:vietad|bacdau|showads)[\s\S]*?<\/div>@@gi
+s@<div[^>]*?(?:qcg)[^>]*?>[\s\S]*?<\/div>@@gi
+
+FILTER: mangak
+s@<script[^>]*?>[^<]*?(somo.vn|adchoice|ballon-right|\/\/ballon-top|ballon-center|360cdn)[\s\S]*?<\/script>@@gi
+s@<script[^>]*?(mob\.vn|cpmbizz)[^>]*?><\/script>@@gi
+s@<div[^>]*?(?:ads-top)[^>]*?>[\s\S]*?<\/div>@@gi
+s@<iframe[^>]*?(\/ad\/|ad-chap)[^>]*?>[\s\S]*?<\/iframe>@@gi
+
+FILTER: commicvn
+s@<a[^>]*?target="_blank"[^>]*?>[\s\S]*?<\/a>@@gi
+s@function MM_openBrWindow[^;]*?;@@
+s@<script[^>]*?>[^<]*?(banner-ads|arrPreload)[\s\S]*?<\/script>@@gi
+
+FILTER: truyentranhaudio
+s@<script[^>]*?>[^<]*?(canRunAds|__CF\$cv\$params|\$\._Ev=\$\.BC)[\s\S]*?<\/script>@@gi
+s@<a[^>]*?(adpia)[^>]*?>[\s\S]*?<\/a>@@gi
+s@<div[^>]*?(?:ScriptRoot)[^>]*?>[\s\S]*?<\/div>@@gi
+
+#-------------
+FILTER: Manga-------------
+#Manga
+
+FILTER: kiss
+s@<iframe[^>]*?(?:Ads|ads|gamesrevenue\.com|animemerchant|mgiframe2|div-bg-ad|check\.aspx)[^>]*?>[\s\S]*?<\/iframe>@@gi
+#s@<div id="[^"]*?(?:FloatLeft|FloatRight|MarketGid|ad[0-9]{1}|Composite)[^"]*?"[\s\S]*?<\/div>@@gi
+s@<script type="text\/javascript">[^<]*?(?:AddCloseButton|joo2ieb\.bid)[\s\S]*?<\/script>@@i
+s@<script type="text\/javascript">[^<]*?DoAdsPosition[^<]*?<\/script>@@gi
+s@\
+<div style="overflow:hidden;width:800px; height:196px;display:inline-block">\s*?\
+\s*?\
+<\/div>\s*?\
+@@i
+s@<div style="[^"]*?overflow:hidden;[^"]*?display:inline-block[^"]*?">[\s\S]*?<\/div>@@i
+s@\
+<div style="font-size: 0; position: relative; width: 300px; height: 250px;">\s*?\
+\s*?\
+<\/div>\s*?\
+@@i
+s@\
+<div class="clear2">&nbsp;<\/div>\s*?\
+@@gi
+s@parent\.DoDetect2\(\)@sida@i
+s@isBlockAds2 = true@isBlockAds2 = false@gi
+s@errorCount\+\+@@
+s@\$\(\"\#selectPlayer\"\)\[0\]\.selectedIndex == 0@\$\(\"\#selectPlayer\"\)\[0\]\.selectedIndex == 1@g
+s@<script[^>]*?>[^<]*?(alreadyPop|BACKUPFUNCTIONaddEventListener|mgid\.com|juicyads)[\s\S]*?<\/script>@@gi
+s@<script[^>]*?(?:joo2ieb\.bid|bebi\.com|juicyads\.com|puhtml\.com|td583|ti553|2mdnsys|puserving)[^>]*?><\/script>@@gi
+s@<script[^>]*?(?:data-cfasync|betterpop|hive\.js)[\s\S]*?<\/script>@@gi
+s@<script[^>]*?(?:2mdnsys)[\s\S]*?<\\\/script>@@gi
+s@<script[^>]*?>[^<]*?(?:div-bg-ad|ovelWrap|divAds)[\s\S]*?<\/script>@@gi
+s@<a[^>]*?onclick=\"hideAd[^>]*?>[\s\S]*?<\/a>@@gi
+#s@<div[^>]*?(?:adsIfrme)[^>]*?>[\s\S]*?<\/div>@@gi
+
+FILTER: batoto
+#s@_qevents.push\([^;]*?;@@gi
+
+FILTER: mangadeer
+s@<div[^>]*?class="(?:ad-)[^"]*?"[\s\S]*?<\/div>@@gi
+
+FILTER: senmanga
+s@<div (id|class)="[^"]*?(?:box|Box)[^"]*?(?:right|left)"[\s\S]*?<\/div>@@gi
+s@i\.src = img\.src;@i\.src = new_image;@i
+s@img\.error = '\/error\.png';\s*?\
+img\.onerror = function\(\) \{\s*?\
+i = document\.getElementById\('picture'\);\s*?\
+i\.src = img\.error;\s*?\
+\};\s*?\
+@@i
+s@popads\.net@sida@gi
+s@puhtml\.com@sida@gi
+s@<script[^>]*?(puhtml\.com|onclicktop\.com|tradeadexchange\.com|topads|clickad|onclasrv|patiland)[^>]*?><\/script>@@gi
+s@<script[^>]*?data-cfasync=\"false\"[\s\S]*?<\/script>@@gi
+s@<script[^>]*?>[^<]*?(topads|patiland)[\s\S]*?<\/script>@@gi
+s@<iframe[^>]*?src='[^']*?ads\.senmanga[^']*?'[\s\S]*?<\/iframe>@@gi
+
+FILTER: mangafox
+s@<div id="[^"]*?(MarketGid)[^"]*?"[\s\S]*?<\/div>@@gi
+s@<a[^>]*?target="_blank"[^>]*?>[\s\S]*?<\/a>@@gi
+s@<div[^>]*?class="ad[^"]*?(?:left|right)">[\s\S]*?<\/div>@@gi
+s@<div[^>]*?class="ad\s[^"]*?"[^>]*?>[\s\S]*?<\/div>@@gi
+
+FILTER: mangareader
+s@<div id="[^"]*?(?:adtop|adfooter)[^"]*?"[\s\S]*?<\/div>@@gi
+s@<iframe[^>]*?(?:admaintop|adbottomright)[^>]*?>[\s\S]*?<\/iframe>@@gi
+s@<a[^>]*?style="margin-bottom:10px; width: 100%; float:left;"[^>]*?>[\s\S]*?<\/a>@@gi
+s@<div class="c4">[\s\S]*?<\/div>@@i
+
+FILTER: mangakakalot
+s@<div[^>]*?id="[^"]*?(Preload)[^"]*?"[\s\S]*?<\/div>@@gi
+s@<script[^>]*?>[^<]*?(ScriptRoot)[\s\S]*?<\/script>@@gi
+s@<iframe[^>]*?(?:\/ads\/|foodketoah)[^>]*?>[\s\S]*?<\/iframe>@@gi
+
+FILTER: mangadex
+s@<a[^>]*?\/title[^>]*?><img[^>]*?src='[^']*?banner[^']*?'[^>]*?\/><\/a>@@gi
 
 FILTER: mangarock
 s@Rr\("iframe",{[^\)]*?\)@Rr\("iframe",{}\)@gi
@@ -446,6 +413,9 @@ s@/n\.verticalReading@1@g
 s@<iframe[^>]*?(?:adtrue)[^>]*?>[\s\S]*?<\/iframe>@@gi
 s@nativeForPublishers.init\(\);@@gi
 
+FILTER: mangahere
+s@<style>[^<]*?{min-height: 300px;}[^<]*?<\/style>@@gi
+
 FILTER: mangatail
 s@<script[^>]*?>[^<]*?(adb_checker)[\s\S]*?<\/script>@@gi
 
@@ -453,23 +423,468 @@ FILTER: lhmanga
 s@<script[^>]*?(?:ergeiros.xyz|adtrue|run-syndicate)[^>]*?><\/script>@@gi
 s@<script[^>]*?>[^<]*?(adtrue|SVIT_ADS|run-syndicate)[\s\S]*?<\/script>@@gi
 
+FILTER: dm5
+s@<div[^>]*?class="[^"]*?(cp_adct|cp_fun_c2|cl970)[^"]*?"[^>]*?>[\s\S]*?<\/div>@@gi
+s@cp.gs307@@i
+s@<a href="[^"]*?(?:fim34s\.com)[^"]*?"[\s\S]*?<\/a>@@gi
+s@<div id="(?:b3)"[\s\S]*?<\/div>@@gi
+
+FILTER: mangaraw
+s@<a href='[^']*?(?:ads\.senmanga\.com)[^']*?'[\s\S]*?<\/a>@@gi
+s@<script[^>]*?(?:runative-syndicate)[^>]*?><\/script>@@gi
+s@<script[^>]*?>[^<]*?(ExitPopupAd|NativeAd|)[\s\S]*?<\/script>@@gi
+s@<div[^>]*?(?:unit banner-block|banner-landscape)[^>]*?>[\s\S]*?<\/div>@@gi
+s@(<\!-- END INJECTION2 -->)@\
+<style type="text/css">\n\
+\.banner-landscape {visibility: hidden !important;}\n\
+</style>\n$1@
+
+#-------------
+FILTER: MangaH-------------
+#MangaH
+
+FILTER: h-ani
+s@\"is_ads_enabled\"\:true@\"is_ads_enabled\"\:false@g
+s@<script[^>]*?>[^<]*?(bottads)[\s\S]*?<\/script>@@gi
+s@<div[^>]*?(?:d-block)[^>]*?>[\s\S]*?<\/div>@@gi
+s@<a[^>]*?(11bet)[^>]*?>[\s\S]*?<\/a>@@gi
+#s@<script[^>]*?>[^<]*?(contentabc\.com\/ads|BetterJsPop)[\s\S]*?<\/script>@@gi
+#s@<a[^>]*?target="_blank""[^"]*?(?:ads)[^"]*?" [\s\S]*?<\/a>@@gi
+#s@<script[^>]*?(?:\/assets\/application-bundle-client)[^>]*?><\/script>@@gi
+
+FILTER: hitomi
+s@<script[^>]*?(?:hitomi-vertical|hitomi-horizontal)[^>]*?><\/script>@@gi
+s@<script[^>]*?>[^<]*?(hitomi-vertical|hitomi-horizontal)[\s\S]*?<\/script>@@gi
+s@function pick_one_popup@function n0th1ng@g
+s@pick_one_popup\(\);@@g
+
+FILTER: nht
+s@<iframe[^>]*?(?:Ads|ads|contentabc|qx\/qx._pc)[^>]*?>[\s\S]*?<\/iframe>@@gi
+s@show_popunders: true@show_popunders: false@
+s@ads\: \{[^\}]*?\}@ads\: \{\}@
+
+FILTER: h2r
+s@var ads=1;@var ads=0;@gi
+s@<a[^>]*?"[^"]*?(?:ads\?zone)[^"]*?" target="_blank"[\s\S]*?<\/a>@@gi
+s@<iframe[^>]*?(ads)[^>]*?>[\s\S]*?<\/iframe>@@gi
+s@<div[^>]*?(?:js-rotating)[^>]*?>[\s\S]*?<\/div>@@gi
+
+FILTER: fakku
+s@update_ads\(\);@closePageAd\(\);@gi
+s@jsPopunder@@gi
+s@(?:analytics|atrk).js@@gi
+
+#-------------
+FILTER: Anime-------------
+#Anime
+
+FILTER: ani47
+#s@<script>[\s\S]*?(?:check_adswidth)[\s\S]*?<\/script>@@gi
+#s@<script language="Javascript">[\s\S]*?(?:cpmstar)[\s\S]*?<\/script>@@gi
+s@<div[^>]*?(ads_float|ad-top-300-250)[^>]*?>[\s\S]*?<\/div>@@gi
+s@<iframe[^>]*?(?:Ads|ads|ad|hotso1|adpia-ads)[^>]*?>[\s\S]*?<\/iframe>@@gi
+s@<script[^>]*?>[^<]*?(_avlVar|cpmstar|async-ajs)[\s\S]*?<\/script>@@gi
+s@<a[^>]*?ad4game[^>]*?>[\s\S]*?<\/a>@@gi
+s@<a[^>]*?target="_blank"[^>]*?>[\s\S]*?<\/a>@@gi
+s@isAdblock=true@isAdblock=false@gi
+s@document\.getElementById\(\"btn-remove-ad\"\)[^;]*?;@@gi
+s@<center>[^>]*?(?:ntv_|quanque)[^>]*?>[\s\S]*?<\/center>@@gi
+
+FILTER: animetvn
+s@function (dh_popup_bak|dh_popup|dh_popup_mobile)@function dell_pop@gi
+
+#-------------
+FILTER: Novel-------------
+#Novel
+
+FILTER: hako
+s@<iframe[^>]*?(idzone)[^>]*?><\/iframe>@@gi
+s@<script[^>]*?(?:safestcontentgate)[^>]*?><\/script>@@gi
+s@<a[^>]*?__blank[^>]*?>[\s\S]*?<\/a>@@gi
+
+FILTER: readln
+s@<a[^>]*?(?:onelink\.me)[^>]*?>[\s\S]*?<\/a>@@gi
+s@<div[^>]*?(?:div-gpt-ad|sidebar_top|adsbyvli)[^>]*?>[\s\S]*?<\/div>@@gi
+s@<script[^>]*?(?:outbrain|trinitymedia|apester|blockchain)[^>]*?><\/script>@@gi
+s@<script[^>]*?>[^<]*?(?:playbuzz)[\s\S]*?<\/script>@@gi
+s@<small[^>]*?(?:ads-title)[^>]*?>[\s\S]*?<\/small>@@gi
+
+FILTER: webnovel
+s@<ins[^>]*?(?:adsbygoogle)[^>]*?>[\s\S]*?<\/ins>@@gi
+s@<script[^>]*?(?:unpkg)[^>]*?><\/script>@@gi
+s@<script[^>]*?>[^<]*?(?:adsbygoogle)[\s\S]*?<\/script>@@gi
+
+FILTER: asianhobbyist
+s@(<\!-- END INJECTION2 -->)@\n<style>\n\
+\.panel\n\
+{\n\
+display:none!important;\n\
+}\n\
+</style>\n$1@i
+s@<script[^>]*?(?:apester|doubleclick)[^>]*?><\/script>@@gi
+s@<script[^>]*?>[^<]*?(?:div-gpt-ad|_mNDetails|adsbygoogle)[\s\S]*?<\/script>@@gi
+s@<div[^>]*?(?:announcement-body|div-gpt-ad|code-block-10)[^>]*?>[\s\S]*?<\/div>@@gi
+s@<a[^>]*?(?:.dpbolvw)[^>]*?>[\s\S]*?<\/a>@@gi
+s@<h4[^>]*?>Ad<\/h4>@@gi
+s@<ins[^>]*?(?:adsbygoogle)[^>]*?>[\s\S]*?<\/ins>@@gi
+s@<span[^>]*?>Translations by AsianHobbyist Website. <\/span>@@gi
+s@<iframe[^>]*?(?:asianhobbyist\.com_300x250)[^>]*?>[\s\S]*?<\/iframe>@@gi
+
 FILTER: valvrareteam
 s@<div[^>]class="(ad-[0-9]{3}|bottomad)">[\s\S]*?<\/div>@@gi
 s@enable_page_level_ads\: true@enable_page_level_ads\: false@gi
 s@<a[^>]*?(toidungchan\.com)[^>]*?>[\s\S]*?<\/a>@@gi
 s@<div[^>]*?(ScriptRoot)[^>]*?>[\s\S]*?<\/div>@@gi
 
-FILTER: animetvn
-s@function (dh_popup_bak|dh_popup|dh_popup_mobile)@function dell_pop@gi
+FILTER: webtruyen
+s@<script[^>]*?(d_bottom\.js|pop\.js|qc_v2\.js|d_ablove_right_content|d_ablove_left_content|es5|zencdn|jsnew|mgid|medi-|load_video|yt_tracking|adstruot|genieessp|adtrue)[^>]*?><\/script>@@gi
+s@<script[^>]*?>[^<]*?(ScriptRoot|googletag\.cmd\.push|var PWT|adtrue_tags)[\s\S]*?<\/script>@@gi
+s@webtruyen\.com\/wp-admin\/jsnew\/d_bottom.js@@
+s@<div class="[^"]*?(?:adsrightcontent|adsleftcontent)[^"]*?"[\s\S]*?<\/div>@@gi
+s@<div[^>]*?(div-gpt-ad-|adsbottom|adtrue_tags)[^>]*?>[\s\S]*?<\/div>@@gi
+s@_HB_native@sida@gi
+s@(<\!-- END INJECTION2 -->)@\n<style>\n\
+\.wt-ads2, \.wt-ads\n\
+{\n\
+display:none!important;\n\
+}\n\
+</style>\n$1@i
+
+FILTER: truyenfull
+s@<div[^>]*?(\'ads-|ad_root)[^>]*?>[\s\S]*?<\/div>@@gi
+s@<iframe[^>]*?(?:ads-|truyenfull\.vn\/ureka|\/quangcao\/|\/spon\/)[^>]*?>[\s\S]*?<\/iframe>@@gi
+s@\.ads-[^{]*?{[^}]*?}@@gi
+s@function load_qc_outbrain@function sida@gi
+s@(<\!-- END INJECTION2 -->)@\n<style>\n\
+\.ads-holder, \.incontent-ad\n\
+{\n\
+display:none!important;\n\
+}\n\
+</style>\n$1@i
+
+FILTER: bachngocsach
+s@<style>[^<]*?(.AdsNode_top)[\s\S]*?<\/style>@@gi
+s@<script[^>]*?>[^<]*?(?:adsbygoogle)[\s\S]*?<\/script>@@gi
+s@<picture>[\s\S]*?<\/picture>@@gi
+
+FILTER: truyenconect
+s@<div[^>]*?(ad c-ads)[^>]*?>[\s\S]*?<\/div>@@gi
+
+FILTER: metruyenchu
+s@<script[^>]*?>[^<]*?(?:__CF\$cv\$params)[\s\S]*?<\/script>@@gi
+s@<div[^>]*?(?:nh-read__alert)[^>]*?>[\s\S]*?<\/div><\/div>@@gi
+s@<center[^>]*?(?:nh-read_)[^>]*?>[\s\S]*?<\/center>@@gi
+s@<iframe[^>]*?(?:metruyenchu\.com\/passback\/)[^>]*?>[\s\S]*?<\/iframe>@@gi
+s@(<\!-- END INJECTION2 -->)@\n<style>\n\
+\.nh-read__alert, \.mb-1, \.col-4\n\
+{\n\
+display:none!important;\n\
+}\n\
+</style>\n$1@i
+
+FILTER: isotls
+s@<div[^>]*?(?:ezo_ad)[^>]*?>[\s\S]*?x<\/span><\/div>@@gi
+s@<span[^>]*?(ezoic-pub-ad|)[^>]*?>[\s\S]*?<\/span>@@gi
+s@<script[^>]*?>[^<]*?(?:_ebcids|ez_isclean|__ez_fad|_ezaq|__ez_func|create_ezolpl|_audins_dom|__ez\.queue|ezRBA)[\s\S]*?<\/script>@@gi
+
+FILTER: kaystls
+s@<script[^>]*?>[^<]*?(?:fivver|_0xc33e|b2a\(a\)|_0xc)[\s\S]*?<\/script>@@gi
+s@<figure[^>]*?(?:wp-block-)[^>]*?>[\s\S]*?<\/figure>@@gi
+s@<a[^>]*?(?:wp-block-button)[^>]*?>[\s\S]*?<\/a>@@gi
+
+#-------------------------
+FILTER: Techs-------------------------
+# Techs
+
+FILTER: gg
+s@<li class="ads-ad"[\s\S]*?<\/li>@@gi
+#s@pagead\/drt\/dn\/@@g
+#s@_\.Ad@Sida@g
+#s@<script[^>]*?(cloudfront)[^>]*?><\/script>@@gi
+s@(<\!-- END INJECTION2 -->)@\
+<style type="text/css">\n\
+/* Style sheet inserted by Privoxy's google filter. */\n\
+\#fbc, \#fbl, \#ra, .rhh, .ads-ad {visibility: hidden !important;}\n\
+\#tpa1,\#tpa2,\#tpa3,\#tpa4,\#tpa5,\#tpa5, \#spl, \#ads,\
+\#toolbar, \#google_ads_frame, \#mbEnd {display: none !important;}\n\
+.main_body, .j, \#res, .med, .hd, .g, .s\n\
+{width: 99%; max-width: 100%; margin-left: 0; margin-right: 0;}\n\
+</style>\n$1@
+s@<div style=\"padding-top:11px;min-width:500px\">@<div id="main_body">@
+s@(<table cellspacing=0 cellpadding=0 width=25% align=right bgcolor=\#ffffff border=0\
+|</font></td></tr></tbody></table><table align=\"right\" bgcolor=\"\#ffffff\"\
+|<table cellspacing=0 cellpadding=0 align=right bgcolor=\#ffffff border=0\
+|<table style=\"clear:both\" align=right width=25% cellspacing=\"0\" cellpadding=\"0\"\
+ border=\"0\" bgcolor=\"\#ffffff\")@$0 id="ads"@
+s@(<br clear=all><table)( border=0 cellpadding=9><tr><td)@$1 id="toolbar"$2@
+s@(<\!-- END INJECTION2 -->)@\n<style>\n\
+\.tads, \.tvcap\n\
+{\n\
+display:none!important;\n\
+}\n\
+</style>\n$1@i
+
+FILTER: notebookcheck
+s@<script[^>]*?(?:adsystem|\/ads\.js|snhb-notebookcheck|adconsent)[^>]*?><\/script>@@gi
+s@<script[^>]*?>[^<]*?(?:googletag|indexOf|abScript|AAdsspaCe)[\s\S]*?<\/script>@@g
+s@(<\!-- END INJECTION2 -->)@\n<style>\n\
+\.am_el\n\
+{\n\
+display:none!important;\n\
+}\n\
+</style>\n$1@i
+
+FILTER: softpedia
+s@<div[^>]*?(Softpedia___)[^>]*?>[\s\S]*?<\/div>@@gi
+s@<div[^>]*?class="[^"]*?(ad_native|ad adl)[^"]*?"[\s\S]*?<\/div>@@g
+s@<a[^>]*?class="mgleft[^"]*?"[^>]*?(softpedia.com\/_out)[^>]*?target="_blank"[\s\S]*?<\/a>@@g
+s@<script[^>]*?>[^<]*?(pubads|APS_GO|DFP_GO)[\s\S]*?<\/script>@@gi
+s@<script[^>]*?(?:admicro|logdantri)[^>]*?><\/script>@@gi
+
+FILTER: ghacks
+s@(<\!-- END INJECTION2 -->)@\n<style>\n\
+\.post-list-sponsored\n\
+{\n\
+display:none!important;\n\
+}\n\
+</style>\n$1@i
+
+FILTER: vnreview
+s@function playClipMute@Kjll@i
+s@function opensh_homepage()@Kjll@gi
+
+FILTER: greasyfork
+s@<div[^>]*?_adbox_[^>]*?>[\s\S]*?<\/div>@@gi
+s@<div[^>]*?(id|class)="(ad-note|ad-content)[^"]*?"[\s\S]*?<\/div>@@gi
+
+FILTER: techtalk
+s@<a[^>]*?(td-sticky-header|topdev\.vn)[^>]*?>[\s\S]*?<\/a>@@gi
+
+FILTER: khoahoc
+s@<div[^>]*?(adindexcenter|adsense_|adsposttop|adsposttoplinks|adssearchcenter)[^>]*?>[\s\S]*?<\/div>@@gi
+s@(<\!-- END INJECTION2 -->)@\n<style>\n\
+\#adrighttop\n\
+{\n\
+display:none!important;\n\
+}\n\
+</style>\n$1@i
+
+FILTER: quantrimang
+s@<div[^>]*?(adindexcenterbox|adsense_|adsposttop|adsposttoplinks|adssearchcenter)[^>]*?>[\s\S]*?<\/div>@@gi
+s@<div[^>]*?(adindexcenter|adrighttop|adbox)[^>]*?>[\s\S]*?<\/div>@@gi
+
+#-------------------------
+FILTER: News-------------------------
+# News
+
+FILTER: tuoitre
+s@(<\!-- END INJECTION -->)@\n\
+<script>function NoWrite(e){return 1}document.write=NoWrite;document.writeln=NoWrite<\/script>\n\
+$1@i
+s@images\/tet-(right|left).png@@gi
+s@<script type='text\/javascript'>[^<]*?googletag[^<]*?<\/script>@@gi
+
+FILTER: dantri
+s@<script[^>]*?(?:admicro|logdantri)[^>]*?><\/script>@@gi
+s@<script[^>]*?>[^<]*?(logdantri|admicro|GetLikeF\*\*kbook)[\s\S]*?<\/script>@@gi
+s@<div[^>]*?(admzone|top-ads|adv-box|d7254|ads flex-jcc|ads-masthead|mobile-home-|mobile-top-page)[^>]*?>[\s\S]*?<\/div>@@gi
+s@<a[^>]*?(fica\.vn)[^>][\s\S]*?<\/a>@@gi
+s@allowF\*\*kbook@allowFacebook@g
+s@\"XdsSlots\"\:\{[^\}]*?\}@\"XdsSlots\"\:\{\}@g
+s@(<\!-- END INJECTION2 -->)@\n<style>\n\
+\.bqtm-w, \.hqt-g, \.hqt-r, \.admzone221, \.fica, \.banner-ds, \.dtms-app, \.top-banner, \.mdbl_16, \.tpm-ads-unit,\n\
+\[id\*=xds-\], \[id\=dtads_inpage_wrapper\]\n\
+{\n\
+display:none!important;\n\
+}\n\
+</style>\n$1@i
+
+FILTER: vietnamnet
+s@<script[^>]*?>[^<]*?(_trackEvent)[\s\S]*?<\/script>@@gi
+
+FILTER: vnexpress
+s@<iframe[^>]*?(id|class|src)="[^"]*?eclick[^"]*?"[\s\S]*?<\/iframe>@@gi
+s@<script[^>]*?>[^<]*?(?:Poly_|cpxad|runUTMTrack|adsbyeclick)[^<]*?<\/script>@@g
+#s@<script[^>]*?>[^<]*?(?:switchoversea)[\s\S]*?<\/script>@@g
+s@<script[^>]*?(?:Poly_|polyad|eclick.vn|mads\.js)[^>]*?><\/script>@@g
+s@<div[^>]*?(box_splienquan|div-gpt-ad)[^>]*?>[\s\S]*?<\/div>@@gi
+s@<ins[^>]*?(adsby)[^>]*?>[\s\S]*?<\/ins>@@gi
+s@<section[^>]*?(sidebar_raovat|box_shopvne|banner_top|box_shop_|ads_large|inner_section|section_ads_|banner-ads)[^>]*?>[\s\S]*?<\/section>@@gi
+s@<a[^>]*?(tainangtrevietnam)[^>]*?target="_blank"[\s\S]*?<\/a>@@gi
+s@crawler\.showWidgetRaovat@@g
+s@Poly_showads\(\)@@g
+s@common.parserAdsFullScreen\(\);@@
+s@parserOldVideo\(\);@@
+s@eclick_zoneid = [^;]*?;@eclick_zoneid = 0;@
+s@is_show_ads = 1;@is_show_ads = 0;@gi
+s@ads_url = [^;]*?;@ads_url = \'\';@gi
+s@showads=1@showads=0@gi
+s@\<\!--[^>]*?(?:BANNER ADS|BLOCK TAG)--\>@@gi
+s@(<\!-- END INJECTION2 -->)@\n<style>\n\
+\.box_shop_vne, \.item_shop, \.inner_ads\n\
+{\n\
+display:none!important;\n\
+}\n\
+</style>\n$1@i
+
+FILTER: vnexpress-video
+#s@removeAdData\(\)@'nothing'@
+
+FILTER: thanhnien
+s@<script[^>]*?>[^<]*?(?:Float_Banner|Balloon_Ads|Scripts_Ads)[^<]*?<\/script>@@g
+s@<div[^>]*?(?:Float_Banner|Balloon_Ads|Scripts_Ads)[^>]*?>[\s\S]*?<\/div>@@gi
+
+FILTER: genk
+#s@admicroAD\.loaded=ADS_CHECKER[^;]*?;@@gi
+#s@admicroAD\.unit\.push\([^;]*?;@@gi
+s@admicroAD\.show\([^\)]*?\)@@gi
+s@ADS_CHECKER\.array_diff\([^\)]*?\)@\'nothing\'@gi
+s@<iframe[^>]*?(lotusembed)[\s\S]*?<\/iframe>@@gi
+s@<a[^>]*?(lotus|bitlylink)[\s\S]*?<\/a>@@gi
+s@<div[^>]*?(?:admzone|ads w|-ads-|adv_sponsored|adv-box|adm-slot-)[^>]*?>[\s\S]*?<\/div>@@gi
+s@<script[^>]*?>[^<]*?(?:admicroMAD\.show|arfAsync\.push)[^<]*?<\/script>@@g
+
+FILTER: tinhte
+s@<div id='div-gpt-ad[^>]*?>[\s\S]*?<\/div>@@gi
+s@<script[^>]*?>[^<]*?(?:gads)[^<]*?<\/script>@@g
+s@document.write\("<div id=\\"bdAd[\s\S]*?\)\);}@@g
+s@<div[^>]*?class="[^"]*?(banner|renderedAd)[^"]*?"[^>]*?>[\s\S]*?<\/div>@@gi
+#s@<script type='text\/javascript'>[\s\S]*?div-gpt-ad-[\s\S]*?<\/script>@@gi
+#s@<script type="text\/javascript"[^>]*?admicro1[^>]*?></script>
+
+FILTER: 24h
+s@<script language="javascript" type=("|')text\/javascript("|')>.*?$\n(?:\/\/<!\[CDATA)[\s\S]*?(ADS)[\s\S]*?<\/script>@@gim
+s@<script type=("|')text\/javascript("|')>.*?$\n(?:\/\/<!\[CDATA)[\s\S]*?(ADS)[\s\S]*?<\/script>@@gim
+s@<span[^>]*?(id|class|name)="(ad|[^"]*?ads|[^"]*?Ads|[^"]*?ADS)[^"]*?"[\s\S]*?<\/span>@@gi
+s@<div (id|class)="[^"]*?(banner-LR|aCenter|banner_box)[^"]*?"[\s\S]*?<\/div>@@gi
+s@(<(?:head|body)[^>]*?>)@$1<script>\n\
+var _0x5440=["\\x36\\x20\\x30\\x28\\x33\\x29\\x7B\\x32\\x20\\x31\\x7D\\x34\\x2E\\x35\\x3D\\x30\\x3B","\\x7C","\\x73\\x70\\x6C\\x69\\x74","\\x4E\\x6F\\x57\\x72\\x69\\x74\\x65\\x7C\\x7C\\x72\\x65\\x74\\x75\\x72\\x6E\\x7C\\x65\\x7C\\x64\\x6F\\x63\\x75\\x6D\\x65\\x6E\\x74\\x7C\\x77\\x72\\x69\\x74\\x65\\x7C\\x66\\x75\\x6E\\x63\\x74\\x69\\x6F\\x6E","\\x72\\x65\\x70\\x6C\\x61\\x63\\x65","","\\x5C\\x77\\x2B","\\x5C\\x62","\\x67"];eval(function (_0xff18x1,_0xff18x2,_0xff18x3,_0xff18x4,_0xff18x5,_0xff18x6){_0xff18x5=function (_0xff18x3){return _0xff18x3;} ;if(\!_0x5440[5][_0x5440[4]](/^/,String)){while(_0xff18x3--){_0xff18x6[_0xff18x3]=_0xff18x4[_0xff18x3]||_0xff18x3;} ;_0xff18x4=[function (_0xff18x5){return _0xff18x6[_0xff18x5];} ];_0xff18x5=function (){return _0x5440[6];} ;_0xff18x3=1;} ;while(_0xff18x3--){if(_0xff18x4[_0xff18x3]){_0xff18x1=_0xff18x1[_0x5440[4]]( new RegExp(_0x5440[7]+_0xff18x5(_0xff18x3)+_0x5440[7],_0x5440[8]),_0xff18x4[_0xff18x3]);} ;} ;return _0xff18x1;} (_0x5440[0],7,7,_0x5440[3][_0x5440[2]](_0x5440[1]),0,{}));\n\
+</script>@i
+s@<a[^>]*?quangcao[\s\S]*?<\/a>@@gi
+s@<script type='text\/javascript'>[\s\S]*?quangcao\.24h\.com\.vn\/quangcao/[\s\S]*?<\/script>@@gi
+
+FILTER: bongdaso
+s@<script[^>]*?>[^<]*?(googletag|MsgAd|left_float|right_float)[\s\S]*?<\/script>@@gi
+s@<script[^>]*?(admanager.js)[^>]*?>[\s\S]*?<\/script>@@gi
+s@<a[^>]*?target=(?:"|')_blank(?:"|')[^<]*?<img[^<]*?<\/a>@@gi
+s@<div[^>]*?class='[^']*?(banner)[^']*?'[^>]*?>[\s\S]*?<\/div>@@gi
+s@<div[^>]*?id="[^"]*?(?:right_float|left_float)[^"]*?"[\s\S]*?<\/div>@@gi
+
+FILTER: bongdaf
+s@<a[^>]*?target=(?:"|')_blank(?:"|')[^<]*?<img[^<]*?<\/a>@@gi
+
+FILTER: pose
+s@<aside data-track-category="Right Rail">[\s\S]*?<\/aside>@@gi
+
+FILTER: bongda365
+s@<a[^>]*?(bit\.ly)[\s\S]*?<\/a>@@gi
+s@<script[^>]*?>[^<]*?(js_banner)[\s\S]*?<\/script>@@gi
+
+#-------------------------
+FILTER: Socials-------------------------
+# Socials
+
+FILTER: facebook
+#s@"interval":50000@"interval":999999999999999999@i
+s@(<\!-- END INJECTION -->)@\n<script>\n\
+setInterval(function() {\n\
+if (document.querySelector("\#pagelet_side_ads") != null) {\n\
+document.querySelector("\#pagelet_side_ads").outerHTML = "";\n\
+}\n\
+if (document.querySelector("\#pagelet_pymk_timeline") != null) {\n\
+document.querySelector("\#pagelet_pymk_timeline").outerHTML = "";\n\
+}\n\
+if (document.querySelector("\#pagelet_ego_pane") != null) {\n\
+document.querySelector("\#pagelet_ego_pane").outerHTML = "";\n\
+}\n\
+if (document.querySelector("\#pagelet_ego_contextual_group") != null) {\n\
+document.querySelector("\#pagelet_ego_contextual_group").outerHTML = "";\n\
+}\n\
+if (document.querySelector("\.groupSkyAux") != null) {\n\
+document.querySelector("\.groupSkyAux").outerHTML = "";\n\
+}\n\
+if (document.querySelector("\#pagelet_advertiser_panel") != null) {\n\
+document.querySelector("\#pagelet_advertiser_panel").outerHTML = "";\n\
+}\n\
+if (document.querySelector("\.home_right_column") != null) {\n\
+document.querySelector("\.home_right_column").outerHTML = "";\n\
+}\n\
+}, 2000\);\n\
+</script>\n$1@i
+
+FILTER: twitter
+s@(<\!-- END INJECTION -->)@\n<script>\n\
+var css = document.createElement("style");\n\
+css.type = "text/css";\n\
+css.innerHTML = "div[data-component-context=\\"suggest_activity_tweet\\"] { display: none }";\n\
+\n\
+document.head.appendChild(css);\n\
+</script>\n$1@i
+s@(<link rel="preconnect" href="\/\/abs.twimg.com" \/><link rel="dns-prefetch" href="\/\/abs.twimg.com" \/>)@$1<link rel="preconnect" href="\/\/config.privoxy.org" \/><link rel="dns-prefetch" href="\/\/config.privoxy.org" \/>@
+
+FILTER: youtube
+s@<script[^>]*?>[^<]*?(?:ad_creative)[\s\S]*?<\/script>@@gi
+#s@<script[^>]*?(?:desktop_polymer)[^>]*?><\/script>@@gi
+#s@product_listing_ads_cards_drawer_auto_open=true@product_listing_ads_cards_drawer_auto_open=false@g
+#s@fix_backfill_mpu_api_stats_ads=true@fix_backfill_mpu_api_stats_ads=false@g
+#s@yt_unlimited_pts_skip_ads_promo_desktop_always=true@yt_unlimited_pts_skip_ads_promo_desktop_always=false@g
+#s@fix_vmap_afc_mpu_api_stats_ads=true@fix_vmap_afc_mpu_api_stats_ads=false@g
+#s@\"google_max_num_ads\\\"\:1@\"google_max_num_ads\\\"\:0@g
+#s@google_only_pyv_ads\\\"\:true@google_only_pyv_ads\\\"\:false@g
+#s@SKIP_RELATED_ADS\'\: false@SKIP_RELATED_ADS\'\: true@g
+#s@<div id="(?:ad_creative)[^"]*?"[\s\S]*?<\/div>@@gi
+#s@doubleclick_gpt_retagging=true@doubleclick_gpt_retagging=false@gi
+#s@yt_unlimited_pts_skip_ads_promo_desktop_always=false@yt_unlimited_pts_skip_ads_promo_desktop_always=true@gi
+#s@\"DISABLE_WARM_LOADS\"\:false@\"DISABLE_WARM_LOADS\"\:true@g
+s@(<\!-- END INJECTION2 -->)@\
+<style type="text/css">\n\
+\#masthead-ad\.ytd-browse, \.ytp-ad-module, \#block\.ytd-action-companion-ad-renderer, ytd-display-ad-renderer, \n\
+\#sparkles-container\.ytd-promoted-sparkles-web-renderer, ytd-page-top-ad-layout-renderer, ytd-in-feed-ad-layout-renderer \n\
+{\n\
+display:none!important;\n\
+}\n\
+</style>\n$1@
+#s@<div[^>]*?(?:video-masthead)[^>]*?>[\s\S]*?<\/div>@@gi
+s@offsetStartMilliseconds@sida1@g
+s@offsetEndMilliseconds@sida2@g
+s@AdRenderer@sida@g
+s@\"adPlacements\"\:@\"adPlacements\"\: undefined,\"sida\"\:@g
+s@\"adPlacementRenderer\"\:@\"adPlacementRenderer\"\: undefined,\"sida2\"\:@g
+s@\"adPlacementConfig\"\:@\"adPlacementConfig\"\: undefined,\"sida3\"\:@g
+s@trackingParams@sidaoverload@g
+#s@adPlacements@sidaaaa@
+#s@adPlacements@sidaaaaaaa@
+#s@adPlacements@sidaaaaaaaaaa@g
+#s@\"offsetStartMilliseconds\"\:\"0\"@\"offsetStartMilliseconds\"\:\"999999999999\"@
+#s@\"offsetEndMilliseconds\"\:\"-1\"@\"offsetEndMilliseconds\"\:\"999999999999\"@
+
+FILTER: 4chan
+s@<iframe[^>]*?__idm_frm__[^>]*?>[\s\S]*?<\/iframe>@@gi
+#s@this.initAds\(\),@@g
+#s@window._adg&&initAdsAG\(\),@@g
+#s@function initAdsAG\(\)\{[^}]*?\}@@g
+s@(<\!-- END INJECTION2 -->)@\n<style>\n\
+.adg-rects{display:none;}\n\
+</style>\n$1@i
+s@<(div [a-zA-Z]{10}=\"\")>@<$1 style=\"display:none;\">@gi
+s@(<\!-- END INJECTION2 -->)@\n<style>\n\
+\.adt-800\n\
+{\n\
+display:none!important;\n\
+}\n\
+</style>\n$1@i
+
+FILTER: pixiv
+s@<iframe[^>]*?(?:Ads|ads|ad)[^>]*?>[\s\S]*?<\/iframe>@@gi
 
 FILTER: deviantart
-s†(<\!-- END INJECTION -->)†$1<style>\n\
+s@(<\!-- END INJECTION -->)@$1<style>\n\
 \.sleekadbubble\.section\.squareBrowsead\.square200H\.ch\n\
 \n\
 {\n\
 display:none;\n\
 }\n\
-</style>†i
+</style>@i
 s@(<body[^>]*?>)@$1<style>\n\
 \.dp-ad-chrome\n\
 {\n\
@@ -511,14 +926,48 @@ s@'(ads_[^']*?)':1@'$1':0@g
 #s@googletag\.pubads\(\)\.[^;]*?;@@g
 s@__wake\(\[\"lib\/da\/ads\/block-notice\/block-notice\"@__wake\(\[\"\"@g
 
+FILTER: wikia
+s@"adsInContent":1@"adsInContent":0@
+s@"showAds":true@"showAds":false@
+s@"pageType":"all_ads"@"pageType":"no_ads"@
+s@<script[^>]*?>[^<]*?(?:wikia_beacon_id|adEngine|_comscore|_qevents|adslots2\.push)[^<]*?<\/script>@@g
+#s@<script[^>]*?(?:nocookie\.net\/__load/)[^>]*?><\/script>@@gi adEngine|_comscore|wikia_beacon_id|_qevents|quantcastLabels|adslots2\.push
+s@<div[^>]*?(?:advertisement|ad-slot-placeholder|-ads-container)[^>]*?>[\s\S]*?<\/div>@@gi
+
+FILTER: reddit
+s@__perfMark\(\'ads_dot_js_fetch_start\'\);@@g
+s@"suggestedSort":"qa","isBlank":false@"suggestedSort":"qa","isBlank":true@gi
+s@"suggestedSort":"qa","isRoadblock":false@"suggestedSort":"qa","isRoadblock":true@gi
+s@(<\!-- END INJECTION -->)@\n<style>\n\
+\.promotedlink, \.xpromoMinimal, \.XPromoPill, \.XPromoPopup, \.TopButton\n\
+{\n\
+display:none!important;\n\
+pointer-events: none !important;\n\
+}\n\
+</style>\n$1@i
+
+#-------------------------
+FILTER: Forums-----------------------
+# Forums
+
+FILTER: vozforums
+#s@(<td[^>]*?width="160">)(?!.*?\1).*?<\/td>@@is
+#s@<script[^>]*?>[^<]*?(adScope|adsbygoogle|truvidScript|powerTag|samBannerUnit|pubpowerplatform)[\s\S]*?<\/script>@@g
+#s@<div id='[^']*?gpt-ad-[^>]*?>[\s\S]*?<\/div>@@gi
+#s@\.neo_column\.side \{max-width[^\}]*?\}@\.neo_column\.side \{max-width\: 0px;\}@
+s@<script[^>]*?(?:adsbygoogle|pubpowerplatform)[^>]*?><\/script>@@gi
+#s@<ins[^>]*?(?:adsbygoogle)[^>]*?><\/ins>@@gi
+s@<pubtag[^>]*?(?:adsbypubpower)[^>]*?><\/pubtag>@@gi
+s@<div[^>]*?(gamau|truvid|vm-placement|div-pw-)[^>]*?>[\s\S]*?<\/div>@@gi
+
 FILTER: xda
 s@\<html dir=\"ltr\" lang=\"en\"\>@\<html dir=\"ltr\">@
-s†(<\!-- END INJECTION -->)†$1<style>\n\
+s@(<\!-- END INJECTION -->)@$1<style>\n\
 \.xdadepot_item, \.xdadepot_img, \.xdadepot_title, \.sponsor-dyn-banner\n\
 {\n\
 display:none;\n\
 }\n\
-</style>†i
+</style>@i
 
 FILTER: miui-vn
 s@random_imglink\(\);@@g
@@ -528,171 +977,67 @@ s@<div class="secondaryContent">[^<]*?<iframe[^>]*?(?:plugins\/likebox)[\s\S]*?<
 #s@<div class="secondaryContent">[^<]*?<a[^>]*?><[^>]*?(?:\/ads\/|randomImage|)[\s\S]*?<\/div>@@g
 s@<a[^>]*?><[^>]*?(?:\/ads\/|randomImage)[\s\S]*?<\/a>@@g
 
-FILTER:xiaomieu
+FILTER: xiaomieu
 s@<iframe[^>]*?(?:_ads_)[^>]*?>[\s\S]*?<\/iframe>@@gi
-
-FILTER: notebookcheck
-s@<script[^>]*?(?:adsystem|\/ads\.js)[^>]*?><\/script>@@gi
-s@<script[^>]*?>[^<]*?(?:googletag|indexOf|abScript|AAdsspaCe)[\s\S]*?<\/script>@@g
-s†(<\!-- END INJECTION2 -->)†\n<style>\n\
-\.am_el\n\
-{\n\
-display:none!important;\n\
-}\n\
-</style>\n$1†i
-
-
-FILTER: wikia
-s@"adsInContent":1@"adsInContent":0@
-s@"showAds":true@"showAds":false@
-s@"pageType":"all_ads"@"pageType":"no_ads"@
-s@<script[^>]*?>[^<]*?(?:adEngine|wikia_beacon_id|_comscore|_qevents|quantcastLabels|adslots2\.push)[^<]*?<\/script>@@g
-#s@<script[^>]*?(?:nocookie\.net\/__load/)[^>]*?><\/script>@@gi
-
-FILTER: softpedia
-s@<div[^>]*?(Softpedia___)[^>]*?>[\s\S]*?<\/div>@@gi
-s@<div[^>]*?class="[^"]*?(ad_native|ad adl)[^"]*?"[\s\S]*?<\/div>@@g
-s@<a[^>]*?class="mgleft[^"]*?"[^>]*?(softpedia.com\/_out)[^>]*?target="_blank"[\s\S]*?<\/a>@@g
-s@<script[^>]*?>[^<]*?(pubads|APS_GO|DFP_GO)[\s\S]*?<\/script>@@gi
-s@<script[^>]*?(?:admicro|logdantri)[^>]*?><\/script>@@gi
-
-FILTER: reddit
-s@__perfMark\(\'ads_dot_js_fetch_start\'\);@@g
-s@"suggestedSort":"qa","isBlank":false@"suggestedSort":"qa","isBlank":true@gi
-s@"suggestedSort":"qa","isRoadblock":false@"suggestedSort":"qa","isRoadblock":true@gi
-s†(<\!-- END INJECTION2 -->)†\n<style>\n\
-\.promotedlink\n\
-{\n\
-display:none!important;\n\
-}\n\
-</style>\n$1†i
-
-FILTER: tuoitre
-s@<head[^>]*?>@$1<script>function NoWrite(e){return 1}document.write=NoWrite;document.writeln=NoWrite</script>@i
-s@images\/tet-(right|left).png@@gi
-s@<script type='text\/javascript'>[^<]*?googletag[^<]*?<\/script>@@gi
-
-FILTER: dantri
-s@<script[^>]*?(?:admicro|logdantri)[^>]*?><\/script>@@gi
-s@<script[^>]*?>[^<]*?(logdantri|admicro|GetLikeF\*\*kbook)[\s\S]*?<\/script>@@gi
-s@<div[^>]*?(admzone|top-ads|adv-box|d7254)[^>]*?>[\s\S]*?<\/div>@@gi
-s@<a[^>]*?(fica\.vn)[^>][\s\S]*?<\/a>@@gi
-s@allowF\*\*kbook@allowFacebook@g
-s†(<\!-- END INJECTION2 -->)†\n<style>\n\
-\.bqtm-w, \.hqt-g, \.hqt-r, \.admzone221, \.fica\n\
-{\n\
-display:none!important;\n\
-}\n\
-</style>\n$1†i
-
-FILTER: vietnamnet
-s@<script[^>]*?>[^<]*?(_trackEvent)[\s\S]*?<\/script>@@gi
-
-FILTER: vnexpress
-s@<iframe[^>]*?(id|class|src)="[^"]*?eclick[^"]*?"[\s\S]*?<\/iframe>@@gi
-s@<script[^>]*?>[^<]*?(?:Poly_|cpxad|runUTMTrack|adsbyeclick)[^<]*?<\/script>@@g
-#s@<script[^>]*?>[^<]*?(?:switchoversea)[\s\S]*?<\/script>@@g
-s@<script[^>]*?(?:Poly_|polyad|eclick.vn|mads\.js)[^>]*?><\/script>@@g
-s@<div[^>]*?(box_splienquan|div-gpt-ad)[^>]*?>[\s\S]*?<\/div>@@gi
-s@<ins[^>]*?(adsby)[^>]*?>[\s\S]*?<\/ins>@@gi
-s@<section[^>]*?(sidebar_raovat|box_shopvne|banner_top|box_shop_|ads_large|inner_section|section_ads_)[^>]*?>[\s\S]*?<\/section>@@gi
-s@<a[^>]*?(tainangtrevietnam)[^>]*?target="_blank"[\s\S]*?<\/a>@@gi
-s@crawler\.showWidgetRaovat@@g
-s@Poly_showads\(\)@@g
-s@common.parserAdsFullScreen\(\);@@
-s@parserOldVideo\(\);@@
-s@eclick_zoneid = [^;]*?;@eclick_zoneid = 0;@
-s@is_show_ads = 1;@is_show_ads = 0;@gi
-s@ads_url = [^;]*?;@ads_url = \'\';@gi
-s@showads=1@showads=0@gi
-s@\<\!--[^>]*?(?:BANNER ADS|BLOCK TAG)--\>@@gi
-s†(<\!-- END INJECTION2 -->)†\n<style>\n\
-\.box_shop_vne, \.item_shop, \.inner_ads\n\
-{\n\
-display:none!important;\n\
-}\n\
-</style>\n$1†i
-
-FILTER: vnexpress-video
-#s@removeAdData\(\)@'nothing'@
-
-FILTER: genk
-#s@admicroAD\.loaded=ADS_CHECKER[^;]*?;@@gi
-#s@admicroAD\.unit\.push\([^;]*?;@@gi
-s@admicroAD\.show\([^\)]*?\)@@gi
-s@ADS_CHECKER\.array_diff\([^\)]*?\)@\'nothing\'@gi
-
-FILTER: garena
-#s@<script[^>]*?(?:bundle.min)[^>]*?><\/script>@@g
-s@<link href='[^']*?akamaihd[^']*?'[^>]*?>@@g
 
 FILTER: hdvn
 s@<div id="[^"]*?(?:banner|ox_fa|divAd)[^"]*?"[\s\S]*?<\/div>@@gi
 s@(ShowAdDiv|FloatTopDiv)@@gi
 s@<script[^>]*?>[^<]*?(?:div-gpt-ad|FloatTopDiv|AdRight|RightAd|\(window\).resize)[^<]*?<\/script>@@gi
 
-FILTER: game8
-s@<div id="[^"]*?(?:divAdLeft|divAdRight)[^"]*?"[\s\S]*?<\/div>@@gi
+FILTER: ankulua
+s@runAntiAdBlock = 1;@runAntiAdBlock = 0;@g
 
-FILTER: gametv
-s@<a[^>]*?(nhanthuong88|jbb512|bit\.ly)[\s\S]*?<\/a>@@gi
+FILTER: xamvn
+s@<a[^>]*?(99906)[^>]*?>[\s\S]*?<\/a>@@gi
 
-FILTER: hltv
-s@<div[^>]*?g\d_(left|middle|right)[^>]*?>[\s\S]*?<\/div>@@gi
+FILTER: otofun
+s@<div[^>]*?(div-gpt-ad)[^>]*?>[\s\S]*?<\/div>@@gi
+s@<script[^>]*?>[^<]*?(?:div-gpt-ad)[^<]*?<\/script>@@gi
 
-FILTER: vcmedia
-s@adsjs="[^"]*?"@adsjs="kjll"@
-
-FILTER: tinhte
-s@<div id='div-gpt-ad[^>]*?>[\s\S]*?<\/div>@@gi
-s@<script[^>]*?>[^<]*?(?:gads)[^<]*?<\/script>@@g
-s@document.write\("<div id=\\"bdAd[\s\S]*?\)\);}@@g
-s@<div[^>]*?class="[^"]*?(banner|renderedAd)[^"]*?"[^>]*?>[\s\S]*?<\/div>@@gi
-#s@<script type='text\/javascript'>[\s\S]*?div-gpt-ad-[\s\S]*?<\/script>@@gi
-#s@<script type="text\/javascript"[^>]*?admicro1[^>]*?></script>
-
-FILTER: aeria
-s@<div[^>]*?(?:rectangleAd|leaderboardAd)[^>]*?>(?![^>]*?<div[^>]*?>)[\s\S]*?<\/div>@@gi
-
-FILTER: mediafire
-s@<script[^>]*?(?:async)[\s\S]*?<\/script>@@gi
-s@<div id="remove_ads[^"]*?"[^>]*?>[\s\S]*?<\/div>[\s\S]*?<\/div>[\s\S]*?<\/div>@@gi
-
-FILTER: 24h
-s@<script language="javascript" type=("|')text\/javascript("|')>.*?$\n(?:\/\/<!\[CDATA)[\s\S]*?(ADS)[\s\S]*?<\/script>@@gim
-s@<script type=("|')text\/javascript("|')>.*?$\n(?:\/\/<!\[CDATA)[\s\S]*?(ADS)[\s\S]*?<\/script>@@gim
-s@<span[^>]*?(id|class|name)="(ad|[^"]*?ads|[^"]*?Ads|[^"]*?ADS)[^"]*?"[\s\S]*?<\/span>@@gi
-s@<div (id|class)="[^"]*?(banner-LR|aCenter|banner_box)[^"]*?"[\s\S]*?<\/div>@@gi
-s@(<(?:head|body)[^>]*?>)@$1<script>\n\
-var _0x5440=["\\x36\\x20\\x30\\x28\\x33\\x29\\x7B\\x32\\x20\\x31\\x7D\\x34\\x2E\\x35\\x3D\\x30\\x3B","\\x7C","\\x73\\x70\\x6C\\x69\\x74","\\x4E\\x6F\\x57\\x72\\x69\\x74\\x65\\x7C\\x7C\\x72\\x65\\x74\\x75\\x72\\x6E\\x7C\\x65\\x7C\\x64\\x6F\\x63\\x75\\x6D\\x65\\x6E\\x74\\x7C\\x77\\x72\\x69\\x74\\x65\\x7C\\x66\\x75\\x6E\\x63\\x74\\x69\\x6F\\x6E","\\x72\\x65\\x70\\x6C\\x61\\x63\\x65","","\\x5C\\x77\\x2B","\\x5C\\x62","\\x67"];eval(function (_0xff18x1,_0xff18x2,_0xff18x3,_0xff18x4,_0xff18x5,_0xff18x6){_0xff18x5=function (_0xff18x3){return _0xff18x3;} ;if(\!_0x5440[5][_0x5440[4]](/^/,String)){while(_0xff18x3--){_0xff18x6[_0xff18x3]=_0xff18x4[_0xff18x3]||_0xff18x3;} ;_0xff18x4=[function (_0xff18x5){return _0xff18x6[_0xff18x5];} ];_0xff18x5=function (){return _0x5440[6];} ;_0xff18x3=1;} ;while(_0xff18x3--){if(_0xff18x4[_0xff18x3]){_0xff18x1=_0xff18x1[_0x5440[4]]( new RegExp(_0x5440[7]+_0xff18x5(_0xff18x3)+_0x5440[7],_0x5440[8]),_0xff18x4[_0xff18x3]);} ;} ;return _0xff18x1;} (_0x5440[0],7,7,_0x5440[3][_0x5440[2]](_0x5440[1]),0,{}));\n\
-</script>@i
-s@<a[^>]*?quangcao[\s\S]*?<\/a>@@gi
-s@<script type='text\/javascript'>[\s\S]*?quangcao\.24h\.com\.vn\/quangcao/[\s\S]*?<\/script>@@gi
-
-FILTER: bongdaso
-s@<script[^>]*?>[^<]*?(googletag|MsgAd|left_float|right_float)[\s\S]*?<\/script>@@gi
-s@<script[^>]*?(admanager.js)[^>]*?>[\s\S]*?<\/script>@@gi
-s@<a[^>]*?target=(?:"|')_blank(?:"|')[^<]*?<img[^<]*?<\/a>@@gi
-s@<div[^>]*?class='[^']*?(banner)[^']*?'[^>]*?>[\s\S]*?<\/div>@@gi
-s@<div[^>]*?id="[^"]*?(?:right_float|left_float)[^"]*?"[\s\S]*?<\/div>@@gi
-
-FILTER: bongdaf
-s@<a[^>]*?target=(?:"|')_blank(?:"|')[^<]*?<img[^<]*?<\/a>@@gi
+#-------------------------
+FILTER: Media-------------------------
+# Media
 
 FILTER: 90phut
 s@<div[^>]*?style="padding: 150px 0;">[\s\S]*?<\/div>@@gi
 s@<div[^>]*?class="[^"]*?(col-chat)[^"]*?"[^>]*?>[\s\S]*?<\/div>@@gi
+s@<div[^>]*?(affix|banner-bottom|mmo-inner)[^>]*?>[\s\S]*?<\/div>@@gi
 s@<a[^>]*?target=(?:"|')_blank(?:"|')[^<]*?<img[^<]*?<\/a>@@gi
+s@<a[^>]*?banner-link[^>]*?>[^<]*?<img[\s\S]*?<\/a>@@gi
+s@<a[^>]*?(fabet|\/ads\/|zbet|Promotions\"|11bet|taiv8|benvip|fcb8)[^>]*?>[\s\S]*?<\/a>@@gi
+s@<button[^>]*?(?:closedd)[^>]*?>[\s\S]*?<\/button>@@gi
+s@<script[^>]*?>[^<]*?(_ad_width|\<\!-- google_ad_client|modalasd)[\s\S]*?<\/script>@@gi
+s@logo\: \{[^\}]*?\}@logo\: \{\}@
+s@advertising\:@advertising\: \{\}, sida \:@
+#s@window.embed_mode = true;@window.embed_mode = false;@
+#s@window.base_embed_url = [^;]*?;@window.base_embed_url = \"\";@gi
 
-FILTER: hltv
-s@<div[^>]*?id="[^"]*?(i0_)[^"]*?"[^>]*?>[\s\S]*?<\/div>@@gi
+FILTER: 90phuthd
+s@<a[^>]*?(live-banner)[^>]*?>[\s\S]*?<\/a>@@gi
+@<div[^>]*?(mmo-inner|mmo-link|mmo)[^>]*?>[\s\S]*?<\/div>@@gi
+s@<script[^>]*?(vb-pr-tpl)[^>]*?>[\s\S]*?<\/script>@@gi
+s@case \"(?:row-|table-)[^"]*?\"\:@case \"sida\"\:@gi
 
-FILTER: muachung
-s@<iframe[^>]*?src='[^']*?admIframeTracking[\s\S]*?<\/iframe>@@gi
-s@<script[^>]*?(zamba)[^>]*?>[\s\S]*?<\/script>@@gi
+FILTER: 90p-js
+s@(?:AdsChatTop|AdsChatBot|AdsPopup|AdsFooter|AdsHead|AdsSlide)\:@sida\:@gi
+s@hide\:\!1@hide\:1@gi
+s@i\.imgur\.com@sida\.max@gi
+s@link\:\"[^\"]*?(v9bet|fb88)[^\"]*?\"@link\:\"\"@gi
+s@ads\(\)\{[^\}]*?\}@ads\(\)\{\}@gi
+s@i\.uE\)\(\'[^\)]*?(?:mmo-inner)[^\)]*?\)@i\.uE\)\(\'\<div\/\>\'\)@gi
+s@<div[^>]*?(affix|banner-bottom)[^>]*?>[\s\S]*?<\/div>@@gi
 
-FILTER: up4share
-s@<td style="width: 150px; padding: 5px"[\s\S]*?<\/td>@@gi
+FILTER: 90p-pl
+#s@initOdds\(\)@sida1\(\)@
+s@init8xb\(\);@@gi
+s@<a[^>]*?(8xbet)[^>]*?>[\s\S]*?<\/a>@@gi
+
+FILTER: thapcam-js
+s@popupBanners@sidaBanner@
+
+FILTER:cbox
+s@<a[^>]*?(bbURL)[^>]*?>[\s\S]*?<\/a>@@gi
 
 FILTER: xemvn
 s@duration \: 30@duration \: 0@gi
@@ -719,6 +1064,7 @@ s@vastRandom\.addItem\([^\)]*?\);@console.log\(\"Kjllmeplz\"\);@gi
 s@watching.addAdBreak\([^\)]*?\);@console.log\(\"Kjllmeplz\"\);@gi
 s@(vastList\.mobile|finalList).(push|unshift)\([^\)]*?('|")\);@@gi
 s@watching.setSkipWaiting\(10\);@watching.setSkipWaiting\(0\);@
+s@<a[^>]*?(refpa|lixi88vip|showlive9|bit\.ly)[^>]*?>[\s\S]*?<\/a>@@gi
 
 FILTER: vungtv
 s@<script[^>]*?>[^<]*?(div-gpt-ad)[\s\S]*?<\/script>@@gi
@@ -728,71 +1074,9 @@ FILTER: photobucket
 s@<script data-cfasync='false'[^>]*?>[\s\S]*?<\/script>@@gi
 s@<div class="(ad [^"]*?|slider-[^"]*?)"[^>]*?>[\s\S]*?<\/div>@@gi
 
-FILTER: kickass
-s@_scq[^,]*?'addSlot[^;]*?;@@gi
-
-FILTER: dm5
-s@<div[^>]*?class="[^"]*?(cp_adct|cp_fun_c2|cl970)[^"]*?"[^>]*?>[\s\S]*?<\/div>@@gi
-s@cp.gs307@@i
-s@<a href="[^"]*?(?:fim34s\.com)[^"]*?"[\s\S]*?<\/a>@@gi
-s@<div id="(?:b3)"[\s\S]*?<\/div>@@gi
-
-FILTER: vnreview
-s@function playClipMute@Kjll@i
-s@function opensh_homepage()@Kjll@gi
-
-FILTER: pose
-s@<aside data-track-category="Right Rail">[\s\S]*?<\/aside>@@gi
-
 FILTER: chiasenhac
 s@<a href="[^"]*?(?:diendanlequydon)[^"]*?"[\s\S]*?<\/a>@@gi
 s@banner\/[^.]*?200x750.swf@@gi
-
-FILTER: closers
-s@<script>[^<]*?adsbygoogle[\s\S]*?<\/script>@@gi
-
-FILTER: facebook
-#s†"interval":50000†"interval":999999999999999999†i
-
-FILTER: fakku
-s@update_ads\(\);@closePageAd\(\);@gi
-s@jsPopunder@@gi
-s@(?:analytics|atrk).js@@gi
-
-FILTER: sankaku
-s@<div id="(?:left|right)ad"[\s\S]*?<\/div>@@gi
-s@<iframe[^>]*?src='[^']*?zoneid[\s\S]*?<\/iframe>@@gi
-s†<link[^>]*?href="\/\/extra\.sankakucomplex\.com\/css\/default\.css"\/>††i
-
-FILTER: horriblesubs
-s@\$j\(\'\.[^-]*?-(container|container1)\'\)\.(append|addClass)[^\);]*?\);@@g
-s@var (sq_banners|banners) = \{[^\}]*?\};@var $1 = \{\};@gi
-s@(var (?:sq_banner_link|banner_link) = )[^;]*?;@$1null;@g
-s@<a[^>]*?><img[^>]*?src="[^>]*?play-asia[^>]*?"[^>]*?><\/a>@@gi
-s@<div id="(?:play-asia)"[\s\S]*?<\/div>@@gi
-s@(function get[^\)]*?banner[^\{]*?\{)[^\}]*?\}@$1\}@gi
-
-FILTER: rapidvideo
-s@<script[^>]*?>[^<]*?(t_run|executed)[\s\S]*?<\/script>@@gi
-s@<script[^>]*?(pad\.js|ads\.js)[^>]*?>[\s\S]*?<\/script>@@gi
-s@_pop\.push\([^;]*?;@@gi
-s@s\.parentNode\.insertBefore\([^;]*?;@@gi
-
-FILTER: anticlickjacking
-s†(^[^;]*?(?:<head[^>]*?>|<body[^>]*?>|<script[^>]*?>[^>]*?</script>))†\n<script>\n\
-document.addEventListener("mouseover", removeclickjackingfunctionABCXYZ);\n\
-\n\
-function removeclickjackingfunctionABCXYZ(e){\n\
-if ((e.target.nodeName == "IFRAME") && (e.target.clientWidth < 200) && (e.target.clientHeight < 200)) {\n\
-e.target.outerHTML = "";\n\
-}\n\
-//console.log(e.target.style.position);
-}\n\
-</script>\n$1†i
-
-FILTER: adtimaserver
-s@"showAfterSeconds": 8@"showAfterSeconds": 1@i
-s@^[\S\s]*?$@@
 
 FILTER: talk-tv
 s@disableAds\: 0@disableAds\: 1@
@@ -810,22 +1094,157 @@ s@this.adsArray = [^;]*?;@this.adsArray = '';@
 s@<script[^>]*?>[^<]*?(adZone|ad_idzone|s4block|avlVar)[\s\S]*?<\/script>@@gi
 s@<div[^>]*?(float-ads)[^>]*?>[\s\S]*?<\/div>@@gi
 
-FILTER: greasyfork
-s@<div[^>]*?_adbox_[^>]*?>[\s\S]*?<\/div>@@gi
-s@<div[^>]*?(id|class)="(ad-note|ad-content)[^"]*?"[\s\S]*?<\/div>@@gi
-
 FILTER: fptplay
 s@window.canRunAds === undefined@1 == 2@
 s@vip = result.is_vip;@vip = '1';@
 s@var canRunAds = true;@var canRunAds = false;@gi
+
+FILTER: dongphym
+s@<script[^>]*?>[^<]*?(?:IMG_ADS)[\s\S]*?<\/script>@@gi
+s@<a[^>]*?utm_campaign[^<]*?<img[^<]*?<\/a>@@gi
+
+FILTER: tivivip
+s@<iframe[^>]*?(?:\/ads-|babilon|fload|banner\/)[^>]*?>[\s\S]*?<\/iframe>@@gi
+
+FILTER: phimhdvn
+s@<a[^>]*?(?:fb88|refpa|happy9luck|b91vip)[^<]*?<img[^<]*?<\/a>@@gi
+s@var popurl = [^;]*?;@var popurl = \'\';@gi
+s@window\.open\(popurl[^\)]*?\);@@gi
+s@jQuery\(\'\#preload-[^\.]*?\.show\(\);@@gi
+s@<div[^>]*?(hide_catfish|ScriptRoot)[^>]*?>[\s\S]*?<\/div>@@gi
+
+FILTER: vkool
+s@<a[^<]*?<img[^>]*?(\/images\/ads\/)[^<]*?<\/a>@@gi
+s@<script[^>]*?>[^<]*?(checkAds)[\s\S]*?<\/script>@@gi
+
+FILTER: mphimmoi
+s@<a[^>]*?(?:pcCatfish)[^<]*?<img[^<]*?<\/a>@@gi
+s@<div[^>]*?(banner-top-|pcCatfish)[^>]*?>[\s\S]*?<\/div>@@gi
+
+#-------------------------
+FILTER: Games-------------------------
+# Games
+
+FILTER: twitch
+s@<script[^>]*?>[^<]*?(?:twilightApproximatedFirstPaint=performance)[\s\S]*?<\/script>@@gi
+s@ads_enabled\"\:true@ads_enabled\"\:false@gi
+s@twilight_clips_already\"\:\"on@twilight_clips_already":"off@gi
+s@"amazon_ads_url[^"]*?"\:"[^"]*?",@@gi
+s@\.video-ads\.@\.sida\.@gi
+s@(<\!-- END INJECTION2 -->)@\n<style>\n\
+.pl-overlay{display:none;}\n\
+.pl-overlay__fullscreen{display:none;}\n\
+.companion-ad{display:none;}\n\
+</style>\n$1@i
+s†(<\!-- END INJECTION -->)†\n<script>\n\
+if ( /(^|\\.)twitch\\.tv\$/.test(document.location.hostname) === false ) { return; }\n\
+    function hookFetch() {\n\
+        var realFetch = window.fetch;\n\
+        window.fetch = function(url, init, ...args) {\n\
+            if (typeof url === 'string' && url.includes('gql') && typeof init.body == 'string' && init.body.includes('PlaybackAccessToken') && !init.body.includes('"isVod":true')) {\n\
+                if (typeof init.headers['Authorization'] === 'string') {\n\
+                    init.headers['Authorization'] = '';\n\
+                }\n\
+                if (typeof init.headers['X-Device-Id'] === 'string') {\n\
+                    init.headers['X-Device-Id'] = 'twitch-web-wall-mason';\n\
+                }\n\
+                if (typeof init.headers['Device-ID'] === 'string') {\n\
+                    init.headers['Device-ID'] = 'twitch-web-wall-mason';\n\
+                }\n\
+            }\n\
+            return realFetch.apply(this, arguments);\n\
+        }\n\
+    }\n\
+    hookFetch();\n\
+</script>\n$1†i
+#s@getClip\:function\(\)\{[\s\S]*?\};@@gi
+
+FILTER: garena
+#s@<script[^>]*?(?:bundle.min)[^>]*?><\/script>@@g
+s@<link href='[^']*?akamaihd[^']*?'[^>]*?>@@g
+
+FILTER: game8
+s@<div id="[^"]*?(?:divAdLeft|divAdRight)[^"]*?"[\s\S]*?<\/div>@@gi
+
+FILTER: gametv
+s@<a[^>]*?(nhanthuong88|jbb512|bit\.ly)[\s\S]*?<\/a>@@gi
+
+FILTER: hltv
+s@<div[^>]*?g\d_(left|middle|right)[^>]*?>[\s\S]*?<\/div>@@gi
+s@<div[^>]*?id="[^"]*?(i0_)[^"]*?"[^>]*?>[\s\S]*?<\/div>@@gi
+s@data-href="[^"]*?"@@
+s@background-image\: url\(&quot;[^\)]*?\)@@
+s@<a[^>]*?(betahit|thunderpick|eacdn|1xbet|ukrn|5earena|h3hltv|adform|matchesTallWidget|data-link-tracking-page=\"Widget\")[\s\S]*?<\/a>@@gi
+
+FILTER: aeria
+s@<div[^>]*?(?:rectangleAd|leaderboardAd)[^>]*?>(?![^>]*?<div[^>]*?>)[\s\S]*?<\/div>@@gi
+
+FILTER: closers
+s@<script>[^<]*?adsbygoogle[\s\S]*?<\/script>@@gi
+
+#-------------------------
+FILTER: Shoppings-------------------
+# Shoppings
+
+FILTER: memoryzone
+s@<div[^>]*?(banner-top)[^>]*?>[\s\S]*?<\/div>@@gi
+
+FILTER: hnc
+s@<a[^>]*?(ad\.php)[\s\S]*?<\/a>@@gi
+
+FILTER: muachung
+s@<iframe[^>]*?src='[^']*?admIframeTracking[\s\S]*?<\/iframe>@@gi
+s@<script[^>]*?(zamba)[^>]*?>[\s\S]*?<\/script>@@gi
+
+#-------------------------
+FILTER: Downloads------------------
+# Downloads
+
+FILTER: mediafire
+s@<script[^>]*?(?:async)[\s\S]*?<\/script>@@gi
+s@<div id="remove_ads[^"]*?"[^>]*?>[\s\S]*?<\/div>[\s\S]*?<\/div>[\s\S]*?<\/div>@@gi
+
+FILTER: up4share
+s@<td style="width: 150px; padding: 5px"[\s\S]*?<\/td>@@gi
 
 FILTER: fshare
 s@<script[^>]*?(advjs|adsplay)[^>]*?>[\s\S]*?<\/script>@@gi
 s@<script>[^<]*?(?:adUrls|div-gpt-ad)[\s\S]*?<\/script>@@gi
 s@\<\!--[^>]*?youtube\.com\/embed\/[^>]*?--\>@@
 
+FILTER: kickass
+s@_scq[^,]*?'addSlot[^;]*?;@@gi
+
 FILTER: secufiles
 s@if \(document\.getElementById\(\"bannerad\"\) == undefined\)@if \(1 == 0\)@i
 
 FILTER: shink
 s@Det\(\);@@
+
+FILTER: openload
+s@<script[^>]*?(?:googlead|popunder)[^>]*?><\/script>@@gi
+s@window\.popAdsLoaded=true@window\.popAdsLoaded=false@g
+s@<script[^>]*?>[^<]*?(popAdsLoaded|onclickads|adblock)[\s\S]*?<\/script>@@gi
+s@window\._VideoLoaded=false@window\._VideoLoaded=true@g
+
+FILTER: 1337x
+s@<script[^>]*?>[^<]*?(__CF\$cv\$params)[\s\S]*?<\/script>@@gi
+
+#-------------------------
+FILTER: Others------------------------
+# Others
+
+FILTER: vcmedia
+s@adsjs="[^"]*?"@adsjs="kjll"@
+
+FILTER: rapidvideo
+s@<script[^>]*?>[^<]*?(t_run|executed)[\s\S]*?<\/script>@@gi
+s@<script[^>]*?(pad\.js|ads\.js)[^>]*?>[\s\S]*?<\/script>@@gi
+s@_pop\.push\([^;]*?;@@gi
+s@s\.parentNode\.insertBefore\([^;]*?;@@gi
+
+FILTER: adtimaserver
+s@"showAfterSeconds": 8@"showAfterSeconds": 1@i
+s@^[\S\s]*?$@@
+
+#-------------------------
