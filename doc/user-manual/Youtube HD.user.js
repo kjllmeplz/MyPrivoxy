@@ -3,7 +3,7 @@
 // @author        adisib
 // @namespace     namespace_adisib
 // @description   Select a youtube resolution and resize the player.
-// @version       2023.08.22
+// @version       2023.10.20.1
 // @match         https://*.youtube.com/*
 // @noframes
 // @grant         none
@@ -15,20 +15,21 @@
 //   add  " @include * "  to the script metadata
 //   remove  " @noframes "  from the script metadata
 
-// 2023.08.19 + 2023.08.22
-// Fix youtube breaking resize, again
+// 2023.10.20.1
+// Fix resizing regression
 
-			 
-																											 
+// 2023.10.19
+// Experimental alternate quality set method for premium support
 
 
 (function() {
 	"use strict";
- 
+
 	// --- SETTINGS -------
- 
+
 	// Target Resolution to always set to. If not available, the next best resolution will be used.
 	const changeResolution = true;
+	const preferPremium = true;
 	const targetRes = "hd1080";
 	// Choices for targetRes are currently:
 	//   "highres" >= ( 8K / 4320p / QUHD  )
@@ -41,11 +42,11 @@
 	//   "medium"   = (       360p         )
 	//   "small"    = (       240p         )
 	//   "tiny"     = (       144p         )
- 
+
 	// Target Resolution for high framerate (60 fps) videos
 	// If null, it is the same as targetRes
 	const highFramerateTargetRes = true;
- 
+
 	// If changePlayerSize is true, then the video's size will be changed on the page
 	//   instead of using youtube's default (if theater mode is enabled).
 	// If useCustomSize is false, then the player will be resized to try to match the target resolution.
@@ -53,31 +54,34 @@
 	const changePlayerSize = true;
 	const useCustomSize = false;
 	const customHeight = 600;
- 
+
 	// If autoTheater is true, each video page opened will default to theater mode.
 	// This means the video will always be resized immediately if you are changing the size.
 	// NOTE: YouTube will not always allow theater mode immediately, the page must be fully loaded before theater can be set.
 	const autoTheater = false;
- 
+
 	// If flushBuffer is false, then the first second or so of the video may not always be the desired resolution.
 	//   If true, then the entire video will be guaranteed to be the target resolution, but there may be
 	//   a very small additional delay before the video starts if the buffer needs to be flushed.
 	const flushBuffer = true;
- 
+
 	// Setting cookies can allow some operations to perform faster or without a delay (e.g. theater mode)
 	// Some people don't like setting cookies, so this is false by default (which is the same as old behavior)
 	const allowCookies = false;
- 
+
 	// Tries to set the resolution as early as possible.
 	// This might cause issues on youtube polymer layout, so disable if videos fail to load.
 	// If videos load fine, leave as true or resolution may fail to set.
 	const setResolutionEarly = true;
- 
+
 	// Enables a temporary work around for an issue where users can get the wrong youtube error screen
 	// (Youtube has two of them for some reason and changing to theater mode moves the wrong one to the front)
 	// Try disabling if you can't interact with the video or you think you are missing an error message.
 	const enableErrorScreenWorkaround = true;
- 
+
+	// Use the iframe API to set resolution if possible. Otherwise uses simulated mouse clicks.
+	const useAPI = true;
+
 	// --------------------
 
 
@@ -91,7 +95,7 @@
 	// Possible resolution choices (in decreasing order, i.e. highres is the best):
 	const resolutions = ['highres', 'hd2880', 'hd2160', 'hd1440', 'hd1080', 'hd720', 'large', 'medium', 'small', 'tiny'];
 	// youtube has to be at least 480x270 for the player UI
-	const heights = [4320, 2880, 2160, 1440, 1080, 720, 480, 360, 270, 270];
+	const heights = [4320, 2880, 2160, 1440, 1080, 720, 480, 360, 240, 144];
 
 	let doc = document, win = window;
 
@@ -163,47 +167,65 @@
 			res = highFramerateTargetRes;
 		}
 
+		let shouldPremium = preferPremium && [...ytPlayer.getAvailableQualityData()].some(q => q.quality == res && q.qualityLabel.includes("Premium"));
+		let useButtons = !useAPI || shouldPremium;
+
 		// Youtube doesn't return "auto" for auto, so set to make sure that auto is not set by setting
 		//   even when already at target res or above, but do so without removing the buffer for this quality
-		if (resolutionList.indexOf(res) >= resolutionList.indexOf(currentQuality))
+		if (resolutionList.indexOf(res) < resolutionList.indexOf(currentQuality))
+		{
+			const end = resolutionList.length - 1;
+			let nextBestIndex = Math.max(resolutionList.indexOf(res), 0);
+			let ytResolutions = ytPlayer.getAvailableQualityLevels();
+			debugLog("Available Resolutions: " + ytResolutions.join(", "));
+
+			while ( (ytResolutions.indexOf(resolutionList[nextBestIndex]) === -1) && nextBestIndex < end )
+			{
+				++nextBestIndex;
+			}
+
+			if (!useButtons && flushBuffer && currentQuality !== resolutionList[nextBestIndex])
+			{
+				let id = getVideoIDFromURL(ytPlayer);
+				if (id.indexOf("ERROR") === -1)
+				{
+					let pos = ytPlayer.getCurrentTime();
+					ytPlayer.loadVideoById(id, pos, resolutionList[nextBestIndex]);
+				}
+
+				debugLog("ID: " + id);
+			}
+
+			res = resolutionList[nextBestIndex];
+		}
+
+		if (useAPI)
 		{
 			if (ytPlayer.setPlaybackQualityRange !== undefined)
 			{
 				ytPlayer.setPlaybackQualityRange(res);
 			}
 			ytPlayer.setPlaybackQuality(res);
-			debugLog("Resolution Set To: " + res);
-			return;
+			debugLog("(API) Resolution Set To: " + res);
 		}
-
-		const end = resolutionList.length - 1;
-		let nextBestIndex = Math.max(resolutionList.indexOf(res), 0);
-		let ytResolutions = ytPlayer.getAvailableQualityLevels();
-		debugLog("Available Resolutions: " + ytResolutions.join(", "));
-
-		while ( (ytResolutions.indexOf(resolutionList[nextBestIndex]) === -1) && nextBestIndex < end )
+		if (useButtons)
 		{
-			++nextBestIndex;
-		}
-
-		if (flushBuffer && currentQuality !== resolutionList[nextBestIndex])
-		{
-			let id = getVideoIDFromURL(ytPlayer);
-			if (id.indexOf("ERROR") === -1)
+			let resLabel = heights[resolutionList.indexOf(res)];
+			if (shouldPremium)
 			{
-				let pos = ytPlayer.getCurrentTime();
-				ytPlayer.loadVideoById(id, pos, resolutionList[nextBestIndex]);
+				resLabel = [...ytPlayer.getAvailableQualityData()].find(q => q.quality == res && q.qualityLabel.includes("Premium")).qualityLabel;
 			}
 
-			debugLog("ID: " + id);
-		}
-		if (ytPlayer.setPlaybackQualityRange !== undefined)
-		{
-			ytPlayer.setPlaybackQualityRange(resolutionList[nextBestIndex]);
-		}
-		ytPlayer.setPlaybackQuality(resolutionList[nextBestIndex]);
+			let settingsButton = unwrapElement(doc.getElementsByClassName("ytp-settings-button")[0]);
+			settingsButton.click();
 
-		debugLog("Resolution Set To: " + resolutionList[nextBestIndex]);
+			let qualityMenuButton = document.evaluate('.//*[contains(text(),"Quality")]/ancestor-or-self::*[@class="ytp-menuitem-label"]', ytPlayer, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+			unwrapElement(qualityMenuButton).click();
+
+			let qualityButton = document.evaluate('.//*[contains(text(),"' + heights[resolutionList.indexOf(res)] + '") and not(@class)]/ancestor::*[@class="ytp-menuitem"]', ytPlayer, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+			unwrapElement(qualityButton).click();
+			debugLog("(Buttons) Resolution Set To: " + res);
+		}
 	}
 
 
@@ -213,7 +235,7 @@
 	// Set resolution, but only when API is ready (it should normally already be ready)
 	function setResOnReady(ytPlayer, resolutionList)
 	{
-		if (ytPlayer.getPlaybackQuality === undefined)
+		if (useAPI && ytPlayer.getPlaybackQuality === undefined)
 		{
 			win.setTimeout(setResOnReady, 100, ytPlayer, resolutionList);
 		}
@@ -311,6 +333,7 @@
 
 			let i = Math.max(resolutions.indexOf(targetRes), 0);
 			height = Math.min(heights[i], win.innerHeight - (mastheadHeight + mastheadPadding));
+      height = Math.max(height, 270);
 		}
 
 		resizePlayer(height);
@@ -332,10 +355,10 @@
 		}
 
 		let styleContent = "\
-		ytd-watch-flexy[theater]:not([fullscreen]) #player-theater-container.style-scope, \
-		ytd-watch-flexy[theater]:not([fullscreen]) #player-wide-container.style-scope, \
-		ytd-watch-flexy[theater]:not([fullscreen]) #full-bleed-container.style-scope { \
-		    min-height: " + height + "px !important; max-height: none !important; height: " + height + "px !important }";
+ytd-watch-flexy[theater]:not([fullscreen]) #player-theater-container.style-scope, \
+ytd-watch-flexy[theater]:not([fullscreen]) #player-wide-container.style-scope, \
+ytd-watch-flexy[theater]:not([fullscreen]) #full-bleed-container.style-scope { \
+min-height: " + height + "px !important; max-height: none !important; height: " + height + "px !important }";
 
 		let ythdStyle = doc.getElementById("ythdStyleSheet");
 		if (!ythdStyle)
@@ -421,4 +444,3 @@
 	win.addEventListener("yt-navigate-finish", main, true);
 
 })();
-

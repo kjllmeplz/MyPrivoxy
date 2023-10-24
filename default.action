@@ -18,17 +18,17 @@ for-privoxy-version=3.0.30
 		      +filter{banners-by-link} \
 		      +filter{banners-by-size}
 # Tracking
-+tracking-filter    = +filter{blockwebrtc} \
-		      +filter{no-ping} \
-		      +filter{webbugs} \
++tracking-filter    = +filter{no-ping} \
 		      +filter{img-reorder} \
 		      +filter{jumping-windows} \
-		      +filter{refresh-tags}
+		      #+filter{blockwebrtc} \
+		      #+filter{refresh-tags} \
+		      +filter{webbugs}
 # All
 +global-filter      = +filter{injection} \
 		      +banner-filter \
 		      +tracking-filter \
-		      +filter{ads4} \
+		      +filter{doubleclick} \
 		      +filter{Troll}
 
 # Bypass filter
@@ -46,7 +46,7 @@ for-privoxy-version=3.0.30
 -global-filter      = -filter{injection} \
 		      -banner-filter \
 		      -tracking-filter \
-		      -filter{ads4} \
+		      -filter{doubleclick} \
 		      -filter{Troll}
 
 #----------------------------------------------------------------------------
@@ -61,6 +61,7 @@ for-privoxy-version=3.0.30
 +client-header-tagger{css-requests} \
 +client-header-tagger{image-requests} \
 +client-header-tagger{range-requests} \
+#+client-header-tagger{url} \
 #+client-header-tagger{tagger4https} \
 #+client-header-tagger{websocket} \
 #+client-header-tagger{maximum-url-length} \
@@ -76,10 +77,6 @@ for-privoxy-version=3.0.30
 # SSL Filter
 {+https-inspection}
 :443
-
-# Forward to ProxHTTPSProxyMII
-#{+forward-override{forward 127.0.0.1:8081}}
-#TAG:.*?ProxHTTPSProxyMII
 
 #-------------------------------------------------------
 # Cautious settings
@@ -143,30 +140,15 @@ ip-check.info
 # Specific settings
 
 #-------------------------------------------------------
-# Don't handle https
-{-https-inspection}
-boxx.ai
-.fahasa.com
-pubsub-edge.twitch.tv
-apird-tvhai.rdgogo.xyz
-i.blogtruyen.com
-
-#-------------------------------------------------------
 # Ignore error on certificate
 {+ignore-certificate-errors}
-config.privoxy.org
 .privoxy.org
-# Custom
 
+# Custom
 #-------------------------------------------------------
 # Block DF by ads4
 {+block{kjll_ads4}}
 .fuck_off_ads.
-
-#-------------------------------------------------------
-# Some specific site
-{+filter{injection2}}
-.notebookcheck.net
 
 #-------------------------------------------------------
 # Handle by file types
@@ -297,6 +279,7 @@ play.tvhaystream.xyz
 
 {+server-header-filter{cors_csstats}}
 .csgostats.gg
+.csstats.gg
 
 {+server-header-filter{bettercache}}
 .greasyfork.org/.*?\.user.js$
@@ -307,11 +290,17 @@ raw.githubusercontent.com/adsbypasser/
 
 {+server-header-filter{removecontentsecuritypolicy}}
 #
+
+{+add-header{Access-Control-Allow-Origin: *}}
+#
 #.twitter.com
 
 {+server-header-filter{privoxycsp}}
 .facebook.com
 .twitter.com
+
+{+server-header-filter{privoxyjs}}
+config.privoxy.org/.*?\.js$
 
 {+hide-user-agent{Nothing} -crunch-incoming-cookies -crunch-outgoing-cookies}
 .ip-check.info
@@ -321,9 +310,9 @@ raw.githubusercontent.com/adsbypasser/
 
 # Redirect
 {+redirect{http://config.privoxy.org/}}
-config.privoxy.org:443
-.privoxy.org/config/
-p.p
+#config.privoxy.org:443
+#.privoxy.org/config/
+#p.p
 
 {+redirect{https://www.ghacks.net/}}
 #genk.vn
@@ -333,6 +322,10 @@ p.p
 
 {+redirect{s@&player_type=site@&player_type=embed@}}
 api.twitch.tv/api/channels/.*/access_token\?.*&player_type=site
+
+{+redirect{s@^https://[^/]*/(.*)@http://old.reddit.com/$1@}}
+reddit.com
+www.reddit.com
 
 # Disable compression
 {+prevent-compression}
@@ -351,34 +344,11 @@ mitom.*.link
 .hltv.org
 .thapcam.
 
-#-------------------------------------------------------
-# Deny all
-{ \
--change-x-forwarded-for{block} \
--server-header-tagger{content-type} \
--client-header-tagger{css-requests} \
--client-header-tagger{image-requests} \
--client-header-tagger{range-requests} \
--set-image-blocker{blank} \
--hide-from-header{block} \
-}
-#
-
-# Deny slection
-{-redirect{https://www.ghacks.net/}}
-#genk.vn/.*.chn
-
-{-redirect{https://www.gematsu.com/}}
-#gamek.vn/.*.chn
-
 #----------------------------------------------------------------------------
 # Sections that reject global filter
 
 #---------------------------------------
 # Specific filter
-
-{-global-filter}
-TAG:^(application|text)/(x-)?javascript$
 
 {-filter{injection}}
 cdnssl.mediafire.com
@@ -453,11 +423,8 @@ kggp.de/
 tinhte.vn
 gamepress.gg
 
-{-filter{ads4}}
-.youtube.com
-.fptplay.vn
-.mphimmoitv.net
-.otofun.net
+{-filter{doubleclick}}
+#
 
 {-filter{Troll}}
 .facebook.com
@@ -493,6 +460,11 @@ api.skype.com
 .mphimmoitv.net
 
 {-global-filter}
+# Tag
+NO-RESPONSE-TAG:^text/html
+#TAG:^(application|text)/(x-)?javascript$
+
+# Sites
 vcplayer.mediacdn.vn
 liveupdate.symantec.com
 liveupdate.liveupdatesymantec.com

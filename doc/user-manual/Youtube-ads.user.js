@@ -1,328 +1,307 @@
 // ==UserScript==
-// @name        Disable YouTube Video Ads
-// @namespace   DisableYouTubeVideoAds
-// @version     1.2.21
-// @license     AGPLv3
-// @author      jcunews
-// @website     https://greasyfork.org/en/users/85671-jcunews
-// @description Disable YouTube video & screen based ads at home page, and right before or in the middle of the main video playback. For new YouTube layout (Polymer) only.
-// @include     https://www.youtube.com/*
-// @grant       unsafeWindow
-// @run-at      document-start
+// @name         YouTube去广告 YouTube AD Blocker
+// @name:zh-CN   YouTube去广告
+// @name:zh-TW   YouTube去廣告
+// @name:zh-HK   YouTube去廣告
+// @name:zh-MO   YouTube去廣告
+// @namespace    http://tampermonkey.net/
+// @version      5.95
+// @description         这是一个去除YouTube广告的脚本，轻量且高效，它能丝滑的去除界面广告和视频广告，包括6s广告。This is a script that removes ads on YouTube, it's lightweight and efficient, capable of smoothly removing interface and video ads, including 6s ads.
+// @description:zh-CN   这是一个去除YouTube广告的脚本，轻量且高效，它能丝滑的去除界面广告和视频广告，包括6s广告。
+// @description:zh-TW   這是一個去除YouTube廣告的腳本，輕量且高效，它能絲滑地去除界面廣告和視頻廣告，包括6s廣告。
+// @description:zh-HK   這是一個去除YouTube廣告的腳本，輕量且高效，它能絲滑地去除界面廣告和視頻廣告，包括6s廣告。
+// @description:zh-MO   這是一個去除YouTube廣告的腳本，輕量且高效，它能絲滑地去除界面廣告和視頻廣告，包括6s廣告。
+// @author       iamfugui
+// @match        *://*.youtube.com/*
+// @icon         https://www.google.com/s2/favicons?sz=64&domain=YouTube.com
+// @grant        none
+// @license MIT
 // ==/UserScript==
+(function() {
+    `use strict`;
 
-((window, fn, ipse, haia, hca, rpo) => {
+    //界面广告选择器
+    const cssSeletorArr = [
+        `#masthead-ad`,//首页顶部横幅广告.
+        `ytd-rich-item-renderer.style-scope.ytd-rich-grid-row #content:has(.ytd-display-ad-renderer)`,//首页视频排版广告.
+        `.video-ads.ytp-ad-module`,//播放器底部广告.
+        `tp-yt-paper-dialog:has(yt-mealbar-promo-renderer)`,//播放页会员促销广告.
+        `ytd-engagement-panel-section-list-renderer[target-id="engagement-panel-ads"]`,//播放页右上方推荐广告.
+        `#related #player-ads`,//播放页评论区右侧推广广告.
+        `#related ytd-ad-slot-renderer`,//播放页评论区右侧视频排版广告.
+        `ytd-ad-slot-renderer`,//搜索页广告.
+        `yt-mealbar-promo-renderer`,//播放页会员推荐广告.
+        `ad-slot-renderer`,//M播放页第三方推荐广告
+        `ytm-companion-ad-renderer`,//M可跳过的视频广告链接处
+    ];
 
-  fn = (a, et) => {
+    window.dev=true;//开发使用
 
-    if ((a = document.scripts[document.scripts.length - 1]) && (a.id === "dyvaUjs")) a.remove();
+    /**
+    * 将标准时间格式化
+    * @param {Date} time 标准时间
+    * @param {String} format 格式
+    * @return {String}
+    */
+    function moment(time, format = `YYYY-MM-DD HH:mm:ss`) {
+        // 获取年⽉⽇时分秒
+        let y = time.getFullYear()
+        let m = (time.getMonth() + 1).toString().padStart(2, `0`)
+        let d = time.getDate().toString().padStart(2, `0`)
+        let h = time.getHours().toString().padStart(2, `0`)
+        let min = time.getMinutes().toString().padStart(2, `0`)
+        let s = time.getSeconds().toString().padStart(2, `0`)
+        if (format === `YYYY-MM-DD`) {
+            return `${y}-${m}-${d}`
+        } else {
+            return `${y}-${m}-${d} ${h}:${min}:${s}`
+        }
+    }
 
-    et = window.InstallTrigger ? "beforescriptexecute" : "message"; //Firefox workaround
+    /**
+    * 输出信息
+    * @param {String} msg 信息
+    * @return {undefined}
+    */
+    function log(msg) {
+        if(!window.dev){
+            return false;
+        }
+        console.log(`${moment(new Date())}  ${msg}`)
+    }
 
-    JSON.parse_ = JSON.parse;
-    JSON.parse = function(a) {
-      var m, z;
-      if (rpo) {
-        a = rpo;
-        try {
-          if (a.forEach) {
-            a.forEach((p, a) => {
-              if (p.player && p.player.args && p.player.args.player_response) {
-                a = p.player_response_;
-                patchPlayerResponse(a); 
-                p.player_response = JSON.stringify(a);
-              } else if (p.playerResponse) {
-                patchPlayerResponse(p.playerResponse);
-              }
-            });
-          } else patchPlayerResponse(a);
-        } catch(z) {}
-        rpo = null;
-      } else if (a && a.match && (m = a.match(/^(.*player_response=)([^&]+)(.*)/))) {
-        try {
-          a = JSON.parse_(decodeURIComponent(m[2]));
-          patchPlayerResponse(a);
-          a = m[1] + encodeURIComponent(JSON.stringify(a)) + m[3];
-        } catch(z) {}
-      } else return JSON.parse_(a);
-      return a;
-    };
+    /**
+    * 获取当前url的参数,如果要查询特定参数请传参
+    * @param {String} 要查询的参数
+    * @return {String || Object}
+    */
+    function getUrlParams(param) {
+        // 通过 ? 分割获取后面的参数字符串
+        let urlStr = location.href.split(`?`)[1]
+        if(!urlStr){
+            return ``;
+        }
+        // 创建空对象存储参数
+        let obj = {};
+        // 再通过 & 将每一个参数单独分割出来
+        let paramsArr = urlStr.split(`&`)
+        for(let i = 0,len = paramsArr.length;i < len;i++){
+            // 再通过 = 将每一个参数分割为 key:value 的形式
+            let arr = paramsArr[i].split(`=`)
+            obj[arr[0]] = arr[1];
+        }
 
-    var ftc = window.fetch;
-    window.fetch = function(u) {
-      if (u) {
-        if (u.substr && /\/v1\/player\/ad_break/.test(u)) return new Promise(() => {});
-        if (u.url && u.url.substr && /\/v1\/player\/ad_break/.test(u.url)) return new Promise(() => {});
-      }
-      return ftc.apply(this, arguments);
-    };
+        if(!param){
+            return obj;
+        }
 
-    var rj = Response.prototype.json;
-    Response.prototype.json = function() {
-      var rs = this, p = rj.apply(this, arguments), pt = p.then;
-      p.then = function(fn) {
-        var fn_ = fn;
-        fn = function(j) {
-          if (/\/v1\/player\?/.test(rs.url)) rpo = j;
-          if ("function" === typeof fn_) return fn_.apply(this, arguments);
-        };
-        return pt.apply(this, arguments);
-      };
-      return p;
-    };
-    var rt = Response.prototype.text;
-    Response.prototype.text = function() {
-      var rs = this, p = rt.apply(this, arguments), pt = p.then;
-      p.then = function(fn) {
-        var fn_ = fn;
-        fn = function(t) {
-          if (/\/v1\/player\?/.test(rs.url)) rpo = JSON.parse_(t);
-          if ("function" === typeof fn_) return fn_.apply(this, arguments);
-        };
-        return pt.apply(this, arguments);
-      };
-      return p;
-    };
+        return obj[param]||``;
+    }
 
-    window.XMLHttpRequest.prototype.open_dyva = window.XMLHttpRequest.prototype.open;
-    window.XMLHttpRequest.prototype.open = function(mtd, url) {
-      if (!(/get_midroll_info/).test(url) && !((/^\/watch/).test(location.pathname) && (/get_video_info/).test(url))) {
-        this.url_dyva = url;
-        return this.open_dyva.apply(this, arguments);
-      }
-    };
-    window.XMLHttpRequest.prototype.addEventListener_dyva = window.XMLHttpRequest.prototype.addEventListener;
-    window.XMLHttpRequest.prototype.addEventListener = function(typ, fn) {
-      if (typ === "readystatechange") {
-        var f = fn;
-        fn = function() {
-          var z;
-          if ((this.readyState === 4) && (/\/watch\?|get_video_info/).test(this.url_dyva)) {
-            rpo = JSON.parse_(this.responseText);
-            try {
-              rpo.forEach(p => {
-                if (p.player && p.player.args && p.player.args.player_response) {
-                  p.playerResponse_ = JSON.parse_(p.player_response);
-                  if (p.playerResponse_.playabilityStatus && (p.playerResponse_.playabilityStatus.status === "LOGIN_REQUIRED")) {
-                    nav.navigate({commandMetadata: {webCommandMetadata: {url: location.href, webPageType: "WEB_PAGE_TYPE_BROWSE"}}}, false);
-                    return;
-                  }
-                  patchPlayerResponse(p.playerResponse_);
-                  p.player_response = JSON.stringify(p.playerResponse_);
-                } else if (p.playerResponse) {
-                  patchPlayerResponse(p.playerResponse);
+    /**
+    * 生成去除广告的css元素style并附加到HTML节点上
+    * @param {String} styles 样式文本
+    * @return {undefined}
+    */
+    function generateRemoveADHTMLElement(styles) {
+        //如果已经设置过,退出.
+        if (document.getElementById(`RemoveADHTMLElement`)) {
+            log(`屏蔽页面广告节点已生成`);
+            return false
+        }
+
+        //设置移除广告样式.
+        let style = document.createElement(`style`);//创建style元素.
+        style.id = `RemoveADHTMLElement`;
+        (document.querySelector(`head`) || document.querySelector(`body`)).appendChild(style);//将节点附加到HTML.
+        style.appendChild(document.createTextNode(styles));//附加样式节点到元素节点.
+        log(`生成屏蔽页面广告节点成功`)
+
+    }
+
+    /**
+    * 生成去除广告的css文本
+    * @param {Array} cssSeletorArr 待设置css选择器数组
+    * @return {String}
+    */
+    function generateRemoveADCssText(cssSeletorArr){
+        cssSeletorArr.forEach((seletor,index)=>{
+            cssSeletorArr[index]=`${seletor}{display:none!important}`;//遍历并设置样式.
+        });
+        return cssSeletorArr.join(` `);//拼接成字符串.
+    }
+
+    /**
+    * 触摸事件
+    * @return {undefined}
+    */
+    function nativeTouch(){
+        const minNum = 100;
+        const maxNum = 999;
+        const randomNum = (Math.floor(Math.random() * (maxNum - minNum + 1)) + minNum)/1000;
+
+        let element =this;
+        // 创建 Touch 对象
+        let touch = new Touch({
+            identifier: Date.now(),
+            target: element,
+            clientX: 111+randomNum,
+            clientY: 222+randomNum,
+            radiusX: 333+randomNum,
+            radiusY: 444+randomNum,
+            rotationAngle: 0,
+            force: 1
+        });
+
+        // 创建 TouchEvent 对象
+        let touchStartEvent = new TouchEvent("touchstart", {
+            bubbles: true,
+            cancelable: true,
+            view: window,
+            touches: [touch],
+            targetTouches: [touch],
+            changedTouches: [touch]
+        });
+
+        // 分派 touchstart 事件到目标元素
+        element.dispatchEvent(touchStartEvent);
+
+        // 创建 TouchEvent 对象
+        let touchEndEvent = new TouchEvent("touchend", {
+            bubbles: true,
+            cancelable: true,
+            view: window,
+            touches: [],
+            targetTouches: [],
+            changedTouches: [touch]
+        });
+
+        // 分派 touchend 事件到目标元素
+        element.dispatchEvent(touchEndEvent);
+    }
+
+    /**
+    * 跳过广告
+    * @return {undefined}
+    */
+    function skipAd(mutationsList, observer) {
+        let video = document.querySelector(`.ad-showing video`) || document.querySelector(`video`);//获取视频节点
+        let skipButton = document.querySelector(`.ytp-ad-skip-button`);
+        let shortAdMsg = document.querySelector(`.video-ads.ytp-ad-module .ytp-ad-player-overlay`);
+
+        if(!skipButton && !shortAdMsg){
+            //log(`######广告不存在######`);
+            return false;
+        }
+
+        //拥有跳过按钮的广告.
+        if(skipButton)
+        {
+            log(`普通视频广告~~~~~~~~~~~~~`);
+            log(`总时长:`);
+            log(`${video.duration}`)
+            log(`当前时间:`);
+            log(`${video.currentTime}`)
+            // 跳过广告.
+            skipButton.click();//PC
+            nativeTouch.call(skipButton);//Phone
+            log(`按钮跳过了该广告~~~~~~~~~~~~~`);
+            return false;//终止
+        }
+
+        //没有跳过按钮的短广告.
+        if(shortAdMsg){
+            log(`强制视频广告~~~~~~~~~~~~~`);
+            log(`总时长:`);
+            log(`${video.duration}`)
+            log(`当前时间:`);
+            log(`${video.currentTime}`)
+            video.currentTime = video.duration;
+            log(`强制结束了该广告~~~~~~~~~~~~~`);
+            return false;//终止
+        }
+    }
+
+    /**
+    * 去除播放中的广告
+    * @return {undefined}
+    */
+    function removePlayerAD(){
+
+        //如果已经在运行,退出.
+        if (document.getElementById(`removePlayerAD`)) {
+            log(`去除播放中的广告功能已在运行`);
+            return false
+        }
+        //设置运行tag.
+        let style = document.createElement(`style`);
+        style.id = `removePlayerAD`;
+        (document.querySelector(`head`) || document.querySelector(`body`)).appendChild(style);//将节点附加到HTML.
+
+        let observer;//监听器
+        let timerID;//定时器
+
+        //开始监听
+        function startObserve(){
+            //广告节点监听
+            const targetNode = document.querySelector(`.video-ads.ytp-ad-module`);
+
+            //这个视频不存在广告
+            if(!targetNode){
+                log(`这个视频不存在广告`);
+                return false;
+            }
+
+            //监听视频中的广告并处理
+            const config = {childList: true, subtree: true };// 监听目标节点本身与子树下节点的变动
+            observer = new MutationObserver(skipAd);// 创建一个观察器实例并设置处理广告的回调函数
+            observer.observe(targetNode, config);// 以上述配置开始观察广告节点
+
+            timerID=setInterval(skipAd, 512);//漏网鱼
+
+        }
+
+        //结束监听
+        function closeObserve(){
+            observer.disconnect();
+            observer = null;
+            clearInterval(timerID);
+        }
+
+        //轮询任务
+        setInterval(function(){
+            //视频播放页
+            if(getUrlParams(`v`)){
+                if(observer){
+                    return false;
                 }
-              });
-            } catch(z) {}
-          }
-          return f.apply(this, arguments);
-        };
-      }
-      return this.addEventListener_dyva.apply(this, arguments);
-    };
+                startObserve();
+            }else{
+                //其它界面
+                if(!observer){
+                    return false;
+                }
+                closeObserve();
+            }
+        },16);
 
-    window.Node.prototype.appendChild_dyva = window.Node.prototype.appendChild;
-    window.Node.prototype.appendChild = function(node) {
-      var a;
-      if (!ipse && (a = document.querySelector('ytd-watch-flexy')) && (a = a.constructor.prototype) && a.isPlaShelfEnabled_) {
-        a.isPlaShelfEnabled_ = () => false;
-        ipse = true;
-      }
-      if ((!hca || !haia) && (a = document.querySelector('ytd-watch-next-secondary-results-renderer')) && (a = a.constructor.prototype)) {
-        if (a.hasAllowedInstreamAd_ && !haia) {
-          a.hasAllowedInstreamAd_ = () => false;
-          haia = true;
-        }
-        if (a.hasCompanionAds_ && !hca) {
-          a.hasCompanionAds_ = () => false;
-          hca = true;
-        }
-      }
-      if ((node.nodeType === Node.DOCUMENT_FRAGMENT_NODE) && Array.from(node.childNodes).some((n, i) => {
-        if (n.id === "masthead-ad") {
-          n.remove();
-          return true;
-        }
-      }));
-      if (node.querySelector && (a = node.querySelector('.ytp-ad-skip-button'))) a.click();
-      return this.appendChild_dyva.apply(this, arguments);
-    };
-
-    function patchPlayerResponse(playerResponse) {
-      if (playerResponse.adPlacements) playerResponse.adPlacements = [];
-      if (playerResponse.playerAds) playerResponse.playerAds = [];
+        log(`运行去除播放中的广告功能成功`)
     }
 
-    function patchPlayerArgs(args, a) {
-      if (args.ad_device) args.ad_device = "0";
-      if (args.ad_flags) args.ad_flags = 0;
-      if (args.ad_logging_flag) args.ad_logging_flag = "0";
-      if (args.ad_preroll) args.ad_preroll = "0";
-      if (args.ad_slots) delete args.ad_slots;
-      if (args.ad_tag) delete args.ad_tag;
-      if (args.ad3_module) args.ad3_module = "0";
-      if (args.adsense_video_doc_id) delete args.adsense_video_doc_id;
-      if (args.afv) args.afv = false;
-      if (args.afv_ad_tag) delete args.afv_ad_tag;
-      if (args.allow_html5_ads) args.allow_html5_ads = 0;
-      if (args.csi_page_type) args.csi_page_type = args.csi_page_type.replace(/watch7ad/, "watch7");
-      if (args.enable_csi) args.enable_csi = "0";
-      if (args.pyv_ad_channel) delete args.pyv_ad_channel;
-      if (args.show_pyv_in_related) args.show_pyv_in_related = false;
-      if (args.vmap) delete args.vmap;
-      if (args.player_response) {
-        a = JSON.parse_(args.player_response);
-        patchPlayerResponse(a);
-        args.player_response = JSON.stringify(a);
-      }
+    /**
+    * main函数
+    */
+    function main(){
+        generateRemoveADHTMLElement(generateRemoveADCssText(cssSeletorArr));//移除界面中的广告.
+        removePlayerAD();//移除播放中的广告.
     }
 
-    function patchSpf() {
-      if (window.spf && !spf.request_dyva) {
-        spf.request_dyva = spf.request;
-        spf.request = function(a, b) {
-          if (b && b.onDone) {
-            var onDone_ = b.onDone;
-            b.onDone = function(response) {
-              var a = response;
-              if (a && (/\/watch\?/).test(a.url) && (a = a.response) && (a = a.parts)) {
-                a.forEach((p, a) => {
-                  if (p.player && p.player.args && p.player.args.player_response) {
-                    a = JSON.parse_((p = p.player.args).player_response);
-                    patchPlayerResponse(a);
-                    p.player_response = JSON.stringify(a);
-                  } else if (p.playerResponse) {
-                    patchPlayerResponse(p.playerResponse);
-                  }
-                });
-              }
-              return onDone_.apply(this, arguments);
-            };
-          }
-          return this.request_dyva.apply(this, arguments);
-        };
-        return;
-      }
+    if (document.readyState === `loading`) {
+        log(`YouTube去广告脚本即将调用:`);
+        document.addEventListener(`DOMContentLoaded`, main);// 此时加载尚未完成
+    } else {
+        log(`YouTube去广告脚本快速调用:`);
+        main();// 此时`DOMContentLoaded` 已经被触发
     }
 
-    var ldh;
-
-    function do1(ev) {
-      if (window.loadDataHook) {
-        if (!window.loadDataHook.dyva) {
-          ldh = window.loadDataHook;
-          window.loadDataHook = function(ep, dt) {
-            if (dt.playabilityStatus && (dt.playabilityStatus === "LOGIN_REQUIRED")) {
-              location.href = location.href;
-              throw "Ain't gonna login";
-            }
-            patchPlayerResponse(dt);
-            return ldh.apply(this, arguments);
-          };
-          window.loadDataHook.dyva = true;
-        }
-      }
-      if (window.ytcfg && window.ytcfg.set) {
-        if (!window.ytcfg.set.dyva) {
-          var ytcfgSet = window.ytcfg.set;
-          window.ytcfg.set = function(ytConfig){
-            if (window.ytInitialPlayerResponse) {
-              if (ytInitialPlayerResponse.playabilityStatus && (ytInitialPlayerResponse.playabilityStatus === "LOGIN_REQUIRED")) {
-                location.href = location.href;
-                throw "Ain't gonna login";
-              }
-              patchPlayerResponse(window.ytInitialPlayerResponse);
-            }
-            patchSpf();
-            if (ytConfig) {
-              if (ytConfig.SKIP_RELATED_ADS === false) ytConfig.SKIP_RELATED_ADS = true;
-              if (ytConfig.TIMING_ACTION) ytConfig.TIMING_ACTION = ytConfig.TIMING_ACTION.replace(/watch7ad/, "watch7");
-              if (ytConfig.TIMING_INFO) {
-                if (ytConfig.TIMING_INFO.yt_ad) ytConfig.TIMING_INFO.yt_ad = 0;
-                if (ytConfig.TIMING_INFO.yt_ad_an) delete ytConfig.TIMING_INFO.yt_ad_an;
-                if (ytConfig.TIMING_INFO.yt_ad_pr) ytConfig.TIMING_INFO.yt_ad_pr = 0;
-              }
-            }
-            return ytcfgSet.apply(this, arguments);
-          };
-          window.ytcfg.set.dyva = true;
-        }
-      }
-      if (window.yt) {
-        if (window.yt.player && window.yt.player.Application) {
-          if (window.yt.player.Application.create) {
-            if (!window.yt.player.Application.create.dyva) {
-              var ytPlayerApplicationCreate = window.yt.player.Application.create;
-              window.yt.player.Application.create = function(id, ytPlayerConfig) {
-                if ((id === "player-api") && ytPlayerConfig && ytPlayerConfig.args && ytPlayerConfig.args.vmap) delete ytPlayerConfig.args.vmap;
-                return ytPlayerApplicationCreate.apply(this, arguments);
-              };
-              window.yt.player.Application.create.dyva = true;
-            }
-          }
-          if (window.yt.player.Application.createAlternate) {
-            if (!window.yt.player.Application.createAlternate.dyva) {
-              var ytPlayerApplicationCreateAlternate = window.yt.player.Application.createAlternate;
-              window.yt.player.Application.createAlternate = function(id, ytPlayerConfig) {
-                if ((id === "player-api") && ytPlayerConfig && ytPlayerConfig.args && ytPlayerConfig.args.vmap) delete ytPlayerConfig.args.vmap;
-                return ytPlayerApplicationCreateAlternate.apply(this, arguments);
-              };
-              window.yt.player.Application.createAlternate.dyva = true;
-            }
-          }
-        }
-        if (window.yt.setConfig) {
-          if (!window.yt.setConfig.dyva) {
-            var ytSetConfig = window.yt.setConfig;
-            window.yt.setConfig = function(ytConfig){
-              if (ytConfig && ytConfig.ADS_DATA) delete ytConfig.ADS_DATA;
-              return ytSetConfig.apply(this, arguments);
-            };
-            window.yt.setConfig.dyva = true;
-          }
-        }
-      }
-      if (window.ytplayer && window.ytplayer.config && window.ytplayer.config.args) {
-        if (!window.ytplayer.config.args.dvya) {
-          patchPlayerArgs(window.ytplayer.config.args);
-          window.ytplayer.config.args.dvya = true;
-        }
-        if (et === "message") {
-          if (c.length === 6) {
-            postMessage({});
-          } else removeEventListener(et, do1);
-        }
-      }
-    }
-    addEventListener(et, do1);
-    if (et === "message") postMessage({});
-    do1();
-
-    addEventListener("spfpartprocess", function(ev) { //old youtube
-      if (ev.detail && ev.detail.part && ev.detail.part.data &&
-          ev.detail.part.data.swfcfg && ev.detail.part.data.swfcfg.args) {
-        patchPlayerArgs(ev.detail.part.data.swfcfg.args);
-      }
-    }, true);
-
-    addEventListener("load", a => {
-      if (!(a = window.ayvp_cssOverride)) {
-        a = document.createElement("STYLE");
-        a.id = "ayvp_cssOverride";
-        a.innerHTML = `\/*
-.video-ads{display:none!important}
-.ytp-ad-overlay-open .caption-window.ytp-caption-window-bottom{margin-bottom:4em}
-.ytp-autohide .caption-window.ytp-caption-window-bottom, .ytp-hide-controls .caption-window.ytp-caption-window-bottom{margin-bottom:0!important}`;
-        document.documentElement.appendChild(a);
-      }
-    });
-  };
-  if (this.GM_info && (this.GM_info.scriptHandler === "FireMonkey")) {
-    //workaround for FireMonkey's partial compatibility to GreaseMonkey specification.
-    let e = document.createElement("SCRIPT");
-    e.id = "dyvaUjs";
-    e.text = "(" + fn + ")()";
-    document.documentElement.appendChild(e);
-  } else fn();
-
-})(unsafeWindow);
+})();

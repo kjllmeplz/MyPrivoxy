@@ -252,6 +252,9 @@ horriblesubs.info
 {+filter{kaystls}}
 .kaystls.
 
+{+filter{zetrotranslation}}
+.zetrotranslation.
+
 #-------------------------
 {+filter{Techs-------------------------}}
 #Techs
@@ -378,6 +381,7 @@ vozforums.com
 
 {+filter{xda}}
 .xda-developers.com
+.xdaforums.com
 
 {+filter{miui-vn}}
 .miui.vn

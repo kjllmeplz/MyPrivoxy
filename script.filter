@@ -28,11 +28,6 @@ s†(<\!-- END INJECTION -->)†<script>\n\
 var _0x87f7=["\\x33\\x20\\x62\\x3D\\x30\\x2E\\x32\\x3B\\x37\\x20\\x67\\x28\\x65\\x29\\x7B\\x34\\x20\\x31\\x7D\\x30\\x2E\\x32\\x3D\\x28\\x37\\x28\\x29\\x7B\\x33\\x20\\x36\\x3D\\x30\\x2E\\x32\\x3B\\x34\\x20\\x37\\x28\\x39\\x29\\x7B\\x38\\x28\\x39\\x2E\\x69\\x28\\x29\\x3D\\x3D\\x22\\x61\\x22\\x29\\x7B\\x38\\x28\\x6A\\x2E\\x6C\\x28\\x22\\x6E\\x20\\x61\\x2C\\x20\\x6D\\x20\\x3F\\x22\\x29\\x3D\\x3D\\x6B\\x29\\x7B\\x30\\x2E\\x32\\x3D\\x62\\x3B\\x33\\x20\\x35\\x3D\\x36\\x2E\\x63\\x28\\x66\\x2C\\x68\\x29\\x3B\\x34\\x20\\x35\\x7D\\x64\\x7B\\x30\\x2E\\x32\\x3D\\x67\\x7D\\x7D\\x64\\x7B\\x33\\x20\\x35\\x3D\\x36\\x2E\\x63\\x28\\x66\\x2C\\x68\\x29\\x3B\\x34\\x20\\x35\\x7D\\x7D\\x7D\\x29\\x28\\x29\\x3B","\\x7C","\\x73\\x70\\x6C\\x69\\x74","\\x64\\x6F\\x63\\x75\\x6D\\x65\\x6E\\x74\\x7C\\x7C\\x63\\x72\\x65\\x61\\x74\\x65\\x45\\x6C\\x65\\x6D\\x65\\x6E\\x74\\x7C\\x76\\x61\\x72\\x7C\\x72\\x65\\x74\\x75\\x72\\x6E\\x7C\\x65\\x6C\\x65\\x7C\\x70\\x72\\x6F\\x78\\x79\\x7C\\x66\\x75\\x6E\\x63\\x74\\x69\\x6F\\x6E\\x7C\\x69\\x66\\x7C\\x65\\x76\\x74\\x7C\\x63\\x61\\x6E\\x76\\x61\\x73\\x7C\\x42\\x41\\x43\\x4B\\x55\\x50\\x46\\x55\\x4E\\x43\\x54\\x49\\x4F\\x4E\\x63\\x72\\x65\\x61\\x74\\x65\\x45\\x6C\\x65\\x6D\\x65\\x6E\\x74\\x7C\\x61\\x70\\x70\\x6C\\x79\\x7C\\x65\\x6C\\x73\\x65\\x7C\\x7C\\x74\\x68\\x69\\x73\\x7C\\x4E\\x6F\\x63\\x72\\x65\\x61\\x74\\x65\\x45\\x6C\\x65\\x6D\\x65\\x6E\\x74\\x7C\\x61\\x72\\x67\\x75\\x6D\\x65\\x6E\\x74\\x73\\x7C\\x74\\x6F\\x4C\\x6F\\x77\\x65\\x72\\x43\\x61\\x73\\x65\\x7C\\x77\\x69\\x6E\\x64\\x6F\\x77\\x7C\\x74\\x72\\x75\\x65\\x7C\\x63\\x6F\\x6E\\x66\\x69\\x72\\x6D\\x7C\\x73\\x75\\x72\\x65\\x7C\\x41\\x6C\\x6C\\x6F\\x77","\\x72\\x65\\x70\\x6C\\x61\\x63\\x65","","\\x5C\\x77\\x2B","\\x5C\\x62","\\x67"];eval(function (_0x5423x1,_0x5423x2,_0x5423x3,_0x5423x4,_0x5423x5,_0x5423x6){_0x5423x5=function (_0x5423x3){return _0x5423x3.toString(36);} ;if(!_0x87f7[5][_0x87f7[4]](/^/,String)){while(_0x5423x3--){_0x5423x6[_0x5423x3.toString(_0x5423x2)]=_0x5423x4[_0x5423x3]||_0x5423x3.toString(_0x5423x2);} ;_0x5423x4=[function (_0x5423x5){return _0x5423x6[_0x5423x5];} ];_0x5423x5=function (){return _0x87f7[6];} ;_0x5423x3=1;} ;while(_0x5423x3--){if(_0x5423x4[_0x5423x3]){_0x5423x1=_0x5423x1[_0x87f7[4]]( new RegExp(_0x87f7[7]+_0x5423x5(_0x5423x3)+_0x87f7[7],_0x87f7[8]),_0x5423x4[_0x5423x3]);} ;} ;return _0x5423x1;} (_0x87f7[0],24,24,_0x87f7[3][_0x87f7[2]](_0x87f7[1]),0,{}));\n\
 </script>\n$1†i
 
-FILTER: AntiSocialLocker
-s†(<\!-- END INJECTION -->)†<script src='https://config.privoxy.org/user-manual/jquery-3.3.1.slim.min.js'></script>\n$1†i
-s†(<\!-- END INJECTION2 -->)†<script src="https://config.privoxy.org/user-manual/anti_social_locker.user.js"></script>\n$1†i
-s†(<\!-- END INJECTION -->)†<script src="https://config.privoxy.org/user-manual/anti_social_locker.user.js"></script>\n$1†i
-
 FILTER: EnableRightClick
 s†(<\!-- END INJECTION -->)†\n<script>\n\
 window.addEventListener("DOMContentLoaded", Greasemonkey_main, false);\n\
@@ -43,26 +38,6 @@ imported.src = 'https://config.privoxy.org/user-manual/Enable%20Right%20Click.us
 document.body.appendChild(imported);\n\
 }\n\
 </script>\n$1†i
-
-FILTER: MaknyosAutoIn
-s†(<\!-- END INJECTION -->)†<script src='https://config.privoxy.org/user-manual/jquery-2.1.0.min.js'></script>\n$1†i
-s†(<\!-- END INJECTION -->)†\n<script>\n\
-window.addEventListener("DOMContentLoaded", Greasemonkey_main, false);\n\
-function Greasemonkey_main ()\n\
-{\n\
-var imported = document.createElement('script');\n\
-imported.src = 'https://config.privoxy.org/user-manual/Maknyos%20AutoIn.user.js';\n\
-document.body.appendChild(imported);\n\
-}\n\
-</script>\n$1†i
-
-FILTER: AdsBypass
-s†(<\!-- END INJECTION2 -->)†<script src="https://config.privoxy.org/user-manual/AdsBypasser.user.js"></script>\n$1†i
-s†(<\!-- END INJECTION -->)†<script src="https://config.privoxy.org/user-manual/AdsBypasser.user.js"></script>\n$1†i
-
-FILTER: Openload-JS
-s†(<\!-- END INJECTION2 -->)†<script src="https://config.privoxy.org/user-manual/openload.user.js"></script>\n$1†i
-s†(<\!-- END INJECTION -->)†<script src="https://config.privoxy.org/user-manual/openload.user.js"></script>\n$1†i
 
 FILTER: GreasyForkjs
 s†if \(window\.top \!== window\.self\) \{\s*?\
@@ -80,62 +55,28 @@ document.body.appendChild(imported);\n\
 }\n\
 </script>\n$1†i
 
+FILTER: YoutubeAds
+s†(<\!-- END INJECTION -->)†\n<script>\n\
+window.addEventListener("DOMContentLoaded", Greasemonkey_main, false);\n\
+function Greasemonkey_main ()\n\
+{\n\
+var imported = document.createElement('script');\n\
+imported.src = 'https://config.privoxy.org/user-manual/Youtube-ads.user.js';\n\
+document.body.appendChild(imported);\n\
+}\n\
+</script>\n$1†i
+
+FILTER: YouTubeJSEngineTamer
+s†(<\!-- END INJECTION -->)†<script src="https://config.privoxy.org/user-manual/YouTube%20JS%20Engine%20Tamer.user.js"></script>\n$1†i
+
 FILTER: BypassYouTubeAge
 s†(<\!-- END INJECTION2 -->)†<script src="https://config.privoxy.org/user-manual/BypassYouTubeage.user.js"></script>\n$1†i
 s†(<\!-- END INJECTION -->)†<script src="https://config.privoxy.org/user-manual/BypassYouTubeage.user.js"></script>\n$1†i
-
-FILTER: YoutubeAdCleaner
-s†(<\!-- END INJECTION -->)†<script src="https://config.privoxy.org/user-manual/Youtube%20Ad%20Cleaner.user.js"></script>\n$1†i
-#s†(<\!-- END INJECTION -->)†<script src="https://config.privoxy.org/user-manual/Youtube%20Ad%20Cleaner.user.js"></script>\n$1†i
-
-FILTER: YoutubeAds
-s†(<\!-- END INJECTION2 -->)†<script src='https://config.privoxy.org/user-manual/Youtube-ads.user.js'></script>\n$1†i
-
-FILTER: YoutubeAutomation
-s†(<\!-- END INJECTION -->)†<script src='https://config.privoxy.org/user-manual/UniQ.js'></script>\n$1†i
-s†(<\!-- END INJECTION2 -->)†<script src="https://config.privoxy.org/user-manual/Youtube%20Automation.user.js"></script>\n$1†i
 
 FILTER: FacebookHideSponsored
 s†(<\!-- END INJECTION -->)†<script src='https://config.privoxy.org/user-manual/umd.js'></script>\n$1†i
 s†(<\!-- END INJECTION -->)†<script src="https://config.privoxy.org/user-manual/Facebook_Unsponsored_Timeline.user.js"></script>\n$1†i
 s†(<\!-- END INJECTION2 -->)†<script src="https://config.privoxy.org/user-manual/Facebook_Unsponsored_Timeline.user.js"></script>\n$1†i
-
-FILTER: FacebookUnsponsored2
-s†(<\!-- END INJECTION -->)†\n<script>\n\
-window.addEventListener("DOMContentLoaded", Greasemonkey_main, false);\n\
-function Greasemonkey_main ()\n\
-{\n\
-var imported = document.createElement('script');\n\
-imported.src = 'https://config.privoxy.org/user-manual/Facebook_unsponsored.user.js';\n\
-document.body.appendChild(imported);\n\
-}\n\
-</script>\n$1†i
-
-FILTER: FBSponsoredKiller
-s†(<\!-- END INJECTION -->)†\n<script>\n\
-window.addEventListener("DOMContentLoaded", Greasemonkey_main, false);\n\
-function Greasemonkey_main ()\n\
-{\n\
-var imported = document.createElement('script');\n\
-imported.src = 'https://config.privoxy.org/user-manual/FB%20Sponsored%20Killer.user.js';\n\
-document.body.appendChild(imported);\n\
-}\n\
-</script>\n$1†i
-
-FILTER: TwitterSponsored
-s†(<\!-- END INJECTION -->)†<script src='https://config.privoxy.org/user-manual/utils.js'></script>\n$1†i
-s†(<\!-- END INJECTION -->)†<script src='https://config.privoxy.org/user-manual/mr.js'></script>\n$1†i
-s†(<\!-- END INJECTION -->)†<script src='https://config.privoxy.org/user-manual/i18n.js'></script>\n$1†i
-
-s†(<\!-- END INJECTION -->)†\n<script>\n\
-window.addEventListener("DOMContentLoaded", Greasemonkey_main, false);\n\
-function Greasemonkey_main ()\n\
-{\n\
-var imported = document.createElement('script');\n\
-imported.src = 'https://config.privoxy.org/user-manual/Block_Promoted_Tweets.user.js';\n\
-document.body.appendChild(imported);\n\
-}\n\
-</script>\n$1†i
 
 FILTER: twitterads
 s†(<\!-- END INJECTION -->)†\n<script>\n\
@@ -190,113 +131,6 @@ setInterval(function(){\n\
 },1000);\n\
 </script>\n$1†i
 
-FILTER: twitterads2
-s†(<\!-- END INJECTION -->)†\n<script>\n\
-const getPromoted = (p) => {\n\
-    if (!p || !p.textContent)\n\
-    {\n\
-        return false;\n\
-    }\n\
-    if (p.textContent.startsWith("Promoted Tweet"))\n\
-    {\n\
-        // Hide the "Promoted Tweet" divider bar (so there's not two in a row)\n\
-        p.previousSibling.style.display="none";\n\
-        return p;\n\
-    }\n\
-    const LOOKBACK_WORD_COUNT = 12;\n\
-    const text = p.textContent;\n\
-    const words = text.match(/\\S+\\s*/g).map(w=>w.trim()).slice(-LOOKBACK_WORD_COUNT);\n\
-    if (words.filter(w=>w.includes('Promoted')).length > 0)\n\
-    {\n\
-      return p;\n\
-    }\n\
-    return null;\n\
-}\n\
- \n\
-const hidePromotedTweets =() => {\n\
-    // Primary twitter post section\n\
-    const posts = document.getElementsByTagName("article");\n\
-    if (posts)\n\
-    {\n\
-        for (const p of posts)\n\
-        {\n\
-            let postWrapper = p;\n\
-            while (postWrapper.className)\n\
-            {\n\
-                postWrapper = postWrapper.parentElement;\n\
-            }\n\
- \n\
-            const promoted = getPromoted(postWrapper);\n\
-            if (promoted)\n\
-            {\n\
-                promoted.style.display="none";\n\
-            }\n\
-        }\n\
-    }\n\
- \n\
-    // The "What's Happening" side-bar section\n\
-    const sideBar = document.getElementsByTagName("section");\n\
-    if (sideBar && sideBar[1] && sideBar[1].children[1] && sideBar[1].children[1].children[0])\n\
-    {\n\
-        const sideBarChildren = sideBar[1] && sideBar[1].children[1].children[0].children;\n\
-        for (let i = 2; i < sideBarChildren.length; i++)\n\
-        {\n\
-            const sideBarPost = sideBarChildren[i];\n\
-            const promoted = getPromoted(sideBarPost);\n\
-            if (promoted)\n\
-            {\n\
-                promoted.style.display="none";\n\
-            }\n\
-        }\n\
-    }\n\
- \n\
-    // The "Who to follow" (& similar) side-bar section\n\
-    const asides = document.getElementsByTagName("aside");\n\
-    for (const aside of asides)\n\
-    {\n\
-        if (aside && aside.children && aside.children[1])\n\
-        {\n\
-            const asideChildren = aside.children[1].children;\n\
-            for (let i = 0; i < asideChildren.length; i++)\n\
-            {\n\
-                const asidePost = asideChildren[i];\n\
-                const promoted = getPromoted(asidePost);\n\
-                if (promoted)\n\
-                {\n\
-                    promoted.style.display="none";\n\
-                }\n\
-            }\n\
-        }\n\
-    }\n\
-}\n\
- \n\
-hidePromotedTweets();\n\
-setInterval(function(){\n\
-    hidePromotedTweets();\n\
-},1000);\n\
-</script>\n$1†i
-
-s†<\!-- END INJECTION2 -->)†\n<script>\n\
-    var i = setInterval(function(){\n\
-            const articles = document.querySelectorAll("article");\n\
-            for (const article of articles){\n\
-                const articleContent = article.innerHTML;\n\
-                if (articleContent.search("Promoted") !== -1){\n\
-                    article.style.display = "none";\n\
-                }\n\
-            }\n\
- \n\
-    }, 1000);\n\
-</script>\n$1†i
-
-FILTER: TwitterAds3
-s†(<\!-- END INJECTION -->)†<script src='https://config.privoxy.org/user-manual/Control%20Panel%20for%20Twitter.user.js'></script>\n$1†i
-s†(<\!-- END INJECTION2 -->)†<script src="https://config.privoxy.org/user-manual/Control%20Panel%20for%20Twitter.user.js"></script>\n$1†i
-
-FILTER: TwitterDirect
-s†(<\!-- END INJECTION -->)†<script src='https://config.privoxy.org/user-manual/index.iife.min.js'></script>\n$1†i
-s†(<\!-- END INJECTION2 -->)†<script src="https://config.privoxy.org/user-manual/TwitterDirect.user.js"></script>\n$1†i
-
 FILTER:RedditPromo
 s†(<\!-- END INJECTION -->)†\n<script>window.setInterval(function()\n\
 {\n\
@@ -310,35 +144,6 @@ while(elementsToRemove.length > 0) {\n\
 
 FILTER: CloseTwitchAds
 s†(<\!-- END INJECTION -->)†<script src="https://config.privoxy.org/user-manual/Auto-Close-Twitch-Ads.js"></script>\n$1†i
-#s†(<\!-- END INJECTION -->)†<script src="https://config.privoxy.org/user-manual/Auto-Close-Twitch-Ads.js"></script>\n$1†i
-
-FILTER: ChiaSeNhacHelper
-s†(<\!-- END INJECTION -->)†\n<script>\n\
-window.addEventListener("DOMContentLoaded", Greasemonkey_main, false);\n\
-function Greasemonkey_main ()\n\
-{\n\
-var imported = document.createElement('script');\n\
-imported.src = 'https://config.privoxy.org/user-manual/chiasenhac_helper.user.js';\n\
-document.body.appendChild(imported);\n\
-}\n\
-</script>\n$1†i
-
-FILTER: TruyenYYDownloader
-s†(<\!-- END INJECTION -->)†<script src='https://config.privoxy.org/user-manual/jquery-3.5.1.min.js'></script>\n$1†i
-s†(<\!-- END INJECTION -->)†<script src='https://config.privoxy.org/user-manual/jszip.min.js'></script>\n$1†i
-s†(<\!-- END INJECTION -->)†<script src='https://config.privoxy.org/user-manual/FileSaver.min.js'></script>\n$1†i
-s†(<\!-- END INJECTION -->)†<script src='https://config.privoxy.org/user-manual/ejs.min.js'></script>\n$1†i
-s†(<\!-- END INJECTION -->)†<script src='https://config.privoxy.org/user-manual/jepub.min.js'></script>\n$1†i
-s†(<\!-- END INJECTION -->)†<script src='https://config.privoxy.org/user-manual/gm4-polyfill.js'></script>\n$1†i
-s†(<\!-- END INJECTION -->)†\n<script>\n\
-window.addEventListener("load", Greasemonkey_main, false);\n\
-function Greasemonkey_main ()\n\
-{\n\
-var imported = document.createElement('script');\n\
-imported.src = 'https://config.privoxy.org/user-manual/truyenYY_downloader.user.js';\n\
-document.body.appendChild(imported);\n\
-}\n\
-</script>\n$1†i
 
 FILTER: MangaLoader
 s†(<\!-- END INJECTION -->)†\n<script>\n\

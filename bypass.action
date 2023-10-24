@@ -132,14 +132,13 @@ quoka.de
 .hdslb.com/bfs/.*?\.(css|js)$
 .mangadex.org/_nuxt/
 
-
-# For privoxy only
-{ \
--filter \
--prevent-compression \
--hide-referer{forge} \
-}
-.privoxy.org
+# Don't handle https
+{-https-inspection}
+boxx.ai
+.fahasa.com
+pubsub-edge.twitch.tv
+apird-tvhai.rdgogo.xyz
+i.blogtruyen.com
 
 #--------------------------------------------------------
 # Alias's time
@@ -151,10 +150,6 @@ quoka.de
 
 # Fragile with no filter https
 {+fragile -https-inspection}
-# Tag
-TAG:^video/
-TAG:^application/octet-stream
-/.*?\.(ts|m3u8|mp4|mkv|woff2)$
 # Microsoft
 otf.msn.com
 .windowsupdate.com
@@ -301,6 +296,7 @@ loadbalance.manga123.net
 .zalo.me
 .bachngocsach.com
 .sponsor.ajay.app
+paimon.moe
 # Hana
 hana:8200
 .hana.ondemand.com
@@ -308,9 +304,12 @@ hana:8200
 .phucnx.name.vn
 my.contabo.com
 
-# Patterns, so no SSL
+# Patterns and TAG, so no SSL
 {+fragile}
-# Type
+# Tag
+TAG:^video/
+TAG:^application/octet-stream
+TAG:^application/vnd
 TAG:^SOCKET-REQUEST$
 # Url
 .bing.com/speech_render.*?
@@ -325,6 +324,7 @@ fonts.googleapis.com/css\?
 .google.com/recaptcha/
 .gstatic.com/recaptcha/
 .google.com/carddav/
+.google.com/maps/vt/
 contacts.google.com/widget/
 .youtube.com/.*?frags=comments
 .youtube.com/comment_service_ajax?

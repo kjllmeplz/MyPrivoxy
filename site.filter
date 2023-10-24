@@ -3,7 +3,8 @@ FILTER: Global-tagger----------------------
 # Global tagger
 
 CLIENT-HEADER-TAGGER: url
-s@^Host@$url@D
+#s@^Host@$url@D
+s@^Host:.*@$0@i
 
 SERVER-HEADER-TAGGER: content-length
 s@^Content-Length:\s+(\d+)@$1@i
@@ -28,6 +29,9 @@ SERVER-HEADER-FILTER: bettercache
 s@^Cache-Control:.*@@i
 #Re-Add Cache-Control header, but max-age=7777777,s-maxage=7777777 will make web browser cache contents forever
 s@^HTTP.*@$0\r\nCache-Control: no-transform,public,max-age=36000,s-maxage=36000@i
+
+SERVER-HEADER-FILTER: privoxyjs
+s@^(Content-Type:)\s*text/(?:html|plain)(;.*)?$@$1 text/javascript@i
 
 CLIENT-HEADER-TAGGER: tagger4https
 s@Tagged: ProxHTTPSProxyMII FrontProxy@$0@i
@@ -65,10 +69,10 @@ s@<img[^>]*?src="[^"]*?(?!thre)(ads|Ads)[^"]*?"[\s\S]*?<\/img>@@gi
 FILTER: ads3
 #s@<script[^>]*?(?:(?:http|https)\:\/\/ad\.|(?:http|https)\:\/\/ads\.|analytics|popunder|admicro|popAds|clickads|adblock|doubleclick|loadQuangCao|btpop|scorecardresearch|quangcao)[^>]*?><\/script>@@gi
 #s@<script[^>]*?>[^<]*?(?:(?:http|https)\:\/\/ad\.|(?:http|https)\:\/\/ads\.|analytics|popunder|admicro|popAds|clickads|adblock|doubleclick|loadQuangCao|btpop|scorecardresearch|quangcao|VideoAds)[\s\S]*?<\/script>@@gi
-
-FILTER: ads4
-s@<img src="[^"]*?doubleclick\.[^>]*?/>@@g
 #s@(google-analytics|googleadservices|googletagmanager|googletagservices|admicro|doubleclick|scorecardresearch|coin-hive|coinhive|traffic2bitcoin|jsecoin)\.@fuck_off_ads.@giT
+
+FILTER: doubleclick
+s@<img src="[^"]*?doubleclick\.[^>]*?/>@@g
 
 FILTER: socialbutton
 s@(platform\.linkedin\.com|platform\.twitter\.com|plusone\.js|connect\.facebook\.|w\.sharethis\.com|like\.php|apis\.google\.com\/js\/platform\.js|js\/api\/share\.js|redditstatic|reddit\.com\/static|addthis_widget\.js)@<!-- Removed by socialbutton -->@gi
@@ -592,6 +596,10 @@ s@<script[^>]*?>[^<]*?(?:fivver|_0xc33e|b2a\(a\)|_0xc)[\s\S]*?<\/script>@@gi
 s@<figure[^>]*?(?:wp-block-)[^>]*?>[\s\S]*?<\/figure>@@gi
 s@<a[^>]*?(?:wp-block-button)[^>]*?>[\s\S]*?<\/a>@@gi
 
+FILTER: zetrotranslation
+s@<script[^>]*?>[^<]*?(?:advads_tracking_ads|advanced_ads_|advads|_stq|pubfuture)[\s\S]*?<\/script>@@gi
+s@<script[^>]*?(?:pubfuture-ad)[^>]*?><\/script>@@gi
+
 #-------------------------
 FILTER: Techs-------------------------
 # Techs
@@ -683,14 +691,16 @@ s@(<\!-- END INJECTION -->)@\n\
 $1@i
 s@images\/tet-(right|left).png@@gi
 s@<script type='text\/javascript'>[^<]*?googletag[^<]*?<\/script>@@gi
+s@<div[^>]*?(?:atc-nonstar)[^>]*?>[\s\S]*?<\/div>@@gi
+s@<div[^>]*?(?:LeaderBoardTop)[^>]*?>[\s\S]*?<\/div>@@
 
 FILTER: dantri
 s@<script[^>]*?(?:admicro|logdantri)[^>]*?><\/script>@@gi
 s@<script[^>]*?>[^<]*?(logdantri|admicro|GetLikeF\*\*kbook)[\s\S]*?<\/script>@@gi
 s@<div[^>]*?(admzone|top-ads|adv-box|d7254|ads flex-jcc|ads-masthead|mobile-home-|mobile-top-page)[^>]*?>[\s\S]*?<\/div>@@gi
 s@<a[^>]*?(fica\.vn)[^>][\s\S]*?<\/a>@@gi
-s@allowF\*\*kbook@allowFacebook@g
-s@\"XdsSlots\"\:\{[^\}]*?\}@\"XdsSlots\"\:\{\}@g
+#s@allowF\*\*kbook@allowFacebook@g
+#s@\"XdsSlots\"\:\{[^\}]*?\}@\"XdsSlots\"\:\{\}@g
 s@(<\!-- END INJECTION2 -->)@\n<style>\n\
 \.bqtm-w, \.hqt-g, \.hqt-r, \.admzone221, \.fica, \.banner-ds, \.dtms-app, \.top-banner, \.mdbl_16, \.tpm-ads-unit,\n\
 \[id\*=xds-\], \[id\=dtads_inpage_wrapper\]\n\
@@ -962,8 +972,12 @@ s@<div[^>]*?(gamau|truvid|vm-placement|div-pw-)[^>]*?>[\s\S]*?<\/div>@@gi
 
 FILTER: xda
 s@\<html dir=\"ltr\" lang=\"en\"\>@\<html dir=\"ltr\">@
+s@<script[^>]*?>[^<]*?(?:function\(o,_name\))[\s\S]*?<\/script>@@gi
+#s@<div[^>]*?(div-gpt-ad-)[^>]*?>[\s\S]*?<\/div>@@gi
+#s@<div[^>]*?(ad-zone-inline-content-above-)[^>]*?>[\s\S]*?<\/div>@@gi
+#s@<div[^>]*?(ad-zone-content-above-)[^>]*?>[\s\S]*?<\/div>@@gi
 s@(<\!-- END INJECTION -->)@$1<style>\n\
-\.xdadepot_item, \.xdadepot_img, \.xdadepot_title, \.sponsor-dyn-banner\n\
+\.xdadepot_item, \.xdadepot_img, \.xdadepot_title, \.sponsor-dyn-banner, \.adsninja-ad-zone, \.ad-zone\n\
 {\n\
 display:none;\n\
 }\n\
@@ -1032,6 +1046,8 @@ FILTER: 90p-pl
 #s@initOdds\(\)@sida1\(\)@
 s@init8xb\(\);@@gi
 s@<a[^>]*?(8xbet)[^>]*?>[\s\S]*?<\/a>@@gi
+s@i\.imgur\.com@sida\.overload@gi
+s@advertising    \: advertising,@@
 
 FILTER: thapcam-js
 s@popupBanners@sidaBanner@

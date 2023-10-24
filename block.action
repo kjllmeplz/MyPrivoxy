@@ -97,6 +97,7 @@ support./(.*/)?track
 cdn.popsww.com/popsapp/
 ads-blocker.com/testing
 .nimo.tv/(.*/)?img.webp
+.redditmedia.com/(.*/)?styles/bannerBackgroundImage_
 
 #----------------------------------------------------------------------------
 # Domain
@@ -1784,6 +1785,7 @@ cloud.hitcashtag.com
 v9banners.com
 .v9bet55.com
 .vulnerableimmigrateaboveaverage.com
+.adsninja.
 
 {+block{EmtyDocument} +handle-as-empty-document}
 anime47.com/js/pop1.js
@@ -1868,8 +1870,11 @@ cdnasset.dantri.com.vn/fe/
 dibsemey.com/pfe/
 vizcloud.co/ping/
 .imgur.com/*(eB4LTKQ|fhXeUtv|K7x3FrU|WRTmeTC|cwqKUAU|GF5wx3I|8voRVx2|ifgVtSv|8zQHZww|AEOpzFx|XF0aGfI|kBi8btO).gif
-.imgur.com/*(?:ZCvsO4D).mp4
+.imgur.com/*(?:ZCvsO4D|VxrIb02).mp4
 photo*.tinhte.vn/data/attachment-files/.*.-VTM.gif
+w3-reporting.reddit.com/reports
+.redditstatic.com/shreddit/sentry-
+.reddit.com/svc/shreddit/
 
 {-block{Custom}}
 .livechart.me
