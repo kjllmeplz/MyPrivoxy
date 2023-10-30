@@ -3,10 +3,11 @@
 // @author        adisib
 // @namespace     namespace_adisib
 // @description   Select a youtube resolution and resize the player.
-// @version       2023.10.20.1
+// @version       2023.10.26
 // @match         https://*.youtube.com/*
 // @noframes
-// @grant         none
+// @grant         GM.getValue
+// @grant         GM.setValue
 // ==/UserScript==
 
 // The video will only resize when in theater mode on the main youtube website.
@@ -14,6 +15,10 @@
 // To enable experimental support for embedded players outside of YouTube website, do the following steps:
 //   add  " @include * "  to the script metadata
 //   remove  " @noframes "  from the script metadata
+
+// 2023.10.24/26
+// Fix possibility of not using youtube API when it should, fix compatibility with OwlZoom, use userscript storage API for settings
+// This update may affect compatibility with older browsers. Please report any issues with browser and version mentioned.
 
 // 2023.10.20.1
 // Fix resizing regression
@@ -27,60 +32,69 @@
 
 	// --- SETTINGS -------
 
-	// Target Resolution to always set to. If not available, the next best resolution will be used.
-	const changeResolution = true;
-	const preferPremium = true;
-	const targetRes = "hd1080";
-	// Choices for targetRes are currently:
-	//   "highres" >= ( 8K / 4320p / QUHD  )
-	//   "hd2880"   = ( 5K / 2880p /  UHD+ )
-	//   "hd2160"   = ( 4K / 2160p /  UHD  )
-	//   "hd1440"   = (      1440p /  QHD  )
-	//   "hd1080"   = (      1080p /  FHD  )
-	//   "hd720"    = (       720p /   HD  )
-	//   "large"    = (       480p         )
-	//   "medium"   = (       360p         )
-	//   "small"    = (       240p         )
-	//   "tiny"     = (       144p         )
+	let settings = {
 
-	// Target Resolution for high framerate (60 fps) videos
-	// If null, it is the same as targetRes
-	const highFramerateTargetRes = true;
+		// Target Resolution to always set to. If not available, the next best resolution will be used.
+		changeResolution: true,
+		preferPremium: true,
+		targetRes: "hd1080",
+		// Choices for targetRes are currently:
+		//   "highres" >= ( 8K / 4320p / QUHD  )
+		//   "hd2880"   = ( 5K / 2880p /  UHD+ )
+		//   "hd2160"   = ( 4K / 2160p /  UHD  )
+		//   "hd1440"   = (      1440p /  QHD  )
+		//   "hd1080"   = (      1080p /  FHD  )
+		//   "hd720"    = (       720p /   HD  )
+		//   "large"    = (       480p         )
+		//   "medium"   = (       360p         )
+		//   "small"    = (       240p         )
+		//   "tiny"     = (       144p         )
 
-	// If changePlayerSize is true, then the video's size will be changed on the page
-	//   instead of using youtube's default (if theater mode is enabled).
-	// If useCustomSize is false, then the player will be resized to try to match the target resolution.
-	//   If true, then it will use the customHeight variables (theater mode is always full page width).
-	const changePlayerSize = true;
-	const useCustomSize = false;
-	const customHeight = 600;
+		// Target Resolution for high framerate (60 fps) videos
+		// If null, it is the same as targetRes
+		highFramerateTargetRes: true,
 
-	// If autoTheater is true, each video page opened will default to theater mode.
-	// This means the video will always be resized immediately if you are changing the size.
-	// NOTE: YouTube will not always allow theater mode immediately, the page must be fully loaded before theater can be set.
-	const autoTheater = false;
+		// If changePlayerSize is true, then the video's size will be changed on the page
+		//   instead of using youtube's default (if theater mode is enabled).
+		// If useCustomSize is false, then the player will be resized to try to match the target resolution.
+		//   If true, then it will use the customHeight variables (theater mode is always full page width).
+		changePlayerSize: true,
+		useCustomSize: false,
+		customHeight: 600,
 
-	// If flushBuffer is false, then the first second or so of the video may not always be the desired resolution.
-	//   If true, then the entire video will be guaranteed to be the target resolution, but there may be
-	//   a very small additional delay before the video starts if the buffer needs to be flushed.
-	const flushBuffer = true;
+		// If autoTheater is true, each video page opened will default to theater mode.
+		// This means the video will always be resized immediately if you are changing the size.
+		// NOTE: YouTube will not always allow theater mode immediately, the page must be fully loaded before theater can be set.
+		autoTheater: false,
 
-	// Setting cookies can allow some operations to perform faster or without a delay (e.g. theater mode)
-	// Some people don't like setting cookies, so this is false by default (which is the same as old behavior)
-	const allowCookies = false;
+		// If flushBuffer is false, then the first second or so of the video may not always be the desired resolution.
+		//   If true, then the entire video will be guaranteed to be the target resolution, but there may be
+		//   a very small additional delay before the video starts if the buffer needs to be flushed.
+		flushBuffer: true,
 
-	// Tries to set the resolution as early as possible.
-	// This might cause issues on youtube polymer layout, so disable if videos fail to load.
-	// If videos load fine, leave as true or resolution may fail to set.
-	const setResolutionEarly = true;
+		// Setting cookies can allow some operations to perform faster or without a delay (e.g. theater mode)
+		// Some people don't like setting cookies, so this is false by default (which is the same as old behavior)
+		allowCookies: false,
+								 
 
-	// Enables a temporary work around for an issue where users can get the wrong youtube error screen
-	// (Youtube has two of them for some reason and changing to theater mode moves the wrong one to the front)
-	// Try disabling if you can't interact with the video or you think you are missing an error message.
-	const enableErrorScreenWorkaround = true;
+		// Tries to set the resolution as early as possible.
+		// This might cause issues on youtube polymer layout, so disable if videos fail to load.
+		// If videos load fine, leave as true or resolution may fail to set.
+		setResolutionEarly: true,
 
-	// Use the iframe API to set resolution if possible. Otherwise uses simulated mouse clicks.
-	const useAPI = true;
+		// Enables a temporary work around for an issue where users can get the wrong youtube error screen
+		// (Youtube has two of them for some reason and changing to theater mode moves the wrong one to the front)
+		// Try disabling if you can't interact with the video or you think you are missing an error message.
+		enableErrorScreenWorkaround: true,
+
+		// Use the iframe API to set resolution if possible. Otherwise uses simulated mouse clicks.
+		useAPI: true,
+
+		// Overwrite stored settings with the settings coded into the script, to apply changes.
+		// Set and keep as true to have settings behave like before, where you can just edit the settings here to change them.
+		overwriteStoredSettings: false
+
+	};
 
 	// --------------------
 
@@ -160,15 +174,15 @@
 		debugLog("Setting Resolution...");
 
 		const currentQuality = ytPlayer.getPlaybackQuality();
-		let res = targetRes;
+		let res = settings.targetRes;
 
-		if (highFramerateTargetRes && foundHFR)
+		if (settings.highFramerateTargetRes && foundHFR)
 		{
-			res = highFramerateTargetRes;
+			res = settings.highFramerateTargetRes;
 		}
 
-		let shouldPremium = preferPremium && [...ytPlayer.getAvailableQualityData()].some(q => q.quality == res && q.qualityLabel.includes("Premium"));
-		let useButtons = !useAPI || shouldPremium;
+		let shouldPremium = settings.preferPremium && [...ytPlayer.getAvailableQualityData()].some(q => q.quality == res && q.qualityLabel.includes("Premium") && q.isPlayable);
+		let useButtons = !settings.useAPI || shouldPremium;
 
 		// Youtube doesn't return "auto" for auto, so set to make sure that auto is not set by setting
 		//   even when already at target res or above, but do so without removing the buffer for this quality
@@ -184,7 +198,7 @@
 				++nextBestIndex;
 			}
 
-			if (!useButtons && flushBuffer && currentQuality !== resolutionList[nextBestIndex])
+			if (!useButtons && settings.flushBuffer && currentQuality !== resolutionList[nextBestIndex])
 			{
 				let id = getVideoIDFromURL(ytPlayer);
 				if (id.indexOf("ERROR") === -1)
@@ -199,7 +213,7 @@
 			res = resolutionList[nextBestIndex];
 		}
 
-		if (useAPI)
+		if (settings.useAPI)
 		{
 			if (ytPlayer.setPlaybackQualityRange !== undefined)
 			{
@@ -216,8 +230,8 @@
 				resLabel = [...ytPlayer.getAvailableQualityData()].find(q => q.quality == res && q.qualityLabel.includes("Premium")).qualityLabel;
 			}
 
-			let settingsButton = unwrapElement(doc.getElementsByClassName("ytp-settings-button")[0]);
-			settingsButton.click();
+			let settingsButton = doc.querySelector(".ytp-settings-button:not(#ScaleBtn)")[0];
+			unwrapElement(settingsButton).click();
 
 			let qualityMenuButton = document.evaluate('.//*[contains(text(),"Quality")]/ancestor-or-self::*[@class="ytp-menuitem-label"]', ytPlayer, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
 			unwrapElement(qualityMenuButton).click();
@@ -235,14 +249,14 @@
 	// Set resolution, but only when API is ready (it should normally already be ready)
 	function setResOnReady(ytPlayer, resolutionList)
 	{
-		if (useAPI && ytPlayer.getPlaybackQuality === undefined)
+		if (settings.useAPI && ytPlayer.getPlaybackQuality === undefined)
 		{
 			win.setTimeout(setResOnReady, 100, ytPlayer, resolutionList);
 		}
 		else
 		{
 			let framerateUpdate = false;
-			if (highFramerateTargetRes)
+			if (settings.highFramerateTargetRes)
 			{
 				let features = ytPlayer.getVideoData().video_quality_features;
 				if (features)
@@ -260,10 +274,10 @@
 				setResolution(ytPlayer, resolutionList);
 
 				let storedQuality = localStorage.getItem("yt-player-quality");
-				if (!storedQuality || storedQuality.indexOf(targetRes) === -1)
+				if (!storedQuality || storedQuality.indexOf(settings.targetRes) === -1)
 				{
 					let tc = Date.now(), te = tc + 2592000000;
-					localStorage.setItem("yt-player-quality","{\"data\":\"" + targetRes + "\",\"expiration\":" + te + ",\"creation\":" + tc + "}");
+					localStorage.setItem("yt-player-quality","{\"data\":\"" + settings.targetRes + "\",\"expiration\":" + te + ",\"creation\":" + tc + "}");
 				}
 			}
 		}
@@ -283,7 +297,7 @@
 
 			if (pageManager)
 			{
-				if (enableErrorScreenWorkaround)
+				if (settings.enableErrorScreenWorkaround)
 				{
 					const styleContent = "#error-screen { z-index: 42 !important } .ytp-error { display: none !important }";
 
@@ -318,8 +332,8 @@
 
 	function computeAndSetPlayerSize()
 	{
-		let height = customHeight;
-		if (!useCustomSize)
+		let height = settings.customHeight;
+		if (!settings.useCustomSize)
 		{
 			// don't include youtube search bar as part of the space the video can try to fit in
 			let heightOffsetEl = doc.getElementById("masthead");
@@ -331,9 +345,9 @@
 				mastheadPadding = parseInt(win.getComputedStyle(mastheadContainerEl).paddingBottom, 10) * 2;
 			}
 
-			let i = Math.max(resolutions.indexOf(targetRes), 0);
+			let i = Math.max(resolutions.indexOf(settings.targetRes), 0);
 			height = Math.min(heights[i], win.innerHeight - (mastheadHeight + mastheadPadding));
-      height = Math.max(height, 270);
+			height = Math.max(height, 270);
 		}
 
 		resizePlayer(height);
@@ -388,9 +402,9 @@ min-height: " + height + "px !important; max-height: none !important; height: " 
 		let ytPlayer = doc.getElementById("movie_player") || doc.getElementsByClassName("html5-video-player")[0];
 		let ytPlayerUnwrapped = unwrapElement(ytPlayer);
 
-		if (autoTheater && ytPlayerUnwrapped)
+		if (settings.autoTheater && ytPlayerUnwrapped)
 		{
-			if (allowCookies && doc.cookie.indexOf("wide=1") === -1)
+			if (settings.allowCookies && doc.cookie.indexOf("wide=1") === -1)
 			{
 				doc.cookie = "wide=1; domain=.youtube.com";
 			}
@@ -398,18 +412,18 @@ min-height: " + height + "px !important; max-height: none !important; height: " 
 			setTheaterMode(ytPlayerUnwrapped);
 		}
 
-		if (changePlayerSize && win.location.host.indexOf("youtube.com") !== -1 && win.location.host.indexOf("gaming.") === -1)
+		if (settings.changePlayerSize && win.location.host.indexOf("youtube.com") !== -1 && win.location.host.indexOf("gaming.") === -1)
 		{
 			computeAndSetPlayerSize();
 			window.addEventListener("resize", computeAndSetPlayerSize, true);
 		}
 
-		if (changeResolution && setResolutionEarly && ytPlayerUnwrapped)
+		if (settings.changeResolution && settings.setResolutionEarly && ytPlayerUnwrapped)
 		{
 			setResOnReady(ytPlayerUnwrapped, resolutions);
 		}
 
-		if (changeResolution || autoTheater)
+		if (settings.changeResolution || settings.autoTheater)
 		{
 			win.addEventListener("loadstart", function(e) {
 				if (!(e.target instanceof win.HTMLMediaElement))
@@ -422,11 +436,11 @@ min-height: " + height + "px !important; max-height: none !important; height: " 
 				if (ytPlayerUnwrapped)
 				{
 					debugLog("Loaded new video");
-					if (changeResolution)
+					if (settings.changeResolution)
 					{
 						setResOnReady(ytPlayerUnwrapped, resolutions);
 					}
-					if (autoTheater)
+					if (settings.autoTheater)
 					{
 						setTheaterMode(ytPlayerUnwrapped);
 					}
@@ -438,9 +452,33 @@ min-height: " + height + "px !important; max-height: none !important; height: " 
 		win.removeEventListener("yt-navigate-finish", main, true);
 	}
 
-	main();
-	// Youtube doesn't load the page immediately in new version so you can watch before waiting for page load
-	// But we can only set resolution until the page finishes loading
-	win.addEventListener("yt-navigate-finish", main, true);
+	async function applySettings()
+	{
+		if (GM.getValue && GM.setValue)
+		{
+			let settingsSaved = await GM.getValue("SettingsSaved");
 
+			if (settings.overwriteStoredSettings || !settingsSaved)
+			{
+				Object.entries(settings).forEach(([k,v]) => GM.setValue(k, v));
+
+				await GM.setValue("SettingsSaved", true);
+			}
+			else
+			{
+				await Promise.all(
+					Object.keys(settings).map(k => { let newval = GM.getValue(k); return newval.then(v => [k,v]); })
+				).then((c) => c.forEach(([nk,nv]) => { if (settings[nk]) { settings[nk] = nv; } }));
+			}
+
+			debugLog(Object.entries(settings).map(([k,v]) => k + " | " + v).join(", "));
+		}
+	}
+
+	applySettings().then(() => {
+		main();
+		// Youtube doesn't load the page immediately in new version so you can watch before waiting for page load
+		// But we can only set resolution until the page finishes loading
+		win.addEventListener("yt-navigate-finish", main, true);
+	});
 })();
