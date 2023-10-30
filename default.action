@@ -285,7 +285,7 @@ play.tvhaystream.xyz
 #
 
 {+server-header-filter{removecontentsecuritypolicy}}
-.twitter.com
+#.twitter.com
 
 {+add-header{Access-Control-Allow-Origin: *}}
 #
@@ -296,7 +296,8 @@ preview.redd.it
 
 {+server-header-filter{privoxycsp}}
 .facebook.com
-.twitter.com
+#.twitter.com
+.#x.com
 
 {+server-header-filter{privoxyjs}}
 config.privoxy.org/.*?\.js$

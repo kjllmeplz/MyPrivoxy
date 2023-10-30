@@ -14,7 +14,7 @@ GM_info = {};
 
 (function () {
 	// Settings, can be changed
-	var enable_GM_registerMenuCommand = true,
+	var enable_GM_registerMenuCommand = false,
 	override_GM_registerMenuCommand = false,
 	show_global_config_menu_item = false,
 	enable_opera_scriptStorage = true,

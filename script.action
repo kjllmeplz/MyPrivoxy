@@ -60,7 +60,8 @@
 #.twitter.com
 
 {+filter{ControlPanelTwitter}}
-twitter.com
+#twitter.com
+#x.com
 
 {+filter{RedditPromo}}
 .reddit.com
