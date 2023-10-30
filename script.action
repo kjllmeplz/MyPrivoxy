@@ -59,6 +59,9 @@
 {+filter{twitterads}}
 #.twitter.com
 
+{+filter{ControlPanelTwitter}}
+twitter.com
+
 {+filter{RedditPromo}}
 .reddit.com
 

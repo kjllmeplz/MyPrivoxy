@@ -1377,6 +1377,7 @@ megaup.net/themes/flow/
 .otofun.net/css.php?
 .otofun.net/styles/
 .otofun.net/data/
+.g.doubleclick.net
 
 #---------------------------------------
 # block tracking MS
@@ -1875,6 +1876,7 @@ photo*.tinhte.vn/data/attachment-files/.*.-VTM.gif
 w3-reporting.reddit.com/reports
 .redditstatic.com/shreddit/sentry-
 .reddit.com/svc/shreddit/
+.twitter.com/i/api/.*/(jot|videoads)/
 
 {-block{Custom}}
 .livechart.me

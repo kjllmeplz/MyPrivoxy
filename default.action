@@ -53,6 +53,10 @@ for-privoxy-version=3.0.30
 # Golbal settings
 
 #-------------------------------------------------------
+# SSL Filter
+{+https-inspection}
+:443
+
 # Default settings + Add by kjll 
 { \
 #+change-x-forwarded-for{block} \
@@ -73,10 +77,6 @@ for-privoxy-version=3.0.30
 #+set-image-blocker{pattern} \
 }
 /
-
-# SSL Filter
-{+https-inspection}
-:443
 
 #-------------------------------------------------------
 # Cautious settings
@@ -282,18 +282,17 @@ play.tvhaystream.xyz
 .csstats.gg
 
 {+server-header-filter{bettercache}}
-.greasyfork.org/.*?\.user.js$
-.userscripts-mirror.org/.*?\.js$
-.githubusercontent.com/kjllmeplz/.*?\.(gif|GIF|jpg|js)$
-raw.githubusercontent.com/adsbypasser/
-.sleazyfork.org/scripts/.*?\.user.js$
+#
 
 {+server-header-filter{removecontentsecuritypolicy}}
-#
+.twitter.com
 
 {+add-header{Access-Control-Allow-Origin: *}}
 #
-#.twitter.com
+
+{+client-header-filter{reddit-image}}
+i.redd.it
+preview.redd.it
 
 {+server-header-filter{privoxycsp}}
 .facebook.com
@@ -301,6 +300,15 @@ raw.githubusercontent.com/adsbypasser/
 
 {+server-header-filter{privoxyjs}}
 config.privoxy.org/.*?\.js$
+
+{+add-header{Referer: https://www.youtube.com/}}
+#.youtube.com/watch?
+
+{+add-header{Origin: https://www.youtube.com}}
+#.youtube.com/watch?
+
+{+hide-user-agent{Mozilla/5.0 (Windows Phone 10.0; Mobile; rv:107.0) Gecko/107.0 Firefox/107.0}}
+#.youtube.com
 
 {+hide-user-agent{Nothing} -crunch-incoming-cookies -crunch-outgoing-cookies}
 .ip-check.info
@@ -329,20 +337,20 @@ www.reddit.com
 
 # Disable compression
 {+prevent-compression}
-.fandom.
-.90phut.
-.90phut*.
-.90m.
-.90p.
-.binhluanvidamme.
-.binhluanvidamme*.
-.phut90.
-.phut91.
-90.*.link
-mitom.*.link
-.90phutt.
-.hltv.org
-.thapcam.
+#.fandom.
+#.hltv.org
+#.90phut.
+#.90phut*.
+#.90m.
+#.90p.
+#.binhluanvidamme.
+#.binhluanvidamme*.
+#.phut90.
+#.phut91.
+#90.*.link
+#mitom.*.link
+#.90phutt.
+#.thapcam.
 
 #----------------------------------------------------------------------------
 # Sections that reject global filter
@@ -441,6 +449,12 @@ gamepress.gg
 .nhaphangtrungquoc247.vn
 itsgl.backlog.com
 playzone.vn
+
+{-redirect{s@^https://[^/]*/(.*)@http://old.reddit.com/$1@}}
+.reddit.com/media?
+i.redd.it
+preview.redd.it
+.reddit.com/gallery/
 
 #---------------------------------------
 # Exception all

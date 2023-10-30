@@ -44,6 +44,9 @@ s@(^GET\s+\/.{600,}\s+HTTP\/\d\.\d\s*$)@MAXIMUM-URL-LENGTH@i
 
 CLIENT-HEADER-TAGGER: maximum-domain-length
 s@^Host.*.{60,}\.[a-z]*$@MAXIMUM-DOMAIN-LENGTH@D
+
+CLIENT-HEADER-FILTER: reddit-image
+s@(^Accept:).*?@$1 image/avif,image/jxl,image/webp,*/*@
 	
 #---------------------------------------
 FILTER: Global-Filter-------------------
@@ -831,6 +834,7 @@ css.innerHTML = "div[data-component-context=\\"suggest_activity_tweet\\"] { disp
 document.head.appendChild(css);\n\
 </script>\n$1@i
 s@(<link rel="preconnect" href="\/\/abs.twimg.com" \/><link rel="dns-prefetch" href="\/\/abs.twimg.com" \/>)@$1<link rel="preconnect" href="\/\/config.privoxy.org" \/><link rel="dns-prefetch" href="\/\/config.privoxy.org" \/>@
+s@(<meta property="fb:app_id")@<link nonce="ZDY4MmQ0ODYtYjM3NS00MGI5LTg0ODctMzM5OWVhMGZiOThj" rel="preload" as="script" crossorigin="anonymous" href="https:\/\/config.privoxy.org\/user-manual\/Control%20Panel%20for%20Twitter.user.js" \/>$1@
 
 FILTER: youtube
 s@<script[^>]*?>[^<]*?(?:ad_creative)[\s\S]*?<\/script>@@gi
@@ -940,7 +944,7 @@ FILTER: wikia
 s@"adsInContent":1@"adsInContent":0@
 s@"showAds":true@"showAds":false@
 s@"pageType":"all_ads"@"pageType":"no_ads"@
-s@<script[^>]*?>[^<]*?(?:wikia_beacon_id|adEngine|_comscore|_qevents|adslots2\.push)[^<]*?<\/script>@@g
+s@<script[^>]*?>[^<]*?(?:wikia_beacon_id|adEngine|_comscore|_qevents|adslots2\.push|push\()[^<]*?<\/script>@@g
 #s@<script[^>]*?(?:nocookie\.net\/__load/)[^>]*?><\/script>@@gi adEngine|_comscore|wikia_beacon_id|_qevents|quantcastLabels|adslots2\.push
 s@<div[^>]*?(?:advertisement|ad-slot-placeholder|-ads-container)[^>]*?>[\s\S]*?<\/div>@@gi
 

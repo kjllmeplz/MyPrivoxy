@@ -74,9 +74,11 @@ s†(<\!-- END INJECTION2 -->)†<script src="https://config.privoxy.org/user-manual
 s†(<\!-- END INJECTION -->)†<script src="https://config.privoxy.org/user-manual/BypassYouTubeage.user.js"></script>\n$1†i
 
 FILTER: FacebookHideSponsored
-s†(<\!-- END INJECTION -->)†<script src='https://config.privoxy.org/user-manual/umd.js'></script>\n$1†i
 s†(<\!-- END INJECTION -->)†<script src="https://config.privoxy.org/user-manual/Facebook_Unsponsored_Timeline.user.js"></script>\n$1†i
 s†(<\!-- END INJECTION2 -->)†<script src="https://config.privoxy.org/user-manual/Facebook_Unsponsored_Timeline.user.js"></script>\n$1†i
+
+FILTER: ControlPanelTwitter
+s†(\(\);<\/script>)†$1\n<script src="https://config.privoxy.org/user-manual/Control%20Panel%20for%20Twitter.user.js"></script>†i
 
 FILTER: twitterads
 s†(<\!-- END INJECTION -->)†\n<script>\n\
