@@ -1033,7 +1033,7 @@ s@advertising\:@advertising\: \{\}, sida \:@
 
 FILTER: 90phuthd
 s@<a[^>]*?(live-banner)[^>]*?>[\s\S]*?<\/a>@@gi
-@<div[^>]*?(mmo-inner|mmo-link|mmo)[^>]*?>[\s\S]*?<\/div>@@gi
+s@<div[^>]*?(mmo-inner|mmo-link|mmo)[^>]*?>[\s\S]*?<\/div>@@gi
 s@<script[^>]*?(vb-pr-tpl)[^>]*?>[\s\S]*?<\/script>@@gi
 s@case \"(?:row-|table-)[^"]*?\"\:@case \"sida\"\:@gi
 
