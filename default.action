@@ -300,6 +300,9 @@ preview.redd.it
 .#x.com
 
 {+server-header-filter{privoxyjs}}
+#config.privoxy.org/.*?\.js$
+
+{+content-type-overwrite{application/xml}}
 config.privoxy.org/.*?\.js$
 
 {+add-header{Referer: https://www.youtube.com/}}
@@ -310,6 +313,10 @@ config.privoxy.org/.*?\.js$
 
 {+hide-user-agent{Mozilla/5.0 (Windows Phone 10.0; Mobile; rv:107.0) Gecko/107.0 Firefox/107.0}}
 #.youtube.com
+
+{+hide-user-agent{Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.3}}
+maps.google.com
+.youtube.com
 
 {+hide-user-agent{Nothing} -crunch-incoming-cookies -crunch-outgoing-cookies}
 .ip-check.info

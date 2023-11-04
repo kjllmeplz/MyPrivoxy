@@ -53,7 +53,7 @@
 {+filter{BypassYouTubeAge}}
 .youtube.com
 
-{+filter{GMFunction} +filter{FacebookHideSponsored}}
+{+filter{GMFunction} +filter{FBCleanMyFeeds}}
 .facebook.com
 
 {+filter{twitterads}}

@@ -245,8 +245,33 @@ s@<script[^>]*?>[^<]*?(_ads)[\s\S]*?<\/script>@@gi
 FILTER: nettruyen
 s@<script[^>]*?>[^<]*?(_taboola|allmobtip|document\.write\(Ads)[\s\S]*?<\/script>@@gi
 s@<script[^>]*?(?:allmobtip)[^>]*?><\/script>@@gi
-s@<a[^>]*?(qc.789.|debet|utm_source=nettruyen|utm_source=nhattruyen|utm_source=nettruyet&utm_campaign=CPD)[^>]*?>[\s\S]*?<\/a>@@gi
-s@<div[^>]*?(text-center mrb5)[^>]*?>[\s\S]*?<\/div>@@gi
+s@<a[^>]*?(qc.789.|debet|utm_source=nettruyen|utm_source=nhattruyen|utm_source=nettruyet&utm_campaign=CPD|deflink)[^>]*?>[\s\S]*?<\/a>@@gi
+#s@<div[^>]*?(text-center mrb5)[^>]*?>[\s\S]*?<\/div>@@gi
+s@(<\!-- END INJECTION -->)@\n<script>\n\
+function removeAds() {\n\
+  GM_addStyle(`\n\
+    .reading-control > .mrb5,\n\
+    div.mrb10:nth-of-type(2),\n\
+    .hidden-sm.hidden-xs.mrb10.alert-info.alert,\n\
+    .top > i,\n\
+    .notify_block,\n\
+    .text-center.page-chapter,\n\
+    \#nt_comments > div.mrt5,\n\
+    .facebook-like,\n\
+    .mrb5.text-center.container,\n\
+    .container div:not(.top)>div.mrb5.mrt5.text-center>a,\n\
+    .footer {\n\
+      display: none !important;\n\
+    }\n\
+    .scroll-to-fixed-fixed.chapter-nav {\n\
+      position: unset !important;\n\
+      z-index: 100 !important;\n\
+      box-shadow: unset !important;\n\
+    }\n\
+  `);\n\
+}\n\
+removeAds();\n\
+</script>\n$1@i
 
 FILTER: truyentranhlh
 s@<div[^>]*?(float_content_left|hide_float_left|float-ck)[^>]*?>[\s\S]*?<\/div>@@gi
