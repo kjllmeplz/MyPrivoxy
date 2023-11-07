@@ -51,7 +51,7 @@
 .youtube.com
 
 {+filter{BypassYouTubeAge}}
-.youtube.com
+#.youtube.com
 
 {+filter{GMFunction} +filter{FBCleanMyFeeds}}
 .facebook.com

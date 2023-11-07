@@ -79,8 +79,8 @@ horriblesubs.info
 {+filter{nettruyen}}
 .nettruyen.com
 .nhattruyen.com
-.nettruyen*.com
-.nhattruyen*.com
+.nettruyen*.
+.nhattruyen*.
 
 {+filter{truyentranhlh}}
 .truyentranhlh.
@@ -163,7 +163,8 @@ horriblesubs.info
 .mangarock.
 
 {+filter{mangahere}}
-.manga-here.club
+.manga-here.
+.mangahere.
 
 {+filter{mangatail}}
 .mangatail.
@@ -246,6 +247,7 @@ horriblesubs.info
 
 {+filter{metruyenchu}}
 .metruyenchu.
+.metruyencv.
 
 {+filter{isotls}}
 .isotls.

@@ -296,6 +296,7 @@ preview.redd.it
 
 {+server-header-filter{privoxycsp}}
 .facebook.com
+#.youtube.com
 #.twitter.com
 .#x.com
 
@@ -316,7 +317,6 @@ config.privoxy.org/.*?\.js$
 
 {+hide-user-agent{Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.3}}
 maps.google.com
-.youtube.com
 
 {+hide-user-agent{Nothing} -crunch-incoming-cookies -crunch-outgoing-cookies}
 .ip-check.info
@@ -339,9 +339,13 @@ maps.google.com
 {+redirect{s@&player_type=site@&player_type=embed@}}
 api.twitch.tv/api/channels/.*/access_token\?.*&player_type=site
 
-{+redirect{s@^https://[^/]*/(.*)@http://old.reddit.com/$1@}}
+{+redirect{s@^https://[^/]*/(.*)@https://old.reddit.com/$1@}}
 reddit.com
 www.reddit.com
+
+{+redirect{s@^https://([^/]*/.*)@https://nyts.link/https:/$1@}}
+.quora.com
+.wsj.com
 
 # Disable compression
 {+prevent-compression}

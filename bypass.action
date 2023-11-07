@@ -143,6 +143,10 @@ i.blogtruyen.com
 #--------------------------------------------------------
 # Alias's time
 
+#No block
+{-block}
+googleads.g.doubleclick.net
+
 # No tag
 {+notagger}
 #

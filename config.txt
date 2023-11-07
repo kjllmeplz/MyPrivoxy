@@ -68,7 +68,7 @@ filterfile style.filter
 #
 #  3.1. debug
 #  ===========
-#debug     1 # Log the destination for each request Privoxy let through. See also debug 1024.
+debug     1 # Log the destination for each request Privoxy let through. See also debug 1024.
 #debug     2 # show each connection status
 #debug     4 # show I/O status
 #debug     8 # show header parsing
@@ -78,7 +78,7 @@ filterfile style.filter
 #debug   128 # debug redirects
 #debug   256 # debug GIF de-animation
 #debug   512 # Common Log Format
-#debug  1024 # Log the destination for requests Privoxy didn't let through, and the reason why.
+debug  1024 # Log the destination for requests Privoxy didn't let through, and the reason why.
 #debug  2048 # CGI user interface
 debug  4096 # Startup banner and warnings.
 debug  8192 # Non-fatal errors
@@ -327,7 +327,7 @@ trusted-cas-file trustedCAs.pem
 #
 #activity-animation   1
 #
-log-messages   0
+log-messages   1
 #
 #log-buffer-size 1
 #

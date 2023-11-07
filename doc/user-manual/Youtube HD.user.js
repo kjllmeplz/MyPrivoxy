@@ -454,6 +454,7 @@ min-height: " + height + "px !important; max-height: none !important; height: " 
 
 	async function applySettings()
 	{
+		/*
 		if (GM.getValue && GM.setValue)
 		{
 			let settingsSaved = await GM.getValue("SettingsSaved");
@@ -473,6 +474,7 @@ min-height: " + height + "px !important; max-height: none !important; height: " 
 
 			debugLog(Object.entries(settings).map(([k,v]) => k + " | " + v).join(", "));
 		}
+		*/
 	}
 
 	applySettings().then(() => {

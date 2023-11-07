@@ -246,6 +246,8 @@ FILTER: nettruyen
 s@<script[^>]*?>[^<]*?(_taboola|allmobtip|document\.write\(Ads)[\s\S]*?<\/script>@@gi
 s@<script[^>]*?(?:allmobtip)[^>]*?><\/script>@@gi
 s@<a[^>]*?(qc.789.|debet|utm_source=nettruyen|utm_source=nhattruyen|utm_source=nettruyet&utm_campaign=CPD|deflink)[^>]*?>[\s\S]*?<\/a>@@gi
+s@var sps@var sida@
+s@window\.open\(sp, \'_blank\'\);@@g
 #s@<div[^>]*?(text-center mrb5)[^>]*?>[\s\S]*?<\/div>@@gi
 s@(<\!-- END INJECTION -->)@\n<script>\n\
 function removeAds() {\n\
@@ -446,7 +448,9 @@ s@<iframe[^>]*?(?:adtrue)[^>]*?>[\s\S]*?<\/iframe>@@gi
 s@nativeForPublishers.init\(\);@@gi
 
 FILTER: mangahere
-s@<style>[^<]*?{min-height: 300px;}[^<]*?<\/style>@@gi
+#s@<style>[^<]*?{min-height: 300px;}[^<]*?<\/style>@@gi
+s@<script[^>]*?>[^<]*?(_gaq|_hmt|gtag|fbAsyncInit|adLimit|EdShow|fanfox)[\s\S]*?<\/script>@@gi
+s@<div[^>]*?(?:edShow)[^>]*?>[\s\S]*?<\/div>@@gi
 
 FILTER: mangatail
 s@<script[^>]*?>[^<]*?(adb_checker)[\s\S]*?<\/script>@@gi
@@ -604,9 +608,14 @@ s@<div[^>]*?(ad c-ads)[^>]*?>[\s\S]*?<\/div>@@gi
 
 FILTER: metruyenchu
 s@<script[^>]*?>[^<]*?(?:__CF\$cv\$params)[\s\S]*?<\/script>@@gi
-s@<div[^>]*?(?:nh-read__alert)[^>]*?>[\s\S]*?<\/div><\/div>@@gi
-s@<center[^>]*?(?:nh-read_)[^>]*?>[\s\S]*?<\/center>@@gi
-s@<iframe[^>]*?(?:metruyenchu\.com\/passback\/)[^>]*?>[\s\S]*?<\/iframe>@@gi
+#s@<div[^>]*?(?:nh-read__alert)[^>]*?>[\s\S]*?<\/div><\/div>@@gi
+#s@<center[^>]*?(?:nh-read_)[^>]*?>[\s\S]*?<\/center>@@gi
+#s@<iframe[^>]*?(?:metruyenchu\.com\/passback\/)[^>]*?>[\s\S]*?<\/iframe>@@gi
+s@<a[^>]*?(?:lazada)[^>]*?>[\s\S]*?<\/a>@@gi
+s@var affAds=@var sida=@
+s@(lazyAdLoad_fnc|showAds|lazyLoadAds)=@sidalord=@gi
+s@\"adx_blocked\"\:0,@@
+s@showAds\(\);@@
 s@(<\!-- END INJECTION2 -->)@\n<style>\n\
 \.nh-read__alert, \.mb-1, \.col-4\n\
 {\n\
@@ -715,7 +724,7 @@ FILTER: News-------------------------
 
 FILTER: tuoitre
 s@(<\!-- END INJECTION -->)@\n\
-<script>function NoWrite(e){return 1}document.write=NoWrite;document.writeln=NoWrite<\/script>\n\
+<script>function NoWrite(e){return 1}document.write=NoWrite;document.writeln=NoWrite<\/script>
 $1@i
 s@images\/tet-(right|left).png@@gi
 s@<script type='text\/javascript'>[^<]*?googletag[^<]*?<\/script>@@gi
@@ -771,6 +780,9 @@ FILTER: vnexpress-video
 FILTER: thanhnien
 s@<script[^>]*?>[^<]*?(?:Float_Banner|Balloon_Ads|Scripts_Ads)[^<]*?<\/script>@@g
 s@<div[^>]*?(?:Float_Banner|Balloon_Ads|Scripts_Ads)[^>]*?>[\s\S]*?<\/div>@@gi
+s@arfAsync\.push\([^\)]*?\);@@gi
+s@box-home-+@sida@gi
+s@class=\"super-masthead\"@@
 
 FILTER: genk
 #s@admicroAD\.loaded=ADS_CHECKER[^;]*?;@@gi
@@ -858,8 +870,8 @@ css.innerHTML = "div[data-component-context=\\"suggest_activity_tweet\\"] { disp
 \n\
 document.head.appendChild(css);\n\
 </script>\n$1@i
-s@(<link rel="preconnect" href="\/\/abs.twimg.com" \/><link rel="dns-prefetch" href="\/\/abs.twimg.com" \/>)@$1<link rel="preconnect" href="\/\/config.privoxy.org" \/><link rel="dns-prefetch" href="\/\/config.privoxy.org" \/>@
-s@(<meta property="fb:app_id")@<link nonce="ZDY4MmQ0ODYtYjM3NS00MGI5LTg0ODctMzM5OWVhMGZiOThj" rel="preload" as="script" crossorigin="anonymous" href="https:\/\/config.privoxy.org\/user-manual\/Control%20Panel%20for%20Twitter.user.js" \/>$1@
+#s@(<link rel="preconnect" href="\/\/abs.twimg.com" \/><link rel="dns-prefetch" href="\/\/abs.twimg.com" \/>)@$1<link rel="preconnect" href="\/\/config.privoxy.org" \/><link rel="dns-prefetch" href="\/\/config.privoxy.org" \/>@
+#s@(<meta property="fb:app_id")@<link nonce="ZDY4MmQ0ODYtYjM3NS00MGI5LTg0ODctMzM5OWVhMGZiOThj" rel="preload" as="script" crossorigin="anonymous" href="https:\/\/config.privoxy.org\/user-manual\/Control%20Panel%20for%20Twitter.user.js" \/>$1@
 
 FILTER: youtube
 s@<script[^>]*?>[^<]*?(?:ad_creative)[\s\S]*?<\/script>@@gi

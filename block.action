@@ -1877,6 +1877,8 @@ w3-reporting.reddit.com/reports
 .reddit.com/svc/shreddit/
 .twitter.com/i/api/.*/(jot|videoads)/
 .thuysanvietnam\.com\.vn[/&:?=_].*\.gif
+static.cdnno.com
+.metruyencv.com/passback/
 
 {-block{Custom}}
 .livechart.me
