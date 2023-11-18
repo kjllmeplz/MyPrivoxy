@@ -1,245 +1,277 @@
 // ==UserScript==
-// @name           YouTube Anti-Anti-Adblock
-// @name:de        YouTube Anti-Anti-Adblock
-// @namespace      yt-anti-anti-adblock
-// @version        1.1.3
-// @description    Removes all the "ad blockers are not allowed on youtube" popups.
-// @description:de Entfernt alle "Werbeblocker sind auf YouTube nicht erlaubt" popups.
-// @author         NullDev
-// @license        MIT
-// @match          *://*.youtube.com/*
-// @homepageURL    https://github.com/NullDev/YT-Anti-Anti-Adblock
-// @icon           https://raw.githubusercontent.com/NullDev/YT-Anti-Anti-Adblock/master/icon.png
-// @grant          none
-// @run-at         document-idle
+// @name         YouTube去广告 YouTube AD Blocker
+// @name:zh-CN   YouTube去广告
+// @name:zh-TW   YouTube去廣告
+// @name:zh-HK   YouTube去廣告
+// @name:zh-MO   YouTube去廣告
+// @namespace    https://greasyfork.org/scripts/459541-youtube%E5%8E%BB%E5%B9%BF%E5%91%8A-youtube-ad-blocker
+// @version      5.97
+// @description         这是一个去除YouTube广告的脚本，轻量且高效，它能丝滑的去除界面广告和视频广告，包括6s广告。This is a script that removes ads on YouTube, it's lightweight and efficient, capable of smoothly removing interface and video ads, including 6s ads.
+// @description:zh-CN   这是一个去除YouTube广告的脚本，轻量且高效，它能丝滑的去除界面广告和视频广告，包括6s广告。
+// @description:zh-TW   這是一個去除YouTube廣告的腳本，輕量且高效，它能絲滑地去除界面廣告和視頻廣告，包括6s廣告。
+// @description:zh-HK   這是一個去除YouTube廣告的腳本，輕量且高效，它能絲滑地去除界面廣告和視頻廣告，包括6s廣告。
+// @description:zh-MO   這是一個去除YouTube廣告的腳本，輕量且高效，它能絲滑地去除界面廣告和視頻廣告，包括6s廣告。
+// @author       iamfugui
+// @match        *://www.youtube.com/*
+// @match        *://m.youtube.com/*
+// @icon         https://www.google.com/s2/favicons?sz=64&domain=YouTube.com
+// @grant        none
+// @license MIT
 // ==/UserScript==
+(function() {
+    `use strict`;
 
-"use strict";
+    //界面广告选择器
+    const cssSeletorArr = [
+        `#masthead-ad`,//首页顶部横幅广告.
+        `ytd-rich-item-renderer.style-scope.ytd-rich-grid-row #content:has(.ytd-display-ad-renderer)`,//首页视频排版广告.
+        `.video-ads.ytp-ad-module`,//播放器底部广告.
+        `tp-yt-paper-dialog:has(yt-mealbar-promo-renderer)`,//播放页会员促销广告.
+        `ytd-engagement-panel-section-list-renderer[target-id="engagement-panel-ads"]`,//播放页右上方推荐广告.
+        `#related #player-ads`,//播放页评论区右侧推广广告.
+        `#related ytd-ad-slot-renderer`,//播放页评论区右侧视频排版广告.
+        `ytd-ad-slot-renderer`,//搜索页广告.
+        `yt-mealbar-promo-renderer`,//播放页会员推荐广告.
+        `ad-slot-renderer`,//M播放页第三方推荐广告
+        `ytm-companion-ad-renderer`,//M可跳过的视频广告链接处
+    ];
 
-// ========================= //
-// = Copyright (c) NullDev = //
-// ========================= //
+    window.dev=false;//开发使用
 
-// @ts-ignore
-window.google_ad_status = 1;
-
-const playerID = Math.random().toString(36).substring(7);
-window[playerID] = null;
-
-/**
- * Log a yt-anti-anti-adblock message and format it.
- *
- * @param {string} msg
- */
-const log = (msg) => console.log(`%cyt-anti-anti-adblock: %c${msg}`, "color:#66A1FF;font-weight:bold;", "color:#63B06B;font-weight:bold;");
-
-/**
- * Probe an array of popup parents (depending on which one youtube decides to show).
- *
- * @param {Element} probe
- * @param {string[]} parents
- */
-const parentProber = function(probe, parents){
-    for (const parent of parents){
-        const parentProbe = probe.closest(parent);
-        if (parentProbe) parentProbe.remove();
-    }
-};
-
-/**
- * Check if the video URL contains a timestamp and seek to it.
- */
-const checkAndSeekTimestamp = function(){
-    const timestamp = (new URLSearchParams(window.location.search)).get("t");
-    if (!timestamp) return;
-
-    // @ts-ignore
-    const [ time, unit ] = timestamp.match(/\d+|\D+/g);
-    const seconds = (unit === "s") ? time : time * 60;
-    window[playerID].seekTo(seconds, true);
-};
-
-/**
- * Load the YouTube API and create a new player.
- *
- * @return {void}
- */
-const loadVideo = function(){
-    log("Loading video...");
-
-    const t = document.createElement("script");
-    t.src = "https://www.youtube.com/iframe_api";
-
-    const firstScr = document.getElementsByTagName("script")[0];
-    firstScr.parentNode?.insertBefore(t, firstScr);
-
-    t.onload = function(){ // @ts-ignore
-        const { YT } = window;
-
-        !!YT && YT.ready(function(){
-            log("YouTube API ready.");
-            window[playerID] = new YT.Player(playerID, {
-                videoId: (new URLSearchParams(window.location.search).get("v") || ""),
-                playerVars: { autoplay: 1, controls: 1, disablekb: 0, enablejsapi: 1 },
-                events: {
-                    onReady(){
-                        document.body.focus();
-                        log("Video loaded.");
-
-                        checkAndSeekTimestamp();
-                    },
-                },
-            });
-        });
-    };
-};
-
-/**
- * Disable auto play to stop funky behaviour.
- */
-const disableAutoPlay = function(){
-    if (!(new URLSearchParams(window.location.search)).has("list")) return;
-
-    const [ manager ] = document.getElementsByTagName("yt-playlist-manager"); // @ts-ignore
-    manager.canAutoAdvance_ = false; // @ts-ignore
-    manager.autoplayData = null;
-
-    log("Disabled auto play.");
-};
-
-/**
- * Handle navigation to a new page.
- *
- * @return {void}
- */
-const handleNavigation = function(){
-    if (window.location.pathname !== "/watch") return;
-
-    disableAutoPlay();
-    if (!!document.getElementById(playerID)) return;
-
-    const f = document.createElement("div");
-    f.setAttribute("id", playerID);
-    f.className = "video-stream html5-main-video";
-    this.document.querySelector("div.yt-playability-error-supported-renderers")?.appendChild(f);
-
-    // eslint-disable-next-line no-use-before-define
-    cleanUp();
-};
-
-/**
- * Handle key codes for the video player.
- *
- * @param {KeyboardEvent} event
- */
-const handleKeyCodes = function(event){
-    const { key } = event;
-
-    if (key === " "){
-        if (!(document.activeElement?.id === "search" || document.activeElement?.id === "contenteditable-root")){
-            (window[playerID].getPlayerState() === 1)
-                ? window[playerID].pauseVideo()
-                : window[playerID].playVideo();
-
-            event.preventDefault();
+    /**
+    * 将标准时间格式化
+    * @param {Date} time 标准时间
+    * @param {String} format 格式
+    * @return {String}
+    */
+    function moment(time, format = `YYYY-MM-DD HH:mm:ss`) {
+        // 获取年⽉⽇时分秒
+        let y = time.getFullYear()
+        let m = (time.getMonth() + 1).toString().padStart(2, `0`)
+        let d = time.getDate().toString().padStart(2, `0`)
+        let h = time.getHours().toString().padStart(2, `0`)
+        let min = time.getMinutes().toString().padStart(2, `0`)
+        let s = time.getSeconds().toString().padStart(2, `0`)
+        if (format === `YYYY-MM-DD`) {
+            return `${y}-${m}-${d}`
+        } else {
+            return `${y}-${m}-${d} ${h}:${min}:${s}`
         }
     }
 
-    else if (key === "ArrowLeft" || key === "ArrowRight"){
-        const currentTime = window[playerID].getCurrentTime();
-        window[playerID].seekTo(currentTime + (key === "ArrowLeft" ? -5 : 5), true);
+    /**
+    * 输出信息
+    * @param {String} msg 信息
+    * @return {undefined}
+    */
+    function log(msg) {
+        if(!window.dev){
+            return false;
+        }
+        console.log(`${moment(new Date())}  ${msg}`)
     }
 
-    else if (key === "f"){ // @ts-ignore
-        ((document.fullscreenElement || document.webkitFullscreenElement) !== null)
-            ? document.exitFullscreen()
-            : window[playerID].getIframe().requestFullscreen();
-    }
-};
-
-/**
- * Initialize the event listener for the video player and for navigation.
- */
-const listeners = function(){
-    document.addEventListener("keydown", handleKeyCodes);
-    window.addEventListener("popstate", handleNavigation);
-};
-
-/**
- * Clean up the page and restore the video player.
- * Needs to be hoisted.
- *
- * @return {void}
- */
-function cleanUp(){
-    if (window.location.pathname !== "/watch") return;
-
-    const f = document.createElement("div");
-    f.setAttribute("id", playerID);
-    f.className = "video-stream html5-main-video";
-
-    const video = document.querySelector("video");
-    if (video && video.src){
-        // old non-strike popup
-        const type1 = document.querySelector("#header.style-scope.ytd-enforcement-message-view-model");
-        if (!type1) return;
-
-        parentProber(type1, ["ytd-popup-container", "#error-screen"]);
-
-        log("Cleaned up popup. Found the video element. Starting video...");
-        video.play();
-
-        return;
+    /**
+    * 设置运行标志
+    * @param {String} name
+    * @return {undefined}
+    */
+    function setRunFlag(name){
+        let style = document.createElement(`style`);
+        style.id = name;
+        (document.querySelector(`head`) || document.querySelector(`body`)).appendChild(style);//将节点附加到HTML.
     }
 
-    const type2 = document.querySelector("ytd-enforcement-message-view-model.style-scope");
-    if (type2){
-        type2.replaceWith(f);
-
-        const hotkeyManager = document.querySelector("yt-hotkey-manager");
-        if (hotkeyManager) hotkeyManager.remove();
-
-        log("Cleaned up violation message");
-
-        listeners();
-        disableAutoPlay();
-        loadVideo();
-    }
-}
-
-/**
- * Callback for the page change observer.
- *
- * @return {void}
- */
-const prober = function(){
-    if (window.location.pathname === "/watch"){
-        cleanUp();
-        return;
+    /**
+    * 获取运行标志
+    * @param {String} name
+    * @return {undefined|Element}
+    */
+    function getRunFlag(name){
+        return document.getElementById(name);
     }
 
-    const prevPlayer = document.getElementById(playerID);
-    if (prevPlayer) prevPlayer.remove();
-};
+    /**
+    * 检查是否设置了运行标志
+    * @param {String} name
+    * @return {Boolean}
+    */
+    function checkRunFlag(name){
+        if(getRunFlag(name)){
+            return true;
+        }else{
+            setRunFlag(name)
+            return false;
+        }
+    }
 
-(() => {
-    log("Initialized.");
-    log("By NullDev - https://nulldev.org - Code: https://github.com/NullDev/YT-Anti-Anti-Adblock");
+    /**
+    * 生成去除广告的css元素style并附加到HTML节点上
+    * @param {String} styles 样式文本
+    * @return {undefined}
+    */
+    function generateRemoveADHTMLElement(styles) {
+        //如果已经设置过,退出.
+        if (checkRunFlag(`RemoveADHTMLElement`)) {
+            log(`屏蔽页面广告节点已生成`);
+            return false
+        }
 
-    const observer = new MutationObserver(prober);
-    observer.observe(document.body, { childList: true, subtree: true });
+        //设置移除广告样式.
+        let style = document.createElement(`style`);//创建style元素.
+        (document.querySelector(`head`) || document.querySelector(`body`)).appendChild(style);//将节点附加到HTML.
+        style.appendChild(document.createTextNode(styles));//附加样式节点到元素节点.
+        log(`生成屏蔽页面广告节点成功`)
 
-    const {pushState} = history;
-    const {replaceState} = history;
-    history.pushState = function(){
-        pushState.apply(history, arguments);
-        handleNavigation();
-    };
+    }
 
-    history.replaceState = function(){
-        replaceState.apply(history, arguments);
-        handleNavigation();
-    };
+    /**
+    * 生成去除广告的css文本
+    * @param {Array} cssSeletorArr 待设置css选择器数组
+    * @return {String}
+    */
+    function generateRemoveADCssText(cssSeletorArr){
+        cssSeletorArr.forEach((seletor,index)=>{
+            cssSeletorArr[index]=`${seletor}{display:none!important}`;//遍历并设置样式.
+        });
+        return cssSeletorArr.join(` `);//拼接成字符串.
+    }
 
-    window.addEventListener("load", prober);
+    /**
+    * 触摸事件
+    * @return {undefined}
+    */
+    function nativeTouch(){
+        const minNum = 375;
+        const maxNum = 750;
+        const randomNum = (Math.floor(Math.random() * (maxNum - minNum + 1)) + minNum)/1000;
+
+        let element =this;
+        // 创建 Touch 对象
+        let touch = new Touch({
+            identifier: Date.now(),
+            target: element,
+            clientX: 12+randomNum,
+            clientY: 34+randomNum,
+            radiusX: 56+randomNum,
+            radiusY: 78+randomNum,
+            rotationAngle: 0,
+            force: 1
+        });
+
+        // 创建 TouchEvent 对象
+        let touchStartEvent = new TouchEvent("touchstart", {
+            bubbles: true,
+            cancelable: true,
+            view: window,
+            touches: [touch],
+            targetTouches: [touch],
+            changedTouches: [touch]
+        });
+
+        // 分派 touchstart 事件到目标元素
+        element.dispatchEvent(touchStartEvent);
+
+        // 创建 TouchEvent 对象
+        let touchEndEvent = new TouchEvent("touchend", {
+            bubbles: true,
+            cancelable: true,
+            view: window,
+            touches: [],
+            targetTouches: [],
+            changedTouches: [touch]
+        });
+
+        // 分派 touchend 事件到目标元素
+        element.dispatchEvent(touchEndEvent);
+    }
+
+    /**
+    * 跳过广告
+    * @return {undefined}
+    */
+    function skipAd(mutationsList, observer) {
+        let video = document.querySelector(`.ad-showing video`) || document.querySelector(`video`);//获取视频节点
+        let skipButton = document.querySelector(`.ytp-ad-skip-button`) || document.querySelector(`.ytp-ad-skip-button-modern`);
+        let shortAdMsg = document.querySelector(`.video-ads.ytp-ad-module .ytp-ad-player-overlay`);
+
+        if(skipButton){
+            //拥有跳过按钮的广告.
+            log(`总时长:`);
+            log(`${video.duration}`)
+            log(`当前时间:`);
+            log(`${video.currentTime}`)
+            // 跳过广告.
+            skipButton.click();//PC
+            //nativeTouch.call(skipButton);//Phone
+            log(`按钮跳过了该广告~~~~~~~~~~~~~`);
+        }else if(shortAdMsg){
+            //没有跳过按钮的短广告.
+            log(`总时长:`);
+            log(`${video.duration}`)
+            log(`当前时间:`);
+            log(`${video.currentTime}`)
+            video.currentTime = video.duration;
+            log(`强制结束了该广告~~~~~~~~~~~~~`);
+        }else{
+            //log(`######广告不存在######`);
+        }
+    }
+
+    /**
+    * 去除播放中的广告
+    * @return {undefined}
+    */
+    function removePlayerAD(){
+        //如果已经在运行,退出.
+        if (checkRunFlag(`removePlayerAD`)) {
+            log(`去除播放中的广告功能已在运行`);
+            return false
+        }
+        let observer;//监听器
+        let timerID;//定时器
+
+        //开始监听
+        function startObserve(){
+            //广告节点监听
+            const targetNode = document.querySelector(`.video-ads.ytp-ad-module`);
+            if(!targetNode){
+                log(`正在寻找待监听的目标节点`);
+                return false;
+            }
+            //监听视频中的广告并处理
+            const config = {childList: true, subtree: true };// 监听目标节点本身与子树下节点的变动
+            observer = new MutationObserver(skipAd);// 创建一个观察器实例并设置处理广告的回调函数
+            observer.observe(targetNode, config);// 以上述配置开始观察广告节点
+            timerID=setInterval(skipAd, 1000);//漏网鱼
+        }
+
+        //轮询任务
+        setInterval(function(){
+            //视频播放页
+            if(observer){
+                return false;
+            }
+            startObserve();
+        },16);
+
+        log(`运行去除播放中的广告功能成功`)
+    }
+
+    /**
+    * main函数
+    */
+    function main(){
+        generateRemoveADHTMLElement(generateRemoveADCssText(cssSeletorArr));//移除界面中的广告.
+        removePlayerAD();//移除播放中的广告.
+    }
+
+    if (document.readyState === `loading`) {
+        log(`YouTube去广告脚本即将调用:`);
+        document.addEventListener(`DOMContentLoaded`, main);// 此时加载尚未完成
+    } else {
+        log(`YouTube去广告脚本快速调用:`);
+        main();// 此时`DOMContentLoaded` 已经被触发
+    }
+
 })();

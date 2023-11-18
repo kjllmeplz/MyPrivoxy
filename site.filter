@@ -19,7 +19,7 @@ SERVER-HEADER-FILTER: removecontentsecuritypolicy
 s@content-security.*@@i
 
 SERVER-HEADER-FILTER: privoxycsp
-s@(content-security.[^;]*?;script-src)(.*$)@$1 *.privoxy.org$2@i
+s@(content-security.[^;]*?;script-src)(.*$)@$1 config.privoxy.org $2@i
 
 SERVER-HEADER-FILTER: fbcdncsp
 s@(content-security.[^;]*?;script-src)(.*$)@$1 *.fbcdn.net$2@i
@@ -874,7 +874,7 @@ document.head.appendChild(css);\n\
 #s@(<meta property="fb:app_id")@<link nonce="ZDY4MmQ0ODYtYjM3NS00MGI5LTg0ODctMzM5OWVhMGZiOThj" rel="preload" as="script" crossorigin="anonymous" href="https:\/\/config.privoxy.org\/user-manual\/Control%20Panel%20for%20Twitter.user.js" \/>$1@
 
 FILTER: youtube
-s@<script[^>]*?>[^<]*?(?:ad_creative)[\s\S]*?<\/script>@@gi
+#s@<script[^>]*?>[^<]*?(?:ad_creative)[\s\S]*?<\/script>@@gi
 #s@<script[^>]*?(?:desktop_polymer)[^>]*?><\/script>@@gi
 #s@product_listing_ads_cards_drawer_auto_open=true@product_listing_ads_cards_drawer_auto_open=false@g
 #s@fix_backfill_mpu_api_stats_ads=true@fix_backfill_mpu_api_stats_ads=false@g
@@ -887,27 +887,36 @@ s@<script[^>]*?>[^<]*?(?:ad_creative)[\s\S]*?<\/script>@@gi
 #s@doubleclick_gpt_retagging=true@doubleclick_gpt_retagging=false@gi
 #s@yt_unlimited_pts_skip_ads_promo_desktop_always=false@yt_unlimited_pts_skip_ads_promo_desktop_always=true@gi
 #s@\"DISABLE_WARM_LOADS\"\:false@\"DISABLE_WARM_LOADS\"\:true@g
-s@(<\!-- END INJECTION2 -->)@\
-<style type="text/css">\n\
-\#masthead-ad\.ytd-browse, \.ytp-ad-module, \#block\.ytd-action-companion-ad-renderer, ytd-display-ad-renderer, \n\
-\#sparkles-container\.ytd-promoted-sparkles-web-renderer, ytd-page-top-ad-layout-renderer, ytd-in-feed-ad-layout-renderer \n\
-{\n\
-display:none!important;\n\
-}\n\
-</style>\n$1@
+#s@(<\!-- END INJECTION2 -->)@\
+#<style type="text/css">\n\
+#\#masthead-ad\.ytd-browse, \.ytp-ad-module, \#block\.ytd-action-companion-ad-renderer, ytd-display-ad-renderer, \n\
+#\#sparkles-container\.ytd-promoted-sparkles-web-renderer, ytd-page-top-ad-layout-renderer, ytd-in-feed-ad-layout-renderer \n\
+#{\n\
+#display:none!important;\n\
+#}\n\
+#</style>\n$1@
 #s@<div[^>]*?(?:video-masthead)[^>]*?>[\s\S]*?<\/div>@@gi
-s@offsetStartMilliseconds@sida1@g
-s@offsetEndMilliseconds@sida2@g
-s@AdRenderer@sida@g
-s@\"adPlacements\"\:@\"adPlacements\"\: undefined,\"sida\"\:@g
-s@\"adPlacementRenderer\"\:@\"adPlacementRenderer\"\: undefined,\"sida2\"\:@g
-s@\"adPlacementConfig\"\:@\"adPlacementConfig\"\: undefined,\"sida3\"\:@g
-s@trackingParams@sidaoverload@g
+#s@offsetStartMilliseconds@sida1@g
+#s@offsetEndMilliseconds@sida2@g
+#s@AdRenderer@sida@g
+#s@\"adPlacements\"\:@\"adPlacements\"\: undefined,\"sida\"\:@g
+#s@\"adPlacementRenderer\"\:@\"adPlacementRenderer\"\: undefined,\"sida2\"\:@g
+#s@\"adPlacementConfig\"\:@\"adPlacementConfig\"\: undefined,\"sida3\"\:@g
+#s@trackingParams@sidaoverload@g
 #s@adPlacements@sidaaaa@
 #s@adPlacements@sidaaaaaaa@
 #s@adPlacements@sidaaaaaaaaaa@g
 #s@\"offsetStartMilliseconds\"\:\"0\"@\"offsetStartMilliseconds\"\:\"999999999999\"@
 #s@\"offsetEndMilliseconds\"\:\"-1\"@\"offsetEndMilliseconds\"\:\"999999999999\"@
+
+FILTER: youtubep
+s@e\.adblock_detection=b\.resolve\(ohb\)@e\.adblock_detection=null@
+#s@ADBLOCK_DETECTION_SERVICE_TOKEN@@
+s@\\\"adPlacements\\\"\:true@\\\"adPlacements\\\"\:\!0@g
+s@\\\"playerAds\\\"\:true@\\\"playerAds\\\"\:\!0@g
+#s@(\\\"getAdBreakUrl\\\":\\\")[^\"]*?\"@$1\"@g
+#s@(getAdBreakUrl:\")[^\"]*?\"@$1\"@gy
+s@showContentThumbnail@sida2@g
 
 FILTER: 4chan
 s@<iframe[^>]*?__idm_frm__[^>]*?>[\s\S]*?<\/iframe>@@gi
@@ -1178,6 +1187,9 @@ FILTER: mphimmoi
 s@<a[^>]*?(?:pcCatfish)[^<]*?<img[^<]*?<\/a>@@gi
 s@<div[^>]*?(banner-top-|pcCatfish)[^>]*?>[\s\S]*?<\/div>@@gi
 
+FILTER: streamable
+s@<div[^>]*?(-ad-banner)[^>]*?>[\s\S]*?<\/div>@@gi
+
 #-------------------------
 FILTER: Games-------------------------
 # Games
@@ -1238,6 +1250,10 @@ s@<div[^>]*?(?:rectangleAd|leaderboardAd)[^>]*?>(?![^>]*?<div[^>]*?>)[\s\S]*?<\/
 
 FILTER: closers
 s@<script>[^<]*?adsbygoogle[\s\S]*?<\/script>@@gi
+
+FILTER: genshinlab
+s@<script(?:|[^>]*?)>[^<]*?(?:createAd|lazyloadRun|pubads|nitroAds|connatix|decodeURIComponent)[\s\S]*?<\/script>@@gi
+s@<script[^>]*?(?:left-right-ads|nitropay)[^>]*?>[\s\S]*?<\/script>@@gi
 
 #-------------------------
 FILTER: Shoppings-------------------

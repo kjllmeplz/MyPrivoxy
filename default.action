@@ -298,7 +298,7 @@ preview.redd.it
 .facebook.com
 #.youtube.com
 #.twitter.com
-.#x.com
+#x.com
 
 {+server-header-filter{privoxyjs}}
 #config.privoxy.org/.*?\.js$
@@ -347,8 +347,16 @@ www.reddit.com
 .quora.com
 .wsj.com
 
+{+redirect{s@^https://[^/]*/[a-z][a-z]/(users|artworks)/(.*)@https://pixivfe.exozy.me/$1/$2@}}
+.pixiv.net
+
+{+redirect{s@^https://[^/]*/(.*)/desktop_polymer_enable_wil_icons.js@https://config.privoxy.org/user-manual/desktop_polymer_enable_wil_icons.js@}}
+#.youtube.com/(.*/)?desktop_polymer_enable_wil_icons.js
+
 # Disable compression
 {+prevent-compression}
+.youtube.com/(.*/)?player\?key=
+.youtube.com/(.*/)?desktop_polymer_.*.js
 #.fandom.
 #.hltv.org
 #.90phut.

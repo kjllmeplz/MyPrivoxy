@@ -134,7 +134,7 @@ enforce-blocks 0
 #
 #  4.8. buffer-limit
 #  ==================
-buffer-limit 8192
+buffer-limit 16384
 #
 #  4.9. enable-proxy-authentication-forwarding
 #  ============================================

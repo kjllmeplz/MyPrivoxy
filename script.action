@@ -40,6 +40,7 @@
 .webnovelonline.com
 .webtruyen.com
 .manhuagui.com
+.dtruyen.com
 
 {+filter{YoutubeHD}}
 .youtube.com
@@ -49,6 +50,9 @@
 
 {+filter{YoutubeAds}}
 .youtube.com
+
+{+filter{YouTubeDeBlock}}
+#.youtube.com
 
 {+filter{BypassYouTubeAge}}
 #.youtube.com

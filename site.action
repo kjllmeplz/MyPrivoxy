@@ -357,6 +357,9 @@ pose.com.vn
 {+filter{youtube}}
 .youtube.
 
+{-filter{youtube}}
+.youtube.com/(.*/)?desktop_polymer_.*.js
+
 {+filter{4chan}}
 .4chan.org
 .4channel.
@@ -500,6 +503,9 @@ fptplay.vn
 .mphimmoi.
 .mphimmoitv.
 
+{+filter{streamable}}
+.streamable.com
+
 #-------------------------
 {+filter{Games-------------------------}}
 #Games
@@ -525,6 +531,9 @@ garena.live
 
 {+filter{closers}}
 closershq.com
+
+{+filter{genshinlab}}
+.genshinlab.
 
 #-------------------------
 {+filter{Shoppings-------------------}}

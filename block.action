@@ -966,6 +966,7 @@ tvhai.org/embed/ads_code_*
 .twitter.com/i/api/
 accounts.spotify.com
 .csstats.gg
+.reddit.com/r/uBlockOrigin/
 
 #----------------------------------------------------------------------------
 # Site-specific block patterns;
@@ -1377,6 +1378,8 @@ megaup.net/themes/flow/
 .otofun.net/css.php?
 .otofun.net/styles/
 .otofun.net/data/
+.dropboxstatic.com/static/
+.dropbox.com/web-grpc/
 
 #---------------------------------------
 # block tracking MS

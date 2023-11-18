@@ -3,7 +3,7 @@
 // @author        adisib
 // @namespace     namespace_adisib
 // @description   Select a youtube resolution and resize the player.
-// @version       2023.10.26
+// @version       2023.11.14
 // @match         https://*.youtube.com/*
 // @noframes
 // @grant         GM.getValue
@@ -15,6 +15,9 @@
 // To enable experimental support for embedded players outside of YouTube website, do the following steps:
 //   add  " @include * "  to the script metadata
 //   remove  " @noframes "  from the script metadata
+
+// 2023.11.14
+// Fixed issues with settings storage
 
 // 2023.10.24/26
 // Fix possibility of not using youtube API when it should, fix compatibility with OwlZoom, use userscript storage API for settings
@@ -31,6 +34,13 @@
 	"use strict";
 
 	// --- SETTINGS -------
+
+	// PLEASE NOTE:
+	// Settings will be saved the first time the script is loaded so that your changes aren't undone by an update.
+	// If you want to make adjustments, please set "overwriteStoredSettings" to true.
+	// Otherwise, your settings changes will NOT have an effect because it will used the saved settings.
+	// After the script has next been run by loading a video with "overwriteStoredSettings" as true, your settings will be updated.
+	// Then after that you can set it to false again to prevent your settings from being changed by an update.
 
 	let settings = {
 
@@ -75,7 +85,6 @@
 		// Setting cookies can allow some operations to perform faster or without a delay (e.g. theater mode)
 		// Some people don't like setting cookies, so this is false by default (which is the same as old behavior)
 		allowCookies: false,
-								 
 
 		// Tries to set the resolution as early as possible.
 		// This might cause issues on youtube polymer layout, so disable if videos fail to load.
@@ -469,7 +478,12 @@ min-height: " + height + "px !important; max-height: none !important; height: " 
 			{
 				await Promise.all(
 					Object.keys(settings).map(k => { let newval = GM.getValue(k); return newval.then(v => [k,v]); })
-				).then((c) => c.forEach(([nk,nv]) => { if (settings[nk]) { settings[nk] = nv; } }));
+				).then((c) => c.forEach(([nk,nv]) => {
+					if (settings[nk] !== null && nk !== "overwriteStoredSettings")
+					{
+						settings[nk] = nv;
+					}
+				}));
 			}
 
 			debugLog(Object.entries(settings).map(([k,v]) => k + " | " + v).join(", "));
@@ -484,3 +498,4 @@ min-height: " + height + "px !important; max-height: none !important; height: " 
 		win.addEventListener("yt-navigate-finish", main, true);
 	});
 })();
+

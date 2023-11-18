@@ -139,13 +139,18 @@ boxx.ai
 pubsub-edge.twitch.tv
 apird-tvhai.rdgogo.xyz
 i.blogtruyen.com
+googleads.g.doubleclick.net
 
 #--------------------------------------------------------
 # Alias's time
 
 #No block
-{-block}
+{-block +handle-as-empty-document}
 googleads.g.doubleclick.net
+.youtube.com/pagead/
+.youtube.com/api/stats/
+.youtube.com/(.*/)?ad_break
+.google.com/pagead/
 
 # No tag
 {+notagger}
@@ -308,6 +313,7 @@ hana:8200
 # Personal
 .phucnx.name.vn
 itsgl.backlog.com
+.dns.nextdns.io
 
 # Patterns and TAG, so no SSL
 {+fragile}
@@ -317,6 +323,8 @@ TAG:^application/octet-stream
 TAG:^application/vnd
 TAG:^SOCKET-REQUEST$
 # Url
+.dropbox.com
+.dropboxusercontent.com
 .bing.com/speech_render.*?
 .vo.llnwd.net/hls/
 .outlook.com/Microsoft-Server-ActiveSync?
@@ -330,9 +338,14 @@ fonts.googleapis.com/css\?
 .gstatic.com/recaptcha/
 .google.com/carddav/
 .google.com/maps/vt/
+.google.com/pagead/
+googleads.g.doubleclick.net
 contacts.google.com/widget/
 .youtube.com/.*?frags=comments
 .youtube.com/comment_service_ajax?
+.youtube.com/pagead/
+.youtube.com/api/stats/
+.youtube.com/(.*/)?ad_break
 .gstatic.com/keep/
 .youtube.com/live_chat/
 .youtube.com/live_chat?
@@ -372,12 +385,9 @@ api.bilibili.com/x/space/
 api.bilibili.com/x/
 voz.vn/cdn-cgi/challenge-platform/
 
-
 # Bypass all
 {+bypass}
 # Local
 192.168.1.1
 192.168.1.111
 192.168.13.1
-# PowerTunner
-powertunnelmonitor13.info

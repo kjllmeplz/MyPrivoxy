@@ -66,6 +66,17 @@ document.body.appendChild(imported);\n\
 }\n\
 </script>\n$1†i
 
+FILTER: YouTubeDeBlock
+s†(<\!-- END INJECTION -->)†\n<script>\n\
+window.addEventListener("DOMContentLoaded", Greasemonkey_main, false);\n\
+function Greasemonkey_main ()\n\
+{\n\
+var imported = document.createElement('script');\n\
+imported.src = 'https://config.privoxy.org/user-manual/YouTube%20DeBlock.user.js';\n\
+document.body.appendChild(imported);\n\
+}\n\
+</script>\n$1†i
+
 FILTER: YouTubeJSEngineTamer
 s†(<\!-- END INJECTION -->)†<script src="https://config.privoxy.org/user-manual/YouTube%20JS%20Engine%20Tamer.user.js"></script>\n$1†i
 
