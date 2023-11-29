@@ -535,8 +535,9 @@ FILTER: Novel-------------
 
 FILTER: hako
 s@<iframe[^>]*?(idzone)[^>]*?><\/iframe>@@gi
-s@<script[^>]*?(?:safestcontentgate)[^>]*?><\/script>@@gi
+s@<script[^>]*?(?:safestcontentgate|gtag|absorbedscholarsvolatile)[^>]*?><\/script>@@gi
 s@<a[^>]*?__blank[^>]*?>[\s\S]*?<\/a>@@gi
+s@<script[^>]*?>[^<]*?(?:gtag)[\s\S]*?<\/script>@@gi
 
 FILTER: readln
 s@<a[^>]*?(?:onelink\.me)[^>]*?>[\s\S]*?<\/a>@@gi
@@ -908,15 +909,17 @@ FILTER: youtube
 #s@adPlacements@sidaaaaaaaaaa@g
 #s@\"offsetStartMilliseconds\"\:\"0\"@\"offsetStartMilliseconds\"\:\"999999999999\"@
 #s@\"offsetEndMilliseconds\"\:\"-1\"@\"offsetEndMilliseconds\"\:\"999999999999\"@
+s@\"service_worker_enabled\"\:true@\"service_worker_enabled\"\:false@
 
 FILTER: youtubep
-s@e\.adblock_detection=b\.resolve\(ohb\)@e\.adblock_detection=null@
+#s@e\.adblock_detection=b\.resolve\(ohb\)@e\.adblock_detection=null@
 #s@ADBLOCK_DETECTION_SERVICE_TOKEN@@
-s@\\\"adPlacements\\\"\:true@\\\"adPlacements\\\"\:\!0@g
-s@\\\"playerAds\\\"\:true@\\\"playerAds\\\"\:\!0@g
+#s@\\\"adPlacements\\\"\:true@\\\"adPlacements\\\"\:\!0@g
+#s@\\\"playerAds\\\"\:true@\\\"playerAds\\\"\:\!0@g
 #s@(\\\"getAdBreakUrl\\\":\\\")[^\"]*?\"@$1\"@g
 #s@(getAdBreakUrl:\")[^\"]*?\"@$1\"@gy
-s@showContentThumbnail@sida2@g
+#s@showContentThumbnail@sida2@g
+s@setTimeout\(function\(\)\{c\(\);a\.resolve\(1\)\},5E3\);@setTimeout\(function\(\)\{c\(\);a\.resolve\(1\)\},0.001\);@
 
 FILTER: 4chan
 s@<iframe[^>]*?__idm_frm__[^>]*?>[\s\S]*?<\/iframe>@@gi

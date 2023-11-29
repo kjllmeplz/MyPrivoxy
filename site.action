@@ -360,6 +360,9 @@ pose.com.vn
 {-filter{youtube}}
 .youtube.com/(.*/)?desktop_polymer_.*.js
 
+{+filter{youtubep}}
+.youtube.com/(.*/)?desktop_polymer_.*.js
+
 {+filter{4chan}}
 .4chan.org
 .4channel.

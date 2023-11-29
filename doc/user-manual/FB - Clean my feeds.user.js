@@ -3,9 +3,10 @@
 // @description  Hide Sponsored and Suggested posts in FB's News Feed, Groups Feed, Watch Videos Feed and Marketplace Feed
 // @namespace    https://greasyfork.org/users/812551
 // @supportURL   https://github.com/zbluebugz/facebook-clean-my-feeds/issues
-// @version      4.25
+// @version      4.26
 // @author       zbluebugz (https://github.com/zbluebugz/)
 // @match        https://www.facebook.com/*
+// @match        https://web.facebook.com/*
 // @match        https://facebook.com/*
 // @noframes
 // @grant        GM.registerMenuCommand
@@ -14,15 +15,23 @@
 // @icon         data:image/png;base64,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
 // @icon64       data:image/png;base64,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
 // @run-at       document-start
+// @downloadURL https://update.greasyfork.org/scripts/431970/FB%20-%20Clean%20my%20feeds.user.js
+// @updateURL https://update.greasyfork.org/scripts/431970/FB%20-%20Clean%20my%20feeds.meta.js
 // ==/UserScript==
 /*
-    
+
     :: Tip ::
         This userscript does not block video ads (begin-roll, mid-roll, end-roll), however there's a work-around:
         1) Install uBlock Origin (uBO) in your browser(s)
         2) In uBO, goto "My filters" tab and paste in the following rule: facebook.com##+js(set, Object.prototype.scrubber, undefined)
         Note: I have not tested this in other content/ad-blockers.
 
+    v4.26 :: November 2023
+        Added web.facebook.com to @match conditions
+        Added Survey detection component (Home / News feed)
+        Added Follow detection component (Home / News feed)
+        Added Participate detection component (Home / News feed)
+        Updated Marketplace detection rules
     v4.25 :: November 2023
         Added extra filter rule for nf_isSuggested() (for "Suggested for you" posts) - fix supplied by opello (via github)
         Added News Feed's Stories post detection rule.
@@ -191,7 +200,7 @@
             'es': 'Historias',
             'cs': 'Stories',
             'vi': 'Tin',
-            'it': 'Storie"',
+            'it': 'Storie',
             'lv': 'Stāsti',
             'pl': 'Relacje',
             'nl': 'Verhalen',
@@ -206,6 +215,33 @@
             'el': 'Ιστορίες',
             'defaultEnabled': false
         },
+        // - fb's survey
+        // - <name>, we're asking a small group of people for their opinion
+        // - could you take a few minutes to answer a short survey?  <button>start survey</button>
+        NF_SURVEY: {
+            'en': 'Survey',
+            'pt': 'Enquete',
+            'de': 'Umfrage',
+            'fr': 'Enquête',
+            'es': 'Encuesta',
+            'cs': 'Průzkum',
+            'vi': 'Khảo sát',
+            'it': 'Sondaggio',
+            'lv': 'Aptauja',
+            'pl': 'Badanie',
+            'nl': 'Vragenlijst',
+            'he': 'סקר',
+            'ar': 'استبيان',
+            'id': 'Survei',
+            'zh-Hans': '调查',
+            'zh-Hant': '調查',
+            'ja': 'アンケート',
+            'fi': 'Kysely',
+            'tr': 'Anket',
+            'el': 'Τοπογράφηση',
+            'defaultEnabled': false
+        },
+
         // - People you may know:
         NF_PEOPLE_YOU_MAY_KNOW: {
             'en': 'People you may know',
@@ -305,6 +341,56 @@
             'fi': 'Ehdotuksia / Suosituksia',
             'tr': 'Öneriler',
             'el': 'Προτάσεις / Συστάσεις',
+            'defaultEnabled': false
+        },
+
+        // - Follow
+        NF_FOLLOW: {
+            'en': 'Follow',
+            'pt': 'Seguir',
+            'de': 'Folgen',
+            'fr': 'Suivre',
+            'es': 'Seguir',
+            'cs': 'Sledovat',
+            'vi': 'Theo dõi',
+            'it': 'Segui',
+            'lv': 'Sekot',
+            'pl': 'Obserwuj',
+            'nl': 'Volgen',
+            'he': 'עקוב',
+            'ar': 'تابع',
+            'id': 'Ikuti',
+            'zh-Hans': '关注',
+            'zh-Hant': '追蹤',
+            'ja': 'フォロー',
+            'fi': 'Seuraa',
+            'tr': 'Takip Et',
+            'el': 'Ακολούθησε',
+            'defaultEnabled': false
+        },
+
+        // - Participate
+        NF_PARTICIPATE: {
+            'en': 'Participate',
+            'pt': 'Participar',
+            'de': 'Teilnehmen',
+            'fr': 'Participer',
+            'es': 'Participar',
+            'cs': 'Participovat',
+            'vi': 'Tham gia',
+            'it': 'Partecipare',
+            'lv': 'Piedalīties',
+            'pl': 'Uczestniczyć',
+            'nl': 'Deelnemen',
+            'he': 'השתתף',
+            'ar': 'المشاركة',
+            'id': 'Berpartisipasi',
+            'zh-Hans': '参与',
+            'zh-Hant': '參與',
+            'ja': '参加する',
+            'fi': 'Osallistua',
+            'tr': 'Katılmak',
+            'el': 'Συμμετέχω',
             'defaultEnabled': false
         },
 
@@ -3506,6 +3592,7 @@
 
     function nf_dropTags(post) {
         // -- remove cmf's attributes/classes from empty posts.
+        // -- including tabs (if any)
         post.removeAttribute(postAtt);
         post.removeAttribute(VARS.cssHide);
         post.removeAttribute(VARS.cssHideEl);
@@ -3763,6 +3850,20 @@
         return (events.length === 0) ? '' : KeyWords.NF_EVENTS_YOU_MAY_LIKE[VARS.language];
     }
 
+    function nf_isFollow(post) {
+        // -- follow someone/something post
+        const queryFollow = ':scope h4[id] > span > div > span';
+        const elementsFollow = querySelectorAllNoChildren(post, queryFollow, 0);
+        return (elementsFollow.length !== 1) ? '' : KeyWords.NF_FOLLOW[VARS.language];
+    }
+
+    function nf_isParticipate(post) {
+        // -- participate in a post ...
+        const queryParticipate = ':scope h4[id] > div[class] > span[dir] > span[class] > div[class] > span[class]';
+        const elementsParticipate = querySelectorAllNoChildren(post, queryParticipate, 0);
+        return (elementsParticipate.length !== 1) ? '' : KeyWords.NF_PARTICIPATE[VARS.language];
+    }
+
     function findFirstMatch(longText, valuesToFind) {
         // for (const value of valuesToFind) {
         //     if (longText.includes(value)) {
@@ -3870,7 +3971,7 @@
         // :: return <nothing>
         const query = `div[style]:not([${postAtt}]) > div > div > span > div > div > a[href*="/marketplace/item/"]`;
         const items = document.querySelectorAll(query);
-        for (const item of items ) {
+        for (const item of items) {
             // - item's container
             const box = item.closest('div[style]');
             if (box.hasAttribute(postAttMPSkip)) {
@@ -3910,7 +4011,7 @@
         // :: return <nothing>
         const queryForContainer = ':scope > div > div > div > div > div > div:nth-of-type(2)';
         const blocksContainer = post.querySelector(queryForContainer);
-        if(blocksContainer && blocksContainer.childElementCount > 0) {
+        if (blocksContainer && blocksContainer.childElementCount > 0) {
             const adBlock = blocksContainer.querySelector(':scope > a');
             if (adBlock && !adBlock.hasAttribute(postAtt)) {
                 hideBlock(adBlock, adBlock, KeyWords.SPONSORED[VARS.language]);
@@ -3951,22 +4052,30 @@
         }
     }
 
-    function nf_scrubTheTabbies() {
+    function nf_scrubTheTabbiesAndOrSurvey(doScrubTheTabbies = false, doScrubTheSurvey = false) {
         // -- Tablist : stories | reels | rooms
         // -- Stories
         // -- both appear at top of NF
+        // -- FB Survey
+        // -- appears after Tablist / Stories
         const queryTabList = `div[role="main"] > div > div > div > div > div > div > div > div[role="tablist"]`;
         const elTabList = document.querySelector(queryTabList);
         if (elTabList) {
-            if (elTabList.hasAttribute(postAttChildFlag)) {
-                return;
+            if (doScrubTheSurvey === true) {
+                const elParent = climbUpTheTree(elTabList, 4);
+                nf_scrubTheSurvey(elParent);
             }
-            // -- parent is 4 levels up.
-            const elParent = climbUpTheTree(elTabList, 4);
-            if (elParent) {
-                hideFeature(elParent, (KeyWords.NF_TABLIST_STORIES_REELS_ROOMS[VARS.language]).replaceAll('"', ''), false);
-                elTabList.setAttribute(postAttChildFlag, 'tablist');
-                return;
+            if (doScrubTheTabbies === true) {
+                if (elTabList.hasAttribute(postAttChildFlag)) {
+                    return;
+                }
+                // -- parent is 4 levels up.
+                const elParent = climbUpTheTree(elTabList, 4);
+                if (elParent) {
+                    hideFeature(elParent, (KeyWords.NF_TABLIST_STORIES_REELS_ROOMS[VARS.language]).replaceAll('"', ''), false);
+                    elTabList.setAttribute(postAttChildFlag, 'tablist');
+                    return;
+                }
             }
         }
         else {
@@ -3974,10 +4083,9 @@
             // -- two patterns
             // -- - one with listing of stories
             // -- - one with no listing of stories
-            const queryForCreateStory = 'a[href*="/stories/create"]';
-            const elCreateStory = document.querySelector(queryForCreateStory);
-            if (elCreateStory && !elCreateStory.hasAttribute(postAttChildFlag)) {
-                const elAFewBranchesUp = climbUpTheTree(elCreateStory, 4);
+
+            function getStoriesParent(element) {
+                const elAFewBranchesUp = climbUpTheTree(element, 4);
                 const moreStories = elAFewBranchesUp.querySelectorAll('a[href*="/stories/"]');
                 let elParent = null;
                 if (moreStories.length > 1) {
@@ -3988,6 +4096,19 @@
                     // -- query results has one link - create story
                     elParent = climbUpTheTree(elCreateStory, 7);
                 }
+                return elParent;
+            }
+
+            const queryForCreateStory = 'a[href*="/stories/create"]';
+            const elCreateStory = document.querySelector(queryForCreateStory);
+            if (doScrubTheSurvey === true && elCreateStory) {
+                const elParent = getStoriesParent(elCreateStory);
+                if (elParent !== null) {
+                    nf_scrubTheSurvey(elParent);
+                }
+            }
+            if (doScrubTheTabbies && elCreateStory && !elCreateStory.hasAttribute(postAttChildFlag)) {
+                const elParent = getStoriesParent(elCreateStory);
                 if (elParent !== null) {
                     hideFeature(elParent, KeyWords.NF_TABLIST_STORIES_REELS_ROOMS[VARS.language], false);
                     elCreateStory.setAttribute(postAttChildFlag, '1');
@@ -4185,6 +4306,25 @@
         nf_hideNumberOfShares(post);
     }
 
+    function nf_scrubTheSurvey(containerTablist) {
+        // -- fb survey
+        // - located in the container next to Stories / Reels / Rooms tablist
+
+        const elContainer = containerTablist.nextElementSibling.querySelector(':scope > div > div');
+
+        const surveyLink = elContainer.querySelector('a[href^="https://www.facebook.com/survey/"]');
+
+        if (surveyLink) {
+            const surveyContainer = climbUpTheTree(surveyLink, 8);
+            if (surveyContainer) {
+                hideFeature(surveyContainer, 'Survey', false);
+            }
+            hideFeature(elContainer, 'Survey', false);
+            // console.info('fbcmf - survey:', elContainer, surveyLink)
+        }
+        // <element>.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement
+    }
+
     function nf_getCollectionOfPosts() {
         // -- get a collection of posts
         // -- fb serves a mixture of html structures
@@ -4225,8 +4365,9 @@
 
         // -- Tablist - not part of the general news feed stream
         // -- Includes Stories (standalone tab)
-        if (VARS.Options.NF_TABLIST_STORIES_REELS_ROOMS) {
-            nf_scrubTheTabbies();
+        // -- Includes FB' survey
+        if (VARS.Options.NF_TABLIST_STORIES_REELS_ROOMS || VARS.Options.NF_SURVEY) {
+            nf_scrubTheTabbiesAndOrSurvey(VARS.Options.NF_TABLIST_STORIES_REELS_ROOMS, VARS.Options.NF_SURVEY);
         }
 
         // -- aside's sponsored
@@ -4267,7 +4408,7 @@
                         // -- already flagged ...
                         hideReason = 'hidden';
                         // -- however, fb is clearing out the posts as the user scrolls ...
-                        if (post.querySelectorAll('a').length === 0) {
+                        if (post.querySelector('a') === null) {
                             nf_dropTags(post);
                         }
                     }
@@ -4291,6 +4432,12 @@
                         }
                         if (hideReason === '' && VARS.Options.NF_SUGGESTIONS) {
                             hideReason = nf_isSuggested(post);
+                        }
+                        if (hideReason === '' && VARS.Options.NF_FOLLOW) {
+                            hideReason = nf_isFollow(post);
+                        }
+                        if (hideReason === '' && VARS.Options.NF_PARTICIPATE) {
+                            hideReason = nf_isParticipate(post);
                         }
                         if (hideReason === '' && VARS.Options.NF_SPONSORED_PAID) {
                             hideReason = nf_isSponsoredPaidBy(post);
@@ -4635,22 +4782,35 @@
 
         mp_stopTrackingDirtIntoMyHouse();
 
+        // console.info(log + 'mopUpTheMarketplaceFeed(); mpType:', VARS.mpType);
+
         if (VARS.mpType === 'marketplace' || VARS.mpType === 'item') {
             // - standard marketplace page
             // - on the item page, there's listing of items to sell ... (similar structure to standard marketplace page)
             // -- "sponsored" is _not_ obfuscated;
             // -- nb: adguard base filter hides the label, but not the item/product ...
             const queryHeadings = `div:not([${postAtt}]) > a[href="/ads/about/?entry_product=ad_preferences"]`;
-            const queryItems = `div[style]:not([${postAtt}]) > span > div:first-of-type > a:not([href*="marketplace"])`;
             const headings = document.querySelectorAll(queryHeadings);
-            const items = document.querySelectorAll(queryItems);
+
+            let queryItems = `div[style]:not([${postAtt}]) > span > div:first-of-type > a:not([href*="marketplace"])`;
+            let items = document.querySelectorAll(queryItems);
+            if (items.length === 0) {
+                // -- structure changed in Nov 2023.
+                queryItems = `div[style]:not([${postAtt}]) > span > div:first-of-type > div > a:not([href*="marketplace"])`;
+                items = document.querySelectorAll(queryItems);
+            }
+
+            // console.info(log+'marketplace(); headings:', headings);
+            // console.info(log+'marketplace(); items:', items);
+
             if ((headings.length > 0) && (items.length > 0)) {
                 for (const heading of headings) {
                     // heading = heading.parentElement;
                     mp_hideBox(heading.parentElement, KeyWords.SPONSORED[VARS.language]);
                 }
                 for (const item of items) {
-                    const parentItem = climbUpTheTree(item, 3);
+                    // const parentItem = climbUpTheTree(item, 3);
+                    const parentItem = climbUpTheTree(item, 4);
                     mp_hideBox(parentItem, KeyWords.SPONSORED[VARS.language]);
                 }
             }
@@ -4663,8 +4823,8 @@
             const elDialog = document.querySelector('div[role="dialog"]');
             if (elDialog) {
                 // -- viewing a mp item via mp feed (no new tab or reloaded page)
-                const queryPattern1 = 'a[href*="/ads/"]';
-                const element = elDialog.querySelector(queryPattern1);
+                let queryPattern = 'a[href*="/ads/"]';
+                let element = elDialog.querySelector(queryPattern);
                 if (element) {
                     if (element.hasAttribute(postAtt)) {
                         return;
@@ -4682,33 +4842,53 @@
                     }
                 }
                 else {
-                    const queryPattern2 = 'a[href*="//l.facebook.com/l.php?u="]';
-                    const element = elDialog.querySelector(queryPattern2);
-                    if (element) {
-                        if (element.hasAttribute(postAtt)) {
+                    // -- structure change, Nov 2023
+                    // -- multiple sponsored items (slider style)
+                    queryPattern = 'a[href*="//l.facebook.com/l.php?u="]';
+                    const elements = elDialog.querySelectorAll(queryPattern);
+                    if (elements.length > 0) {
+                        element = elements[0];
+                        if (element.hasAttribute(postAttChildFlag)) {
                             return;
                         }
                         if (element.href.length > 500) {
-                            const elParent = climbUpTheTree(element, 3);
-                            if (elParent.nodeName === 'SPAN') {
-                                mp_hideBox(elParent, KeyWords.SPONSORED[VARS.language]);
-                                element.setAttribute(postAtt, KeyWords.SPONSORED[VARS.language]);
-                            }
+                            const elParent = climbUpTheTree(element, 9);
+                            mp_hideBox(elParent, KeyWords.SPONSORED[VARS.language]);
+                            element.setAttribute(postAttChildFlag, KeyWords.SPONSORED[VARS.language]);
                         }
                     }
                 }
             }
             else {
                 // -- viewing a mp item in a new tab / reloaded page.
-                const queryPattern1 = 'a[href*="/ads/"]';
-                const element = document.querySelector(queryPattern1);
-                if (element && !element.hasAttribute(postAtt)) {
-                    // -- found the sponsored box inside the mp item box.
-                    let elParent = element.parentElement.closest('h2');
-                    if (elParent) {
-                        elParent = elParent.closest('span');
-                        mp_hideBox(elParent, KeyWords.SPONSORED[VARS.language]);
-                        element.setAttribute(postAtt, KeyWords.SPONSORED[VARS.language]);
+                let queryPattern = 'a[href*="/ads/"]';
+                let element = document.querySelector(queryPattern);
+                if (element) {
+                    if (!element.hasAttribute(postAtt)) {
+                        // -- found the sponsored box inside the mp item box.
+                        let elParent = element.parentElement.closest('h2');
+                        if (elParent) {
+                            elParent = elParent.closest('span');
+                            mp_hideBox(elParent, KeyWords.SPONSORED[VARS.language]);
+                            element.setAttribute(postAtt, KeyWords.SPONSORED[VARS.language]);
+                        }
+                    }
+                }
+                else {
+                    // -- structure change, Nov 2023
+                    // -- multiple sponsored items (slider style)
+                    queryPattern = 'a[href*="//l.facebook.com/l.php?u="]';
+                    const elements = document.querySelectorAll(queryPattern);
+                    if (elements.length > 0) {
+                        element = elements[0];
+                        if (element.hasAttribute(postAttChildFlag)) {
+                            return;
+                        }
+                        if (element.href.length > 500) {
+                            const elParent = climbUpTheTree(element, 9);
+                            mp_hideBox(elParent, KeyWords.SPONSORED[VARS.language]);
+                            element.setAttribute(postAttChildFlag, KeyWords.SPONSORED[VARS.language]);
+                        }
                     }
                 }
             }

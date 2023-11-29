@@ -156,7 +156,16 @@ while(elementsToRemove.length > 0) {\n\
 </script>\n$1†i
 
 FILTER: CloseTwitchAds
-s†(<\!-- END INJECTION -->)†<script src="https://config.privoxy.org/user-manual/Auto-Close-Twitch-Ads.js"></script>\n$1†i
+s†(<\!-- END INJECTION -->)†<script src='https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.11.0/underscore-min.js'></script>\n$1†i
+s†(<\!-- END INJECTION -->)†\n<script>\n\
+window.addEventListener("DOMContentLoaded", Greasemonkey_main, false);\n\
+function Greasemonkey_main ()\n\
+{\n\
+var imported = document.createElement('script');\n\
+imported.src = 'https://config.privoxy.org/user-manual/Auto-Close-Twitch-Ads.js';\n\
+document.body.appendChild(imported);\n\
+}\n\
+</script>\n$1†i
 
 FILTER: MangaLoader
 s†(<\!-- END INJECTION -->)†\n<script>\n\
