@@ -295,7 +295,7 @@ i.redd.it
 preview.redd.it
 
 {+server-header-filter{privoxycsp}}
-.facebook.com
+#.facebook.com
 #.youtube.com
 #.twitter.com
 #x.com
@@ -317,6 +317,7 @@ config.privoxy.org/.*?\.js$
 
 {+hide-user-agent{Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.3}}
 maps.google.com
+mail.google.com
 
 {+hide-user-agent{Nothing} -crunch-incoming-cookies -crunch-outgoing-cookies}
 .ip-check.info
